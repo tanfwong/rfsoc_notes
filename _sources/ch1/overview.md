@@ -1,9 +1,9 @@
-# Course Overview
+# Overview
 
-* Our goal is to learn how to implement real-time, high-speed digital
-  signal processing (DSP) objects and algorithms.
+* Our goal is to learn how to implement high-speed digital
+  signal processing (DSP) objects and algorithms in real time.
 
-* Typical hardware technologies/plaforms/architectures for dsp
+* Typical hardware technologies/plaforms/architectures for DSP
   implementation include:
   1. **General-purpose CPU / micro-controller**
   2. **Digital signal processor (dsp)**
@@ -11,7 +11,7 @@
   4. **FPGA**
   5. **ASIC**
 
-* Very roughly speaking, the hardware technologies listed above
+* Very roughly speaking, the hardware technologies as listed above
   present a decreasing order in *programmability/reconfigurability*
   and an increasing order in *speed*.
 
@@ -22,11 +22,11 @@
   stream of samples.
    
 * In addition, it is a common practice nowadays to have a
-  system-on-chip (SoC) hardware that contains multiple different
-  technologies. For example, a SoC may contain a general-purpose CPU
-  for control and interfacing, a GPU for display, and an FPGA with
-  *"hardened"* features (effectively ASIC) optimized for a
-  specific class of applications.
+  system-on-chip (SoC) device that contains multiple different
+  technologies. For example, an SoC device may contain a
+  general-purpose CPU for control and interfacing, a GPU for display,
+  and an FPGA with *"hardened"* features (effectively ASIC) optimized
+  for a specific class of applications.
 
 * In this course, we will focus on the kind of applications in which
   continuous *high-speed* streams of samples coming from
@@ -37,7 +37,7 @@
   design. Typical applications of this kind include digital
   communications and radar signal processing.
 
-* We will use an SoC with a programmable logic (PL) component in the
-  form of an FPGA and high-speed hardened ADCs as the hardware
+* We will use an SoC device with a programmable logic (PL) component
+  in the form of an FPGA and high-speed hardened ADCs as the hardware
   platform to support implementation development for the
   aforementioned DSP applications.

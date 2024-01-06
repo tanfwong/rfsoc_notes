@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>1. Course Overview &#8212; Real-time DSP Notes</title>
+    <title>1. Overview &#8212; Real-time DSP Notes</title>
   
   
   
@@ -159,7 +159,7 @@ const thebe_selector_output = ".output, .cell_output"
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">1. Course Overview</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">1. Overview</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="rfsoc4x2.html">1.1. Hardware Platform</a></li>
 </ul>
 </li>
@@ -344,7 +344,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Course Overview</h1>
+    <h1>Overview</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -358,12 +358,12 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="course-overview">
-<h1><span class="section-number">1. </span>Course Overview<a class="headerlink" href="#course-overview" title="Permalink to this headline">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="overview">
+<h1><span class="section-number">1. </span>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">#</a></h1>
 <ul class="simple">
-<li><p>Our goal is to learn how to implement real-time, high-speed digital
-signal processing (DSP) objects and algorithms.</p></li>
-<li><p>Typical hardware technologies/plaforms/architectures for dsp
+<li><p>Our goal is to learn how to implement high-speed digital
+signal processing (DSP) objects and algorithms in real time.</p></li>
+<li><p>Typical hardware technologies/plaforms/architectures for DSP
 implementation include:</p>
 <ol class="arabic simple">
 <li><p><strong>General-purpose CPU / micro-controller</strong></p></li>
@@ -373,7 +373,7 @@ implementation include:</p>
 <li><p><strong>ASIC</strong></p></li>
 </ol>
 </li>
-<li><p>Very roughly speaking, the hardware technologies listed above
+<li><p>Very roughly speaking, the hardware technologies as listed above
 present a decreasing order in <em>programmability/reconfigurability</em>
 and an increasing order in <em>speed</em>.</p></li>
 <li><p>Whether a specific technology is more suitable for a specific
@@ -382,11 +382,11 @@ example, typical GPUs are optimized to process images stored in
 memory but may not be most efficient in processing a continuous
 stream of samples.</p></li>
 <li><p>In addition, it is a common practice nowadays to have a
-system-on-chip (SoC) hardware that contains multiple different
-technologies. For example, a SoC may contain a general-purpose CPU
-for control and interfacing, a GPU for display, and an FPGA with
-<em>“hardened”</em> features (effectively ASIC) optimized for a
-specific class of applications.</p></li>
+system-on-chip (SoC) device that contains multiple different
+technologies. For example, an SoC device may contain a
+general-purpose CPU for control and interfacing, a GPU for display,
+and an FPGA with <em>“hardened”</em> features (effectively ASIC) optimized
+for a specific class of applications.</p></li>
 <li><p>In this course, we will focus on the kind of applications in which
 continuous <em>high-speed</em> streams of samples coming from
 analog-to-digital converters (ADCs) are to be
@@ -395,8 +395,8 @@ may go up to the giga-samples per second (Gsps) range. However, we
 will be limiting ourselves to about <span class="math notranslate nohighlight">\(300\)</span> Msps for easier
 design. Typical applications of this kind include digital
 communications and radar signal processing.</p></li>
-<li><p>We will use an SoC with a programmable logic (PL) component in the
-form of an FPGA and high-speed hardened ADCs as the hardware
+<li><p>We will use an SoC device with a programmable logic (PL) component
+in the form of an FPGA and high-speed hardened ADCs as the hardware
 platform to support implementation development for the
 aforementioned DSP applications.</p></li>
 </ul>
