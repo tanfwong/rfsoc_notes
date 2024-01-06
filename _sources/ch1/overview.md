@@ -1,12 +1,12 @@
 # Course Overview
 
 * Our goal is to learn how to implement real-time, high-speed digital
-  signal processing (dsp) objects and algorithms.
+  signal processing (DSP) objects and algorithms.
 
 * Typical hardware technologies/plaforms/architectures for dsp
   implementation include:
   1. **General-purpose CPU / micro-controller**
-  2. **Digital signal processor (DSP)**
+  2. **Digital signal processor (dsp)**
   3. **GPU**
   4. **FPGA**
   5. **ASIC**
