@@ -64,7 +64,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="2. References" href="../refs.html" />
+    <link rel="next" title="1.2. Software Development Tools" href="vitis.html" />
     <link rel="prev" title="1. Overview" href="overview.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
@@ -159,6 +159,7 @@ const thebe_selector_output = ".output, .cell_output"
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="overview.html">1. Overview</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">1.1. Hardware Platform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vitis.html">1.2. Software Development Tools</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">2. References</a></li>
@@ -411,35 +412,28 @@ this class.</p></li>
 <li><p>The Zynq XCZU48DR UltraScale+ RFSoC device <span id="id4">[<a class="reference internal" href="../refs.html#id9" title="Zynq UltraScale+ RFSoC Data Sheet: Overview. AMD-Xilinx, June 2023. URL: https://docs.xilinx.com/v/u/en-US/ds889-zynq-usp-rfsoc-overview.">AMD-Xilinx23</a>]</span>
 implements a heterogeneous system consisting of the following
 component subsystems:</p>
-<ol class="arabic simple">
-<li><p>Processing System (PS):</p></li>
-</ol>
-<ul class="simple">
-<li><p>a 64-bit quad-core ARM Cortex-A53 APU</p></li>
+<dl class="glossary simple">
+<dt id="term-Processing-System-PS">Processing System (PS):<a class="headerlink" href="#term-Processing-System-PS" title="Permalink to this term">#</a></dt><dd><ul class="simple">
+<li><p>a 64-bit quad-core ARM Cortex-A53 APU with NEON advanced SIMD
+engine and FPU</p></li>
 <li><p>a 32-bit dual-core ARM Cortex-R5F RPU</p></li>
-<li><p>an ARM Mali-400 based GPU and NEON advanced SIMD media processing engine</p></li>
+<li><p>an ARM Mali-400 based GPU</p></li>
 <li><p>an 8-channel DMA controller that supports 64-bit, 2400MHz DDR4</p></li>
 <li><p>connectivity controllers for PCI Express, SATA, DisplayPort, Gbit Ethernet, USB3 and other ports</p></li>
-<li><p>a platform management unit (PMU) and a configuration security
-unit (CSU) for secure boot support</p></li>
+<li><p>a platform management unit (PMU) and a configuration security unit (CSU) for secure boot support</p></li>
 </ul>
-<ol class="arabic simple" start="2">
-<li><p>Programmable Logic (PL):</p></li>
-</ol>
-<ul class="simple">
+</dd>
+<dt id="term-Programmable-Logic-PL">Programmable Logic (PL):<a class="headerlink" href="#term-Programmable-Logic-PL" title="Permalink to this term">#</a></dt><dd><ul class="simple">
 <li><p>425,280 configurable logic block (CLB) lookup tables (LUTs)</p></li>
 <li><p>850,560 CLB flip-flops (FFs)</p></li>
 <li><p>4,272 DSP slices</p></li>
-<li><p>38 Mb block RAM (BRAM) in 1080 blocks and 22.5 Mb ultra RAM
-(URAM) in 80 blocks</p></li>
+<li><p>38 Mb block RAM (BRAM) in 1080 blocks and 22.5 Mb ultra RAM (URAM) in 80 blocks</p></li>
 <li><p>Sixteen 33Gbps GTY transceivers</p></li>
 <li><p>Integrated blocks for PCIe Gen 3/4, 150 Gbps Interlaken, and 100 Gbps Ethernet</p></li>
 <li><p>high-performance and high-density I/Os</p></li>
 </ul>
-<ol class="arabic simple" start="3">
-<li><p>RF System:</p></li>
-</ol>
-<ul class="simple">
+</dd>
+<dt id="term-RF-System">RF System:<a class="headerlink" href="#term-RF-System" title="Permalink to this term">#</a></dt><dd><ul class="simple">
 <li><p>eight 14-bit RF ADCs supporting up to 5.0 Gsps sampling rate
 (the RFSoC 4x2 board provides SMA input ports to 4 ADCs)</p></li>
 <li><p>eight 14-bit RF DACs supporting up to 9.85 Gsps sampling rate
@@ -448,6 +442,8 @@ unit (CSU) for secure boot support</p></li>
 <li><p>Integrated data converter blocks supporting up to 40x decimation/interpolation</p></li>
 <li><p>8 fractional phase-locked loops (PLLs)</p></li>
 </ul>
+</dd>
+</dl>
 <figure class="align-center" id="xczu48dr">
 <a class="reference internal image-reference" href="../_images/rfsoc_g3.png"><img alt="Zynq XCZU48DR UltraScale+ RFSoC Board Diagram" src="../_images/rfsoc_g3.png" style="width: 1000px;" /></a>
 <figcaption>
@@ -462,7 +458,8 @@ high-bandwidth interconnects conforming to the Advanced eXtensible
 Interface 4 (AXI4) protocol <span id="id5">[<a class="reference internal" href="../refs.html#id10" title="Introduction to AMBA AXI4. ARM, Aug. 2020. URL: https://developer.arm.com/-/media/Arm%20Developer%20Community/PDF/Learn%20the%20Architecture/102202_0100_01_Introduction_to_AMBA_AXI.pdf?revision=369ad681-f926-47b0-81be-42813d39e132.">ARM20</a>]</span>.</p></li>
 <li><p>We will primarily use the ARM Cortex-A53 APU in the PS, the CLB, DSP
 and RAM resources in the PL, and one ADC, including the
-corresponding PLL and data converter, the RF system for this class.</p></li>
+corresponding PLL and data converter, the RF system for DSP
+development in this class.</p></li>
 </ul>
 </section>
 </section>
@@ -508,11 +505,11 @@ corresponding PLL and data converter, the RF system for this class.</p></li>
       </div>
     </a>
     <a class="right-next"
-       href="../refs.html"
+       href="vitis.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">2. </span>References</p>
+        <p class="prev-next-title"><span class="section-number">1.2. </span>Software Development Tools</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

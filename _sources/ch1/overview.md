@@ -1,7 +1,8 @@
 # Overview
 
-* Our goal is to learn how to implement high-speed digital
-  signal processing (DSP) objects and algorithms in real time.
+* Our goal is to learn how to implement real-time, high-speed digital
+  signal processing (DSP) objects and algorithms, which will be
+  referred to collectively as ***DSP kernels***.
 
 * Typical hardware technologies/plaforms/architectures for DSP
   implementation include:
