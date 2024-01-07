@@ -408,24 +408,33 @@ this class.</p></li>
 <section id="zynq-rfsoc">
 <h2><span class="section-number">1.1.2. </span>Zynq RFSoC<a class="headerlink" href="#zynq-rfsoc" title="Permalink to this headline">#</a></h2>
 <ul>
-<li><p>The Zynq XCZU48DR UltraScale+ RFSoC device implements a
-heterogeneous system consisting of the following component subsystems:</p>
+<li><p>The Zynq XCZU48DR UltraScale+ RFSoC device <span id="id4">[<a class="reference internal" href="../refs.html#id9" title="Zynq UltraScale+ RFSoC Data Sheet: Overview. AMD-Xilinx, June 2023. URL: https://docs.xilinx.com/v/u/en-US/ds889-zynq-usp-rfsoc-overview.">AMD-Xilinx23</a>]</span>
+implements a heterogeneous system consisting of the following
+component subsystems:</p>
 <ol class="arabic simple">
 <li><p>Processing System (PS):</p></li>
 </ol>
 <ul class="simple">
-<li><p>a 64-bit quad-core ARM Cortex-A53</p></li>
-<li><p>a 32-bit dual-core ARM Cortex-R5F</p></li>
+<li><p>a 64-bit quad-core ARM Cortex-A53 APU</p></li>
+<li><p>a 32-bit dual-core ARM Cortex-R5F RPU</p></li>
 <li><p>an ARM Mali-400 based GPU and NEON advanced SIMD media processing engine</p></li>
 <li><p>an 8-channel DMA controller that supports 64-bit, 2400MHz DDR4</p></li>
 <li><p>connectivity controllers for PCI Express, SATA, DisplayPort, Gbit Ethernet, USB3 and other ports</p></li>
-<li><p>a platform management unit</p></li>
+<li><p>a platform management unit (PMU) and a configuration security
+unit (CSU) for secure boot support</p></li>
 </ul>
 <ol class="arabic simple" start="2">
 <li><p>Programmable Logic (PL):</p></li>
 </ol>
 <ul class="simple">
-<li></li>
+<li><p>425,280 configurable logic block (CLB) lookup tables (LUTs)</p></li>
+<li><p>850,560 CLB flip-flops (FFs)</p></li>
+<li><p>4,272 DSP slices</p></li>
+<li><p>38 Mb block RAM (BRAM) in 1080 blocks and 22.5 Mb ultra RAM
+(URAM) in 80 blocks</p></li>
+<li><p>Sixteen 33Gbps GTY transceivers</p></li>
+<li><p>Integrated blocks for PCIe Gen 3/4, 150 Gbps Interlaken, and 100 Gbps Ethernet</p></li>
+<li><p>high-performance and high-density I/Os</p></li>
 </ul>
 <ol class="arabic simple" start="3">
 <li><p>RF System:</p></li>
@@ -435,8 +444,9 @@ heterogeneous system consisting of the following component subsystems:</p>
 (the RFSoC 4x2 board provides SMA input ports to 4 ADCs)</p></li>
 <li><p>eight 14-bit RF DACs supporting up to 9.85 Gsps sampling rate
 (the RFSoC 4x2 board provides SMA output ports to 2 DACs)</p></li>
-<li><p>eight SD-FEC hardened IP blocks</p></li>
-<li><p>hardened IP blocks supporting up to 40x decimation/interpolation</p></li>
+<li><p>eight integrated SD-FEC blocks</p></li>
+<li><p>Integrated data converter blocks supporting up to 40x decimation/interpolation</p></li>
+<li><p>8 fractional phase-locked loops (PLLs)</p></li>
 </ul>
 <figure class="align-center" id="xczu48dr">
 <a class="reference internal image-reference" href="../_images/rfsoc_g3.png"><img alt="Zynq XCZU48DR UltraScale+ RFSoC Board Diagram" src="../_images/rfsoc_g3.png" style="width: 1000px;" /></a>
@@ -447,6 +457,12 @@ document</a>)</span><a class="headerlink" href="#xczu48dr" title="Permalink to t
 </figcaption>
 </figure>
 </li>
+<li><p>Various components of the three subsystems are connected via on-chip
+high-bandwidth interconnects conforming to the Advanced eXtensible
+Interface 4 (AXI4) protocol.</p></li>
+<li><p>We will primarily use the ARM Cortex-A53 APU in the PS, the CLB, DSP
+and RAM resources in the PL, and one ADC, including the
+corresponding PLL and data converter, the RF system for this class.</p></li>
 </ul>
 </section>
 </section>

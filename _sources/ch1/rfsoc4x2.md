@@ -42,27 +42,37 @@ peripherals and ports for a typical embedded system development board:
 
 ## Zynq RFSoC
 
-* The Zynq XCZU48DR UltraScale+ RFSoC device implements a
-  heterogeneous system consisting of the following component subsystems:
+* The Zynq XCZU48DR UltraScale+ RFSoC device {cite}`rfsoc_data_sheet`
+  implements a heterogeneous system consisting of the following
+  component subsystems:
   1. Processing System (PS):
-    - a 64-bit quad-core ARM Cortex-A53 
-    - a 32-bit dual-core ARM Cortex-R5F
+    - a 64-bit quad-core ARM Cortex-A53 APU
+    - a 32-bit dual-core ARM Cortex-R5F RPU
     - an ARM Mali-400 based GPU and NEON advanced SIMD media processing engine
     - an 8-channel DMA controller that supports 64-bit, 2400MHz DDR4
     - connectivity controllers for PCI Express, SATA, DisplayPort, Gbit Ethernet, USB3 and other ports
-    - a platform management unit 
+    - a platform management unit (PMU) and a configuration security
+      unit (CSU) for secure boot support
 
   2. Programmable Logic (PL):
-    - 
+    - 425,280 configurable logic block (CLB) lookup tables (LUTs)
+    - 850,560 CLB flip-flops (FFs)
+    - 4,272 DSP slices
+    - 38 Mb block RAM (BRAM) in 1080 blocks and 22.5 Mb ultra RAM
+      (URAM) in 80 blocks
+    - Sixteen 33Gbps GTY transceivers
+    - Integrated blocks for PCIe Gen 3/4, 150 Gbps Interlaken, and 100 Gbps Ethernet
+    - high-performance and high-density I/Os
 
   3. RF System:
     - eight 14-bit RF ADCs supporting up to 5.0 Gsps sampling rate
       (the RFSoC 4x2 board provides SMA input ports to 4 ADCs)
     - eight 14-bit RF DACs supporting up to 9.85 Gsps sampling rate
       (the RFSoC 4x2 board provides SMA output ports to 2 DACs)
-    - eight SD-FEC hardened IP blocks
-    - hardened IP blocks supporting up to 40x decimation/interpolation
-  
+    - eight integrated SD-FEC blocks
+    - Integrated data converter blocks supporting up to 40x decimation/interpolation
+    - 8 fractional phase-locked loops (PLLs)
+
   ```{figure} ../figs/rfsoc_g3.png
   ---
   name: xczu48dr
@@ -74,4 +84,11 @@ peripherals and ports for a typical embedded system development board:
   [this Xilinx
   document](https://docs.xilinx.com/r/en-US/ug1496-t2-telco/Zynq-UltraScale-RFSoC-Specification))
   ```
+ 
+* Various components of the three subsystems are connected via on-chip
+ high-bandwidth interconnects conforming to the Advanced eXtensible
+ Interface 4 (AXI4) protocol.
 
+* We will primarily use the ARM Cortex-A53 APU in the PS, the CLB, DSP
+  and RAM resources in the PL, and one ADC, including the
+  corresponding PLL and data converter, the RF system for this class.
