@@ -359,6 +359,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dsp-implementation-configuration">1.2.1. DSP Implementation Configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vitis-vivado-toolchain">1.2.2. Vitis-Vivado Toolchain</a></li>
 </ul>
             </nav>
         </div>
@@ -374,12 +375,11 @@ document.write(`
 <h1><span class="section-number">1.2. </span>Software Development Tools<a class="headerlink" href="#software-development-tools" title="Permalink to this headline">#</a></h1>
 <section id="dsp-implementation-configuration">
 <h2><span class="section-number">1.2.1. </span>DSP Implementation Configuration<a class="headerlink" href="#dsp-implementation-configuration" title="Permalink to this headline">#</a></h2>
-<ul class="simple">
-<li><p>There are many possible configurations of utilizing the various
-computing resources in the three subsystems in the XCZU48DR RFSoC
+<p>There are many possible configurations of utilizing the various
+compute resources in the three subsystems in the XCZU48DR RFSoC
 device to support DSP implementation. Since our main goal is to
 learn how to develop real-time, high-speed DSP implementation, we
-will employ the heterogeneous computing resources in the XCZU48DR
+will employ the heterogeneous compute resources in the XCZU48DR
 RFSoC device in the configuration below:</p>
 <ol class="arabic simple">
 <li><p>One ADC, the corresponding PLL, and data converter in the RF
@@ -389,12 +389,76 @@ system will be configured to supply a continuous stream of
 resources in the PL. The results will be stored in the global
 memory (DDR4) connected to the PL.</p></li>
 <li><p>The ARM Cortex-A53 APU in the PS will serve as a <em>host</em> for
-control of the DSP kernels in the PL, interfacing with the global PL memory, and simple post
-processing of the DSP results. An embedded Linux OS will run on
-the APU.</p></li>
-<li><p>All these PS, PL, and RF resources will be interconnected via
-AXI4 protocols.</p></li>
+control of the DSP kernels in the PL, interfacing with the global
+PL memory, and simple post processing of the DSP results. An
+embedded Linux OS will run on the APU.</p></li>
+<li><p>Control and data signals will be transfered between all these PS,
+PL, and RF components via AXI4 protocols.</p></li>
 </ol>
+</section>
+<section id="vitis-vivado-toolchain">
+<h2><span class="section-number">1.2.2. </span>Vitis-Vivado Toolchain<a class="headerlink" href="#vitis-vivado-toolchain" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>DSP implementation in the configuration above follows the
+traditional embedded/SoC system development workflow by programming
+the heterogeneous compute components:</p>
+<ul class="simple">
+<li><p><strong>PL</strong>:</p>
+<ol class="arabic simple">
+<li><p>Configure the ADC, PLL, and data converter to provide a stream
+of input signal samples at the desired sampling rate and
+interface the ADC sample stream to the DSP kernels in the PL.
+This step is usually developed at the <em>register-transfer level
+(RTL)</em> using hardware description languages (HDLs), such as
+Verilog and VHDL.</p></li>
+<li><p>Implement DSP kernels, each with interfaces to the ADC, to other DSP
+kernels, and/or to global memory. This step may be developed at
+the RTL level as in the previous step, or with <em>high-level
+synthesis (HLS)</em> using  high-level programming languages, such
+as C or C++.</p></li>
+</ol>
+</li>
+<li><p><strong>PS</strong>:</p>
+<ol class="arabic simple">
+<li><p>Develop drivers and APIs to control the DSP kernels and ADC
+hardware blocks in the PL as well as to transfer data between
+the host (the ARM Cortex-A53 APU) and the DSP kernels.</p></li>
+<li><p>Develop an application program on the host to control and
+communicate with the DSP kernels and to present the processed
+results from the DSP kernels.</p></li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>The AMD-Xilinx tools that support the embedded system
+development workflow is <a class="reference external" href="https://www.xilinx.com/products/design-tools/vitis.html">Vitis</a>, <a class="reference external" href="https://www.xilinx.com/products/design-tools/vivado.html">Vivado</a>, and <a class="reference external" href="https://www.xilinx.com/products/design-tools/vitis/vitis-hls.html">Vitis HLS</a>:</p>
+<dl class="glossary simple">
+<dt id="term-Vivado">Vivado<a class="headerlink" href="#term-Vivado" title="Permalink to this term">#</a></dt><dd><ul class="simple">
+<li><p>Supports RTL design of DSP kernels, hardware blocks, and
+interfaces in the PL</p></li>
+<li><p>Performs FPGA implementation steps, including synthesis,
+verification and simulation, elaboration, place and route,
+static timing analysis, and bit-stream generation</p></li>
+</ul>
+</dd>
+<dt id="term-Vitis-HLS">Vitis HLS<a class="headerlink" href="#term-Vitis-HLS" title="Permalink to this term">#</a></dt><dd><ul class="simple">
+<li><p>Supports HLS design of DSP kernels and interfaces in the PL</p></li>
+<li><p>Performs HLS design steps, including RTL synthesis, C simulation
+and C/RTL co-simulation</p></li>
+<li><p>RTL design sythesized can be used in Vivado for FPGA implementation</p></li>
+</ul>
+</dd>
+<dt id="term-Vitis">Vitis<a class="headerlink" href="#term-Vitis" title="Permalink to this term">#</a></dt><dd><ul class="simple">
+<li><p>Supports host application/driver development and build</p></li>
+<li><p>Invokes Vitis HLS and Vivado to perform PL design and implementation</p></li>
+<li><p>Packages the host OS, host application executable, and FPGA bit-stream
+for running the embedded DSP application on the RFSoC 4x2
+board</p></li>
+<li><p>Provids a unified IDE for the embedded system development steps
+above</p></li>
+</ul>
+</dd>
+</dl>
 </li>
 </ul>
 </section>
@@ -468,6 +532,7 @@ AXI4 protocols.</p></li>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dsp-implementation-configuration">1.2.1. DSP Implementation Configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vitis-vivado-toolchain">1.2.2. Vitis-Vivado Toolchain</a></li>
 </ul>
   </nav></div>
 
