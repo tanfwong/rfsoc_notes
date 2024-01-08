@@ -20,6 +20,7 @@ RFSoC device in the configuration below:
   4. Control and data signals will be transfered between all these PS,
       PL, and RF components via AXI4 protocols.
 
+(sec:vitis)=
 ## Vitis-Vivado Toolchain
 * DSP implementation in the configuration above follows the
   traditional embedded/SoC system development workflow by programming
