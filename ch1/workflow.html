@@ -359,6 +359,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vitis-application-accelerated-development-flow">1.3.1. Vitis Application Accelerated Development Flow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vaadf-procedures-in-vitis">1.3.2. VAADF Procedures in Vitis</a></li>
 </ul>
             </nav>
         </div>
@@ -394,20 +395,27 @@ design process in <a class="reference internal" href="../ch2/hls.html#sec-hls"><
 </ul>
 <section id="vitis-application-accelerated-development-flow">
 <h2><span class="section-number">1.3.1. </span>Vitis Application Accelerated Development Flow<a class="headerlink" href="#vitis-application-accelerated-development-flow" title="Permalink to this headline">#</a></h2>
-<ul class="simple">
+<ul>
 <li><p>The VAADF <span id="id1">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23a</a>]</span> is essentially a design process that allows
 developers to focus on developing the core functionalities of the PL
 kernels while the interface development is all automated by Vitis.</p></li>
 <li><p>It contains:</p>
 <ul>
 <li><p>a <em>Vitis extensible platform</em> which is composed of</p>
-<ul>
+<ul class="simple">
 <li><p>a <em>domain</em> with the necessary software to run Linux on the PS host</p></li>
 <li><p>a base PL hardware block with a predefined configuration of AXI4
 interfaces for PL kernel control by the PS host and for data
 transfer with between the PS host and the PL kernels via global
 memory, clocks, and interrupted signals</p></li>
 </ul>
+<figure class="align-center" id="vitis-platform">
+<a class="reference internal image-reference" href="../_images/vitis_platform.png"><img alt="Vitis extensible platform" src="../_images/vitis_platform.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 1.4 </span><span class="caption-text">Components of a Vitis extensible platform
+(image taken from <span id="id2">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23a</a>]</span>)</span><a class="headerlink" href="#vitis-platform" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
 </li>
 <li><p>a predefined configuration of AXI4 interfaces for kernel control
 and data transfer, clock input, and interrupt signals to which
@@ -428,6 +436,48 @@ negligible for us since we will not be interested in developing
 interfaces to other peripherals, and the adoption of VAADF allows us
 to focus on the “DSP stuff” in our development.</p></li>
 </ul>
+</section>
+<section id="vaadf-procedures-in-vitis">
+<h2><span class="section-number">1.3.2. </span>VAADF Procedures in Vitis<a class="headerlink" href="#vaadf-procedures-in-vitis" title="Permalink to this headline">#</a></h2>
+<p>The followings are the steps of performing our DSP development under
+VAADF:</p>
+<ol class="arabic simple">
+<li><p>Build a Vitis extensible platform for the RFSoC 4x2 board:</p>
+<ul class="simple">
+<li><p>Use Vivado to build a hardware platform component</p></li>
+<li><p>Use PetaLinux to build an image for the Linux domain with the
+required boot files, device tree, and XRT</p></li>
+<li><p>Create a <em>Platform Component</em> in Vitis to build the Vitis
+extensible platform</p></li>
+</ul>
+</li>
+<li><p>Create a <em>System Project</em> in Vitis by selecting to use the Vitis platform,
+the Linux kernel image, rootfs, and sysroot generated in
+step 1. The system project will serve as a system container for
+developing our embedded application.</p></li>
+<li><p>Create a <em>HLS Component</em> (multiple HLS components) in Vitis to use
+Vitis HLS to develop DSP kernel(s).</p></li>
+<li><p>Create an <em>Application Component</em> in Vitis to develop PS host application.</p></li>
+<li><p>Add the HLS and application components to the system project.</p></li>
+<li><p>Build the system project for software emulation, hardware
+emulation, and/or hardware in Vitis.</p></li>
+<li><p>Deploy the host executables and FPGA bit-stream, if applicable, for
+testing, debugging, and verification. The usual sequence of testing
+build is to start from software emulation, then to hardware
+emulation, and finally to hardware.</p></li>
+</ol>
+<ul class="simple">
+<li><p>Note that steps 2-5 can be replaced, and often simplified, by
+generating all the components from an <em>Acceleration Example</em> in
+Vitis and modifying the corresponding components in the example.</p></li>
+</ul>
+<figure class="align-center" id="vitis-build">
+<a class="reference internal image-reference" href="../_images/vitis_build.png"><img alt="Vitis extensible platform" src="../_images/vitis_build.png" style="width: 1000px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 1.5 </span><span class="caption-text">VAADF Procedures in Vitis
+(image modified from <span id="id3">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23a</a>]</span>)</span><a class="headerlink" href="#vitis-build" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
 </section>
 </section>
 
@@ -499,6 +549,7 @@ to focus on the “DSP stuff” in our development.</p></li>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vitis-application-accelerated-development-flow">1.3.1. Vitis Application Accelerated Development Flow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vaadf-procedures-in-vitis">1.3.2. VAADF Procedures in Vitis</a></li>
 </ul>
   </nav></div>
 
