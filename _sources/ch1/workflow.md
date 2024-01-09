@@ -54,7 +54,7 @@
 * The tradeoffs for adopting VAADF are potential losses in
   flexibility of the implementation architecture and in PL utilization
   efficiency. Nonetheless, these potential losses are rather
-  negligible for us since we will not be interested in developing
+  acceptable for us since we will not be interested in developing
   interfaces to other peripherals, and the adoption of VAADF allows us
   to focus on the "DSP stuff" in our development. 
 
