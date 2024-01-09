@@ -10,21 +10,21 @@ RFSoC device in the configuration below:
   1. One ADC, the corresponding PLL, and data converter in the RF
      system will be configured to supply a continuous stream of
      (real-valued) signal samples at the sampling rate of $307.2$ Msps.
-  2. DSP kernels will be implemented using the various
-     resources in the PL. The results will be stored in the global
-     memory (DDR4) connected to the PL. 
+  2. DSP kernels will be implemented using the various resources in
+     the PL.  The results will be stored in the global memory (DDR4)
+     connected to the PL.
   3. The ARM Cortex-A53 APU in the PS will serve as a *host* for
      control of the DSP kernels in the PL, interfacing with the global
-     PL memory, and simple post processing of the DSP results. An
+     memory, and simple post processing of the DSP results. An
      embedded Linux OS will run on the APU.
   4. Control and data signals will be transfered between all these PS,
       PL, and RF components via AXI4 protocols.
 
 (sec:vitis)=
 ## Vitis-Vivado Toolchain
-* DSP implementation in the configuration above follows the
-  traditional embedded/SoC system development workflow by programming
-  the heterogeneous compute components:
+* DSP implementation in the configuration above follows a typical
+  embedded/SoC system development workflow by programming the
+  heterogeneous compute components:
   - **PL**:
     1. Configure the ADC, PLL, and data converter to provide a stream
       of input signal samples at the desired sampling rate and
@@ -33,7 +33,7 @@ RFSoC device in the configuration below:
       (RTL)* using hardware description languages (HDLs), such as
       Verilog and VHDL.
     2. Implement DSP kernels, each with interfaces to the ADC, to other DSP
-       kernels, and/or to global memory. This step may be developed at
+       kernels, and/or to local and global memory. This step may be developed at
        the RTL level as in the previous step, or with *high-level
        synthesis (HLS)* using  high-level programming languages, such
        as C or C++.

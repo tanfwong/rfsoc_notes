@@ -387,12 +387,12 @@ RFSoC device in the configuration below:</p>
 <li><p>One ADC, the corresponding PLL, and data converter in the RF
 system will be configured to supply a continuous stream of
 (real-valued) signal samples at the sampling rate of <span class="math notranslate nohighlight">\(307.2\)</span> Msps.</p></li>
-<li><p>DSP kernels will be implemented using the various
-resources in the PL. The results will be stored in the global
-memory (DDR4) connected to the PL.</p></li>
+<li><p>DSP kernels will be implemented using the various resources in
+the PL.  The results will be stored in the global memory (DDR4)
+connected to the PL.</p></li>
 <li><p>The ARM Cortex-A53 APU in the PS will serve as a <em>host</em> for
 control of the DSP kernels in the PL, interfacing with the global
-PL memory, and simple post processing of the DSP results. An
+memory, and simple post processing of the DSP results. An
 embedded Linux OS will run on the APU.</p></li>
 <li><p>Control and data signals will be transfered between all these PS,
 PL, and RF components via AXI4 protocols.</p></li>
@@ -401,9 +401,9 @@ PL, and RF components via AXI4 protocols.</p></li>
 <section id="vitis-vivado-toolchain">
 <span id="sec-vitis"></span><h2><span class="section-number">1.2.2. </span>Vitis-Vivado Toolchain<a class="headerlink" href="#vitis-vivado-toolchain" title="Permalink to this headline">#</a></h2>
 <ul>
-<li><p>DSP implementation in the configuration above follows the
-traditional embedded/SoC system development workflow by programming
-the heterogeneous compute components:</p>
+<li><p>DSP implementation in the configuration above follows a typical
+embedded/SoC system development workflow by programming the
+heterogeneous compute components:</p>
 <ul class="simple">
 <li><p><strong>PL</strong>:</p>
 <ol class="arabic simple">
@@ -414,7 +414,7 @@ This step is usually developed at the <em>register-transfer level
 (RTL)</em> using hardware description languages (HDLs), such as
 Verilog and VHDL.</p></li>
 <li><p>Implement DSP kernels, each with interfaces to the ADC, to other DSP
-kernels, and/or to global memory. This step may be developed at
+kernels, and/or to local and global memory. This step may be developed at
 the RTL level as in the previous step, or with <em>high-level
 synthesis (HLS)</em> using  high-level programming languages, such
 as C or C++.</p></li>

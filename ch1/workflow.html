@@ -385,14 +385,43 @@ here, namely DSP kernel implementation.</p></li>
 <li><p>In order to simplify our development process, we will employ the
 following approach:</p>
 <ol class="arabic simple">
-<li><p>Follow the <em>Vitis Application Accelerated Development Flow</em>.</p></li>
-<li><p>Use HLS to develop DSP kernels under the Vitis Application Accelerated Development Flow.  We will discuss more about the HLS
+<li><p>Follow the <em>Vitis Application Accelerated Development Flow (VAADF)</em>.</p></li>
+<li><p>Use HLS to develop DSP kernels under the Vitis Application
+Accelerated Development Flow.  We will discuss more about the HLS
 design process in <a class="reference internal" href="../ch2/hls.html#sec-hls"><span class="std std-numref">Section 2</span></a>.</p></li>
 </ol>
 </li>
 </ul>
 <section id="vitis-application-accelerated-development-flow">
 <h2><span class="section-number">1.3.1. </span>Vitis Application Accelerated Development Flow<a class="headerlink" href="#vitis-application-accelerated-development-flow" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>The VAADF <span id="id1">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23a</a>]</span> is essentially a design process that allows
+developers to focus on developing the core functionalities of the PL
+kernels while the interface development is all automated by Vitis.</p></li>
+<li><p>It contains:</p>
+<ul>
+<li><p>a <em>Vitis extensible platform</em> which is composed of</p>
+<ul>
+<li><p>a <em>domain</em> with the necessary software to run Linux on the PS host</p></li>
+<li><p>a base PL hardware block with a predefined configuration of AXI4
+interfaces for PL kernel control by the PS host and for data
+transfer with between the PS host and the PL kernels via global
+memory, clocks, and interrupted signals</p></li>
+</ul>
+</li>
+<li><p>a predefined configuration of AXI4 interfaces for kernel control
+and data transfer, clock input, and interrupt signals to which
+each PL kernel must conform</p></li>
+<li><p>the <a class="reference external" href="https://xilinx.github.io/XRT/2023.2/html/index.html">Xilinx Runtime
+(XRT)</a>
+library which contains Linux drivers and APIs to support PL kernel
+control and data transfer in host application programming.</p></li>
+</ul>
+</li>
+<li><p>In addition, Vitis HLS can be employed to automatically synthesize
+interfaces that conform to the predefined configuration required by
+VAADF for a PL kernel.</p></li>
+</ul>
 </section>
 </section>
 
