@@ -4,7 +4,7 @@
   signal processing (DSP) objects and algorithms, which will be
   referred to collectively as ***DSP kernels***.
 
-* Typical hardware technologies/plaforms/architectures for DSP
+* Typical hardware technologies/platforms/architectures for DSP
   implementation include:
   1. **General-purpose CPU / micro-controller**
   2. **Digital signal processor (dsp)**
@@ -40,5 +40,5 @@
 
 * We will use an SoC device with a programmable logic (PL) component
   in the form of an FPGA and high-speed hardened ADCs as the hardware
-  platform to support implementation development for the
-  aforementioned DSP applications.
+  platform to support the development of the aforementioned DSP
+  applications.
