@@ -12,18 +12,21 @@
 
 * In order to simplify our development process, we will employ the
   following approach:
-  1. Follow the *Vitis Application Accelerated Development Flow (VAADF)*. 
+  1. Follow the *Vitis Application Acceleration Development Flow (VAADF)*. 
   2. Use HLS to develop DSP kernels under the Vitis Application
      Accelerated Development Flow.  We will discuss more about the HLS
      design process in {numref}`sec:hls`.
 
-## Vitis Application Accelerated Development Flow
+## Vitis Application Acceleration Development Flow
 * The VAADF {cite}`ug1393` is essentially a design process that allows
   developers to focus on developing the core functionalities of the PL
-  kernels while the interface development is all automated by Vitis.
+  kernels while the development of the required interfaces is all
+  automated by Vitis.
 
 * It contains:
-  - a *Vitis extensible platform* which is composed of 
+  - a *Vitis extensible platform* which serves as an abstraction of
+    the PL hardware to the host application development process, and
+    is composed of
     - a *domain* with the necessary software to run Linux on the PS host
     - a base PL hardware block with a predefined configuration of AXI4
       interfaces for PL kernel control by the PS host and for data
@@ -49,14 +52,14 @@
 
 * In addition, Vitis HLS can be employed to automatically synthesize
   interfaces that conform to the predefined configuration required by
-  VAADF for a PL kernel.
+  VAADF for a PL kernel. 
 
 * The tradeoffs for adopting VAADF are potential losses in
   flexibility of the implementation architecture and in PL utilization
   efficiency. Nonetheless, these potential losses are rather
   acceptable for us since we will not be interested in developing
   interfaces to other peripherals, and the adoption of VAADF allows us
-  to focus on the "DSP stuff" in our development. 
+  to focus on only the "DSP stuff" in our development. 
 
 (sec:vaadf_steps)=
 ## VAADF Procedures in Vitis
