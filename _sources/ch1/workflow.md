@@ -1,4 +1,4 @@
-# Vitis Application Accelerated Development
+# Vitis Application Acceleration Development
 
 * As discussed in {numref}`sec:vitis`, we have to program the
   different compute components and construct interfaces (both hardware
