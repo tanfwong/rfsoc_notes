@@ -452,13 +452,13 @@ VAADF:</p>
 <ul class="simple">
 <li><p>Use Vivado to build a hardware platform component</p></li>
 <li><p>Use PetaLinux to build an image for the Linux domain with the
-required boot files, device tree, and XRT</p></li>
+required boot files, device tree, and XRT library</p></li>
 <li><p>Create a <em>Platform Component</em> in Vitis to build the Vitis
 extensible platform</p></li>
 </ul>
 </li>
-<li><p>Create a <em>System Project</em> in Vitis by selecting to use the Vitis platform,
-the Linux kernel image, rootfs, and sysroot generated in
+<li><p>Create a <em>System Project</em> in Vitis by selecting to use the Vitis
+platform, the Linux kernel image, rootfs, and sysroot generated in
 step 1. The system project will serve as a system container for
 developing our embedded application.</p></li>
 <li><p>Create a <em>HLS Component</em> (multiple HLS components) in Vitis to use
@@ -467,7 +467,7 @@ Vitis HLS to develop DSP kernel(s).</p></li>
 <li><p>Add the HLS and application components to the system project.</p></li>
 <li><p>Build the system project for software emulation, hardware
 emulation, and/or hardware in Vitis.</p></li>
-<li><p>Deploy the host executables and FPGA bit-stream, if applicable, for
+<li><p>Deploy the host executable and FPGA bit-stream, if applicable, for
 testing, debugging, and verification. The usual sequence of testing
 build is to start from software emulation, then to hardware
 emulation, and finally to hardware.</p></li>
@@ -489,10 +489,10 @@ Vitis and modifying the corresponding components in the example.</p></li>
 <h2><span class="section-number">1.3.3. </span>Class Vitis Extensible Platform<a class="headerlink" href="#class-vitis-extensible-platform" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p>To ease the development process, I have built a simple Vitis
-extensible platform in step 1 of <a class="reference internal" href="#sec-vaadf-steps"><span class="std std-numref">Section 1.3.2</span></a> for use
-in class. The platform is called <code class="docutils literal notranslate"><span class="pre">rfsoc_adc_vitis_platform</span></code> and will
-be provided. Those interested may follow the steps similar to those
-in <a class="reference external" href="https://github.com/tanfwong/rfsoc4x2/blob/main/vitis_adc_platform.md">this
+extensible platform described in step 1 of <a class="reference internal" href="#sec-vaadf-steps"><span class="std std-numref">Section 1.3.2</span></a>
+for use in class. The platform is called <code class="docutils literal notranslate"><span class="pre">rfsoc_adc_vitis_platform</span></code>
+and will be provided. Those interested may follow the steps similar
+to those in <a class="reference external" href="https://github.com/tanfwong/rfsoc4x2/blob/main/vitis_adc_platform.md">this
 tutorial</a>
 to generate the Vitis platform.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">rfsoc_adc_vitis_platform</span></code> has ADC-D (ADC0 on tile 224) on the

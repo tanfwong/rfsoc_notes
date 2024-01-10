@@ -68,12 +68,12 @@ VAADF:
 1. Build a Vitis extensible platform for the RFSoC 4x2 board:
    - Use Vivado to build a hardware platform component
    - Use PetaLinux to build an image for the Linux domain with the
-     required boot files, device tree, and XRT
+     required boot files, device tree, and XRT library
    - Create a *Platform Component* in Vitis to build the Vitis
      extensible platform
 
-2. Create a *System Project* in Vitis by selecting to use the Vitis platform,
-   the Linux kernel image, rootfs, and sysroot generated in
+2. Create a *System Project* in Vitis by selecting to use the Vitis
+   platform, the Linux kernel image, rootfs, and sysroot generated in
    step 1. The system project will serve as a system container for
    developing our embedded application.
 
@@ -87,7 +87,7 @@ VAADF:
 6. Build the system project for software emulation, hardware
    emulation, and/or hardware in Vitis. 
 
-7. Deploy the host executables and FPGA bit-stream, if applicable, for
+7. Deploy the host executable and FPGA bit-stream, if applicable, for
    testing, debugging, and verification. The usual sequence of testing
    build is to start from software emulation, then to hardware
    emulation, and finally to hardware.
@@ -109,10 +109,10 @@ VAADF Procedures in Vitis
 
 ## Class Vitis Extensible Platform
 * To ease the development process, I have built a simple Vitis
-  extensible platform in step 1 of {numref}`sec:vaadf_steps` for use
-  in class. The platform is called `rfsoc_adc_vitis_platform` and will
-  be provided. Those interested may follow the steps similar to those
-  in [this
+  extensible platform described in step 1 of {numref}`sec:vaadf_steps`
+  for use in class. The platform is called `rfsoc_adc_vitis_platform`
+  and will be provided. Those interested may follow the steps similar
+  to those in [this
   tutorial](https://github.com/tanfwong/rfsoc4x2/blob/main/vitis_adc_platform.md)
   to generate the Vitis platform.
 
