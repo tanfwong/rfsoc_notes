@@ -43,7 +43,7 @@ peripherals and ports for a typical embedded system development board:
 ## Zynq RFSoC
 
 * The Zynq XCZU48DR UltraScale+ RFSoC device {cite}`rfsoc_data_sheet`
-  implements a heterogeneous system consisting of the following
+  implements a heterogeneous compute system consisting of the following
   component subsystems:
   
   ```{glossary}
