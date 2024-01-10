@@ -51,8 +51,8 @@ RFSoC device in the configuration below:
   Vivado
     - Supports RTL design of DSP kernels, hardware blocks, and
       interfaces in the PL
-    - Performs FPGA implementation steps, including synthesis,
-      verification and simulation, elaboration, place and route,
+    - Performs FPGA implementation steps, including elaboration,
+      verification and simulation, synthesis, place and route,
       static timing analysis, and bit-stream generation
 
   Vitis HLS

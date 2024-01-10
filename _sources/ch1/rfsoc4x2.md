@@ -88,7 +88,7 @@ peripherals and ports for a typical embedded system development board:
  
 * Various components of the three subsystems are connected via on-chip
  high-bandwidth interconnects conforming to the Advanced eXtensible
- Interface 4 (AXI4) protocol {cite}`axi4`.
+ Interface 4 (AXI4) protocol standard {cite}`axi4`.
 
 * We will primarily use the ARM Cortex-A53 APU in the PS, the CLB, DSP
   and RAM resources in the PL, and one ADC, including the
