@@ -1,3 +1,4 @@
+(sec:vaad)=
 # Vitis Application Acceleration Development
 
 * As discussed in {numref}`sec:vitis`, we have to program the

@@ -65,7 +65,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="3. References" href="../refs.html" />
-    <link rel="prev" title="1.3. Vitis Application Accelerated Development" href="../ch1/workflow.html" />
+    <link rel="prev" title="1.3. Vitis Application Acceleration Development" href="../ch1/workflow.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
   </head>
@@ -160,7 +160,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1 has-children"><a class="reference internal" href="../ch1/overview.html">1. Overview</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../ch1/rfsoc4x2.html">1.1. Hardware Platform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ch1/vitis.html">1.2. Software Development Tools</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../ch1/workflow.html">1.3. Vitis Application Accelerated Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ch1/workflow.html">1.3. Vitis Application Acceleration Development</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">2. Introduction to HLS</a></li>
@@ -362,6 +362,20 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="introduction-to-hls">
 <span id="sec-hls"></span><h1><span class="section-number">2. </span>Introduction to HLS<a class="headerlink" href="#introduction-to-hls" title="Permalink to this headline">#</a></h1>
+<ul class="simple">
+<li><p>As discussed in <a class="reference internal" href="../ch1/workflow.html#sec-vaad"><span class="std std-numref">Section 1.3</span></a>, we will employ <em>high-level
+synthesis (HLS)</em> to develop DSP kernels in the PL.</p></li>
+<li><p>In the HLS design process of a DSP kernel, we specify the
+<em><strong>macro-architecture</strong></em> of the kernel, including:</p>
+<ul>
+<li><p>the behavioral description of the DSP kernel in a high-level
+language, such as C/C++,</p></li>
+<li><p>the ways that the DSP kernel interfaces with other components
+in the system, and</p></li>
+<li><p>design constraints such as clock period, latency, and throughput.</p></li>
+</ul>
+</li>
+</ul>
 </section>
 
     <script type="text/x-thebe-config">
@@ -401,7 +415,7 @@ document.write(`
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title"><span class="section-number">1.3. </span>Vitis Application Accelerated Development</p>
+        <p class="prev-next-title"><span class="section-number">1.3. </span>Vitis Application Acceleration Development</p>
       </div>
     </a>
     <a class="right-next"
