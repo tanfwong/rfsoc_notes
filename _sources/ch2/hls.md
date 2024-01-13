@@ -1,4 +1,4 @@
-(sec:hls)=                                                                                                                       
+(sec:hls)=
 # Introduction to HLS
 
 * As discussed in {numref}`sec:vaad`, we will employ *high-level
