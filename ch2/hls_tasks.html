@@ -365,7 +365,7 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="hls-tasks">
 <h1><span class="section-number">2.1. </span>HLS Tasks<a class="headerlink" href="#hls-tasks" title="Permalink to this headline">#</a></h1>
-<ul>
+<ul class="simple">
 <li><p>A high-level C/C++ specification of a DSP kernel is
 <em><strong>untimed</strong></em>. This means that the C/C++ specification describes
 only the logical operations in a sequential manner. No description is
@@ -381,25 +381,46 @@ construct a timed RTL specification of the DSP kernel from the
 untimed C/C++ specification. In addition, the HLS tool needs to
 construct a digital architecture to implement the logical operations
 described in the C/C++ specification. A typical digital architecture
-for the DSP kernel includes the data path, control logic, and memory,
-AXI4, and other interfaces. The main functionality of the DSP kernel
+for the DSP kernel includes:</p>
+<ul>
+<li><p>data path</p></li>
+<li><p>control logic</p></li>
+<li><p>memory, AXI4, and other interfaces.</p></li>
+</ul>
+</li>
+<li><p>The main functionality of the DSP kernel
 is implemented in the <em>data path</em>, which consists of:</p>
-<ul class="simple">
+<ul>
 <li><p>storage elements, e.g., registers and memories,</p></li>
 <li><p>functional units, e.g., multipliers and arithmetic logic units, and</p></li>
 <li><p>interconnect elements, e.g., multiplexers, tri-state drivers, buses.</p></li>
 </ul>
 </li>
-<li><p>The flowchart below shows the sequence of tasks that the HLS tool
+<li><p>The list below shows the sequence of tasks that the HLS tool
 needs to perform in order to produce the RTL specification of a DSP
 kernel from the high-level C/C++ specification:</p>
-<figure class="align-center" id="id2">
-<a class="reference internal image-reference" href="../_images/hls_tasks.png"><img alt="HLS tasks" src="../_images/hls_tasks.png" style="width: 600px;" /></a>
-<figcaption>
-<p><span class="caption-number">Fig. 2.1 </span><span class="caption-text">Sequence of tasks performed by the HLS tool
-(image taken from <span id="id1">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>)</span><a class="headerlink" href="#id2" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
+<ol class="arabic simple">
+<li><p><strong>Compilation</strong>: The HLS tool compiles the C/C++ code that
+specifies the DSP kernel. Code optimizations are also performed
+to try to meet the design constraints.</p></li>
+<li><p><strong>Scheduling</strong>: The HLS tool determines which operations should
+occur in each clock cycle and the amount of PL resources needed to
+support the operations in that clock cycle.</p></li>
+<li><p><strong>Binding</strong>: The HLS tool assigns specific PL resources to
+implement each scheduled operation as well as memories and
+registers to variables in the C/C++ code. Resource sharing is
+also performed so that the same sets of resources can be re-used
+by operations scheduled to different clock cycles. RTL
+implementations of the scheduled operations are produced in this
+step.</p></li>
+<li><p><strong>Control logic extraction</strong>: The HLS tool creates a finite state
+machine (FSM) that is responsible for sequencing the scheduled
+operations.</p></li>
+<li><p><strong>Interface generation:</strong>: The HLS generates external AXI4
+interfaces for the DSP kernel.</p></li>
+<li><p><strong>RTL generation</strong>: The HLS synthesizes the RTL specification of
+the complete DSP kernel.</p></li>
+</ol>
 </li>
 </ul>
 </section>
