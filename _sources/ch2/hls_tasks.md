@@ -44,11 +44,10 @@
 
   3. ***Binding***: The HLS tool assigns specific PL resources to
      implement each scheduled operation as well as memories and
-     registers to variables in the C/C++ code. Resource sharing is
-     also performed so that the same sets of resources can be re-used
-     by operations scheduled to different clock cycles. RTL
-     implementations of the scheduled operations are produced in this
-     step.
+     registers required. Resource sharing is also performed so that
+     the same sets of resources can be re-used by operations scheduled
+     to different clock cycles. RTL implementations of the scheduled
+     operations are produced in this step.
 
   4. ***Control logic extraction***: The HLS tool creates a finite state
      machine (FSM) that is responsible for sequencing the scheduled
@@ -90,3 +89,19 @@
   Example showing the assigments in the HLS scheduling and binding
   tasks (image taken from {cite}`ug1399`)
   ```
+* In the scheduling task, the HLS tool determines the function `foo`
+  can be implemented in two clock cycles:
+  - The multiplication and first addition `x*a+b` are scheduled to clock
+    cycle 1.
+  - The result of the operation in clock cycle 1 is to be stored in a
+    register.
+  - The second addition `+c` is scheduled to clock cycle 2.
+  
+* The binding task is performed in two phases:
+  - In the initial binding phase, the HLS tool assigns a combinational
+    multiplier (`Mul`) to the multiplication operation and a
+    combinational adder/subtractor (`AddSub`) to each of the two
+    additions. 
+  - In the target binding phase, the HLS tool decides to use a DSP
+     slice, in lieu of the `Mul` and `AddSub`,  to implement the
+     multiplication and addition together in clock cycle 1. 

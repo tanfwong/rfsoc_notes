@@ -420,11 +420,10 @@ occur in each clock cycle and the amount of PL resources needed to
 support the operations in that clock cycle.</p></li>
 <li><p><em><strong>Binding</strong></em>: The HLS tool assigns specific PL resources to
 implement each scheduled operation as well as memories and
-registers to variables in the C/C++ code. Resource sharing is
-also performed so that the same sets of resources can be re-used
-by operations scheduled to different clock cycles. RTL
-implementations of the scheduled operations are produced in this
-step.</p></li>
+registers required. Resource sharing is also performed so that
+the same sets of resources can be re-used by operations scheduled
+to different clock cycles. RTL implementations of the scheduled
+operations are produced in this step.</p></li>
 <li><p><em><strong>Control logic extraction</strong></em>: The HLS tool creates a finite state
 machine (FSM) that is responsible for sequencing the scheduled
 operations.</p></li>
@@ -462,6 +461,27 @@ the scheduling and binding tasks:</p>
 tasks (image taken from <span id="id2">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>)</span><a class="headerlink" href="#hls-tasks-2-3" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
+</li>
+<li><p>In the scheduling task, the HLS tool determines the function <code class="docutils literal notranslate"><span class="pre">foo</span></code>
+can be implemented in two clock cycles:</p>
+<ul class="simple">
+<li><p>The multiplication and first addition <code class="docutils literal notranslate"><span class="pre">x*a+b</span></code> are scheduled to clock
+cycle 1.</p></li>
+<li><p>The result of the operation in clock cycle 1 is to be stored in a
+register.</p></li>
+<li><p>The second addition <code class="docutils literal notranslate"><span class="pre">+c</span></code> is scheduled to clock cycle 2.</p></li>
+</ul>
+</li>
+<li><p>The binding task is performed in two phases:</p>
+<ul class="simple">
+<li><p>In the initial binding phase, the HLS tool assigns a combinational
+multiplier (<code class="docutils literal notranslate"><span class="pre">Mul</span></code>) to the multiplication operation and a
+combinational adder/subtractor (<code class="docutils literal notranslate"><span class="pre">AddSub</span></code>) to each of the two
+additions.</p></li>
+<li><p>In the target binding phase, the HLS tool decides to use a DSP
+slice, in lieu of the <code class="docutils literal notranslate"><span class="pre">Mul</span></code> and <code class="docutils literal notranslate"><span class="pre">AddSub</span></code>,  to implement the
+multiplication and addition together in clock cycle 1.</p></li>
+</ul>
 </li>
 </ul>
 </section>
