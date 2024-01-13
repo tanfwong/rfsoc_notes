@@ -32,15 +32,17 @@
   needs to perform in order to produce the RTL specification of a DSP
   kernel from the high-level C/C++ specification:
 
-  1. **Compilation**: The HLS tool compiles the C/C++ code that
+  1. ***Compilation***: The HLS tool compiles the C/C++ code that
      specifies the DSP kernel. Code optimizations are also performed
-     to try to meet the design constraints.
+     to try to meet the design constraints. This step is equivalent to
+     the compilation step in a typical C/C++ compiler, but with
+     perhaps a different set of optimization objectives.
 
-  2. **Scheduling**: The HLS tool determines which operations should
+  2. ***Scheduling***: The HLS tool determines which operations should
      occur in each clock cycle and the amount of PL resources needed to
      support the operations in that clock cycle.
 
-  3. **Binding**: The HLS tool assigns specific PL resources to
+  3. ***Binding***: The HLS tool assigns specific PL resources to
      implement each scheduled operation as well as memories and
      registers to variables in the C/C++ code. Resource sharing is
      also performed so that the same sets of resources can be re-used
@@ -48,13 +50,43 @@
      implementations of the scheduled operations are produced in this
      step.
 
-  4. **Control logic extraction**: The HLS tool creates a finite state
+  4. ***Control logic extraction***: The HLS tool creates a finite state
      machine (FSM) that is responsible for sequencing the scheduled
      operations.
 
-  5. **Interface generation:**: The HLS generates external AXI4
-     interfaces for the DSP kernel.
+  5. ***Interface generation***: The HLS generates external interfaces
+     for the DSP kernel.
 
-  6. **RTL generation**: The HLS synthesizes the RTL specification of
+  6. ***RTL generation***: The HLS synthesizes the RTL specification of
      the complete DSP kernel.
 
+* The following two illustrative examples, taken directly from
+  {cite}`ug1399`, help to explain the HLS tasks listed above.
+
+
+## Scheduling and Binding Example
+* Consider the following C/C++ function that specifies a simple DSP
+  kernel: 
+   ```c++ 
+   int foo(char x, char a, char b, char c) { 
+     char y; 
+     y = x*a+b+c; 
+     return y; 
+   } 
+   ``` 
+  where the `char` variable `x` and `int` variable `y` respectively are
+  the input and output of the kernel and the `char` variables `a`, `b`,
+  and `c` are kernel parameters.
+
+* The figure below shows the assignments produced by the HLS tool in
+  the scheduling and binding tasks:
+  ```{figure} ../figs/hls2-3.png
+  ---
+  name: HLS tasks 2 & 3
+  alt: HLS scheduling and binding tasks
+  width: 800px
+  align: center
+  ---
+  Example showing the assigments in the HLS scheduling and binding
+  tasks (image taken from {cite}`ug1399`)
+  ```

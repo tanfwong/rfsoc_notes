@@ -338,7 +338,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -354,6 +356,14 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scheduling-and-binding-example">2.1.1. Scheduling and Binding Example</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -400,29 +410,61 @@ is implemented in the <em>data path</em>, which consists of:</p>
 needs to perform in order to produce the RTL specification of a DSP
 kernel from the high-level C/C++ specification:</p>
 <ol class="arabic simple">
-<li><p><strong>Compilation</strong>: The HLS tool compiles the C/C++ code that
+<li><p><em><strong>Compilation</strong></em>: The HLS tool compiles the C/C++ code that
 specifies the DSP kernel. Code optimizations are also performed
-to try to meet the design constraints.</p></li>
-<li><p><strong>Scheduling</strong>: The HLS tool determines which operations should
+to try to meet the design constraints. This step is equivalent to
+the compilation step in a typical C/C++ compiler, but with
+perhaps a different set of optimization objectives.</p></li>
+<li><p><em><strong>Scheduling</strong></em>: The HLS tool determines which operations should
 occur in each clock cycle and the amount of PL resources needed to
 support the operations in that clock cycle.</p></li>
-<li><p><strong>Binding</strong>: The HLS tool assigns specific PL resources to
+<li><p><em><strong>Binding</strong></em>: The HLS tool assigns specific PL resources to
 implement each scheduled operation as well as memories and
 registers to variables in the C/C++ code. Resource sharing is
 also performed so that the same sets of resources can be re-used
 by operations scheduled to different clock cycles. RTL
 implementations of the scheduled operations are produced in this
 step.</p></li>
-<li><p><strong>Control logic extraction</strong>: The HLS tool creates a finite state
+<li><p><em><strong>Control logic extraction</strong></em>: The HLS tool creates a finite state
 machine (FSM) that is responsible for sequencing the scheduled
 operations.</p></li>
-<li><p><strong>Interface generation:</strong>: The HLS generates external AXI4
-interfaces for the DSP kernel.</p></li>
-<li><p><strong>RTL generation</strong>: The HLS synthesizes the RTL specification of
+<li><p><em><strong>Interface generation</strong></em>: The HLS generates external interfaces
+for the DSP kernel.</p></li>
+<li><p><em><strong>RTL generation</strong></em>: The HLS synthesizes the RTL specification of
 the complete DSP kernel.</p></li>
 </ol>
 </li>
+<li><p>The following two illustrative examples, taken directly from
+<span id="id1">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>, help to explain the HLS tasks listed above.</p></li>
 </ul>
+<section id="scheduling-and-binding-example">
+<h2><span class="section-number">2.1.1. </span>Scheduling and Binding Example<a class="headerlink" href="#scheduling-and-binding-example" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>Consider the following C/C++ function that specifies a simple DSP
+kernel:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">foo</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">y</span><span class="p">;</span><span class="w"> </span>
+<span class="w">  </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="o">*</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">+</span><span class="n">c</span><span class="p">;</span><span class="w"> </span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">y</span><span class="p">;</span><span class="w"> </span>
+<span class="p">}</span><span class="w"> </span>
+</pre></div>
+</div>
+<p>where the <code class="docutils literal notranslate"><span class="pre">char</span></code> variable <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">int</span></code> variable <code class="docutils literal notranslate"><span class="pre">y</span></code> respectively are
+the input and output of the kernel and the <code class="docutils literal notranslate"><span class="pre">char</span></code> variables <code class="docutils literal notranslate"><span class="pre">a</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">c</span></code> are kernel parameters.</p>
+</li>
+<li><p>The figure below shows the assignments produced by the HLS tool in
+the scheduling and binding tasks:</p>
+<figure class="align-center" id="hls-tasks-2-3">
+<a class="reference internal image-reference" href="../_images/hls2-3.png"><img alt="HLS scheduling and binding tasks" src="../_images/hls2-3.png" style="width: 800px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 2.1 </span><span class="caption-text">Example showing the assigments in the HLS scheduling and binding
+tasks (image taken from <span id="id2">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>)</span><a class="headerlink" href="#hls-tasks-2-3" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+</li>
+</ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -483,6 +525,20 @@ the complete DSP kernel.</p></li>
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scheduling-and-binding-example">2.1.1. Scheduling and Binding Example</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

@@ -165,7 +165,10 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">1.3. Vitis Application Acceleration Development</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../ch2/hls.html">2. Introduction to HLS</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../ch2/hls.html">2. Introduction to HLS</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ch2/hls_tasks.html">2.1. HLS Tasks</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">3. References</a></li>
 </ul>
 
@@ -399,7 +402,7 @@ design process in <a class="reference internal" href="../ch2/hls.html#sec-hls"><
 <section id="vitis-application-acceleration-development-flow">
 <h2><span class="section-number">1.3.1. </span>Vitis Application Acceleration Development Flow<a class="headerlink" href="#vitis-application-acceleration-development-flow" title="Permalink to this headline">#</a></h2>
 <ul>
-<li><p>The VAADF <span id="id1">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23a</a>]</span> is essentially a design process that allows
+<li><p>The VAADF <span id="id1">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23b</a>]</span> is essentially a design process that allows
 developers to focus on developing the core functionalities of the PL
 kernels while the development of the required interfaces is all
 automated by Vitis.</p></li>
@@ -419,7 +422,7 @@ memory, clocks, and interrupted signals</p></li>
 <a class="reference internal image-reference" href="../_images/vitis_platform.png"><img alt="Vitis extensible platform" src="../_images/vitis_platform.png" style="width: 600px;" /></a>
 <figcaption>
 <p><span class="caption-number">Fig. 1.4 </span><span class="caption-text">Components of a Vitis extensible platform
-(image taken from <span id="id2">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23a</a>]</span>)</span><a class="headerlink" href="#vitis-platform" title="Permalink to this image">#</a></p>
+(image taken from <span id="id2">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23b</a>]</span>)</span><a class="headerlink" href="#vitis-platform" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 </li>
@@ -481,7 +484,7 @@ Vitis and modifying the corresponding components in the example.</p></li>
 <a class="reference internal image-reference" href="../_images/vitis_build.png"><img alt="Vitis extensible platform" src="../_images/vitis_build.png" style="width: 1000px;" /></a>
 <figcaption>
 <p><span class="caption-number">Fig. 1.5 </span><span class="caption-text">VAADF Procedures in Vitis
-(image modified from <span id="id3">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23a</a>]</span>)</span><a class="headerlink" href="#vitis-build" title="Permalink to this image">#</a></p>
+(image modified from <span id="id3">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23b</a>]</span>)</span><a class="headerlink" href="#vitis-build" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 </section>
