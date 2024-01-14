@@ -364,7 +364,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vitis-application-acceleration-development-flow">1.3.1. Vitis Application Acceleration Development Flow</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vaadf-procedures-in-vitis">1.3.2. VAADF Procedures in Vitis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vaad-procedures-in-vitis">1.3.2. VAAD Procedures in Vitis</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#class-vitis-extensible-platform">1.3.3. Class Vitis Extensible Platform</a></li>
 </ul>
             </nav>
@@ -392,7 +392,7 @@ here, namely DSP kernel implementation.</p></li>
 <li><p>In order to simplify our development process, we will employ the
 following approach:</p>
 <ol class="arabic simple">
-<li><p>Follow the <em>Vitis Application Acceleration Development Flow (VAADF)</em>.</p></li>
+<li><p>Follow the *Vitis Application Acceleration Development (VAAD) Flow *.</p></li>
 <li><p>Use HLS to develop DSP kernels under the Vitis Application
 Accelerated Development Flow.  We will discuss more about the HLS
 design process in <a class="reference internal" href="../ch2/hls.html#sec-hls"><span class="std std-numref">Section 2</span></a>.</p></li>
@@ -402,10 +402,10 @@ design process in <a class="reference internal" href="../ch2/hls.html#sec-hls"><
 <section id="vitis-application-acceleration-development-flow">
 <h2><span class="section-number">1.3.1. </span>Vitis Application Acceleration Development Flow<a class="headerlink" href="#vitis-application-acceleration-development-flow" title="Permalink to this headline">#</a></h2>
 <ul>
-<li><p>The VAADF <span id="id1">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23b</a>]</span> is essentially a design process that allows
-developers to focus on developing the core functionalities of the PL
-kernels while the development of the required interfaces is all
-automated by Vitis.</p></li>
+<li><p>The VAAD flow <span id="id1">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23b</a>]</span> is essentially a design process that
+allows developers to focus on developing the core functionalities of
+the PL kernels while the development of the required interfaces is
+all automated by Vitis.</p></li>
 <li><p>It contains:</p>
 <ul>
 <li><p>a <em>Vitis extensible platform</em> which serves as an abstraction of
@@ -437,8 +437,8 @@ control and data transfer in host application programming.</p></li>
 </li>
 <li><p>In addition, Vitis HLS can be employed to automatically synthesize
 interfaces that conform to the predefined configuration required by
-VAADF for a PL kernel.</p></li>
-<li><p>The tradeoffs for adopting VAADF are potential losses in
+VAAD for a PL kernel.</p></li>
+<li><p>The tradeoffs for adopting VAAD are potential losses in
 flexibility of the implementation architecture and in PL utilization
 efficiency. Nonetheless, these potential losses are rather
 acceptable for us since we will not be interested in developing
@@ -446,10 +446,10 @@ interfaces to other peripherals, and the adoption of VAADF allows us
 to focus on only the “DSP stuff” in our development.</p></li>
 </ul>
 </section>
-<section id="vaadf-procedures-in-vitis">
-<span id="sec-vaadf-steps"></span><h2><span class="section-number">1.3.2. </span>VAADF Procedures in Vitis<a class="headerlink" href="#vaadf-procedures-in-vitis" title="Permalink to this headline">#</a></h2>
+<section id="vaad-procedures-in-vitis">
+<span id="sec-vaadf-steps"></span><h2><span class="section-number">1.3.2. </span>VAAD Procedures in Vitis<a class="headerlink" href="#vaad-procedures-in-vitis" title="Permalink to this headline">#</a></h2>
 <p>The followings are the steps of performing our DSP development under
-VAADF:</p>
+VAAD:</p>
 <ol class="arabic simple">
 <li><p>Build a Vitis extensible platform for the RFSoC 4x2 board:</p>
 <ul class="simple">
@@ -483,7 +483,7 @@ Vitis and modifying the corresponding components in the example.</p></li>
 <figure class="align-center" id="vitis-build">
 <a class="reference internal image-reference" href="../_images/vitis_build.png"><img alt="Vitis extensible platform" src="../_images/vitis_build.png" style="width: 1000px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 1.5 </span><span class="caption-text">VAADF Procedures in Vitis
+<p><span class="caption-number">Fig. 1.5 </span><span class="caption-text">VAAD Procedures in Vitis
 (image modified from <span id="id3">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23b</a>]</span>)</span><a class="headerlink" href="#vitis-build" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
@@ -581,7 +581,7 @@ generated by Vivado is given below:</p></li>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vitis-application-acceleration-development-flow">1.3.1. Vitis Application Acceleration Development Flow</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vaadf-procedures-in-vitis">1.3.2. VAADF Procedures in Vitis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vaad-procedures-in-vitis">1.3.2. VAAD Procedures in Vitis</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#class-vitis-extensible-platform">1.3.3. Class Vitis Extensible Platform</a></li>
 </ul>
   </nav></div>

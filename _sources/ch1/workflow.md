@@ -13,16 +13,16 @@
 
 * In order to simplify our development process, we will employ the
   following approach:
-  1. Follow the *Vitis Application Acceleration Development Flow (VAADF)*. 
+  1. Follow the *Vitis Application Acceleration Development (VAAD) Flow *. 
   2. Use HLS to develop DSP kernels under the Vitis Application
      Accelerated Development Flow.  We will discuss more about the HLS
      design process in {numref}`sec:hls`.
 
 ## Vitis Application Acceleration Development Flow
-* The VAADF {cite}`ug1393` is essentially a design process that allows
-  developers to focus on developing the core functionalities of the PL
-  kernels while the development of the required interfaces is all
-  automated by Vitis.
+* The VAAD flow {cite}`ug1393` is essentially a design process that
+  allows developers to focus on developing the core functionalities of
+  the PL kernels while the development of the required interfaces is
+  all automated by Vitis.
 
 * It contains:
   - a *Vitis extensible platform* which serves as an abstraction of
@@ -53,9 +53,9 @@
 
 * In addition, Vitis HLS can be employed to automatically synthesize
   interfaces that conform to the predefined configuration required by
-  VAADF for a PL kernel. 
+  VAAD for a PL kernel. 
 
-* The tradeoffs for adopting VAADF are potential losses in
+* The tradeoffs for adopting VAAD are potential losses in
   flexibility of the implementation architecture and in PL utilization
   efficiency. Nonetheless, these potential losses are rather
   acceptable for us since we will not be interested in developing
@@ -63,9 +63,9 @@
   to focus on only the "DSP stuff" in our development. 
 
 (sec:vaadf_steps)=
-## VAADF Procedures in Vitis
+## VAAD Procedures in Vitis
 The followings are the steps of performing our DSP development under
-VAADF:
+VAAD:
 1. Build a Vitis extensible platform for the RFSoC 4x2 board:
    - Use Vivado to build a hardware platform component
    - Use PetaLinux to build an image for the Linux domain with the
@@ -104,7 +104,7 @@ alt: Vitis extensible platform
 width: 1000px
 align: center
 ---
-VAADF Procedures in Vitis
+VAAD Procedures in Vitis
 (image modified from {cite}`ug1393`)
 ```
 
