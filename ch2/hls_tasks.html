@@ -60,6 +60,8 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'ch2/hls_tasks';</script>
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -362,6 +364,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scheduling-and-binding-example">2.1.1. Scheduling and Binding Example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#control-logic-extraction-and-interface-generation-example">2.1.2. Control Logic Extraction and Interface Generation Example</a></li>
 </ul>
             </nav>
         </div>
@@ -420,7 +423,7 @@ occur in each clock cycle and the amount of PL resources needed to
 support the operations in that clock cycle.</p></li>
 <li><p><em><strong>Binding</strong></em>: The HLS tool assigns specific PL resources to
 implement each scheduled operation as well as memories and
-registers required. Resource sharing is also performed so that
+registers required. ec:hls+esource sharing is also performed so that
 the same sets of resources can be re-used by operations scheduled
 to different clock cycles. RTL implementations of the scheduled
 operations are produced in this step.</p></li>
@@ -437,15 +440,15 @@ the complete DSP kernel.</p></li>
 <span id="id1">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>, help to explain the HLS tasks listed above.</p></li>
 </ul>
 <section id="scheduling-and-binding-example">
-<h2><span class="section-number">2.1.1. </span>Scheduling and Binding Example<a class="headerlink" href="#scheduling-and-binding-example" title="Permalink to this headline">#</a></h2>
+<span id="sec-hls-tasks-ex1"></span><h2><span class="section-number">2.1.1. </span>Scheduling and Binding Example<a class="headerlink" href="#scheduling-and-binding-example" title="Permalink to this headline">#</a></h2>
 <ul>
 <li><p>Consider the following C/C++ function that specifies a simple DSP
 kernel:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">foo</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">ex1</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
 <span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">y</span><span class="p">;</span><span class="w"> </span>
 <span class="w">  </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="o">*</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">+</span><span class="n">c</span><span class="p">;</span><span class="w"> </span>
 <span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">y</span><span class="p">;</span><span class="w"> </span>
-<span class="p">}</span><span class="w"> </span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>where the <code class="docutils literal notranslate"><span class="pre">char</span></code> variable <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">int</span></code> variable <code class="docutils literal notranslate"><span class="pre">y</span></code> respectively are
@@ -482,6 +485,41 @@ additions.</p></li>
 slice, in lieu of the <code class="docutils literal notranslate"><span class="pre">Mul</span></code> and <code class="docutils literal notranslate"><span class="pre">AddSub</span></code>,  to implement the
 multiplication and addition together in clock cycle 1.</p></li>
 </ul>
+</li>
+</ul>
+</section>
+<section id="control-logic-extraction-and-interface-generation-example">
+<h2><span class="section-number">2.1.2. </span>Control Logic Extraction and Interface Generation Example<a class="headerlink" href="#control-logic-extraction-and-interface-generation-example" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>Consider the following C/C++ function that specifies another simple DSP
+kernel:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ex2</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">out</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">;</span>
+<span class="w">   </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">     </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="o">*</span><span class="n">x</span><span class="o">+</span><span class="n">b</span><span class="o">+</span><span class="n">c</span><span class="p">;</span>
+<span class="w">     </span><span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>whose functionality is the same as the kernel in
+<a class="reference internal" href="#sec-hls-tasks-ex1"><span class="std std-numref">Section 2.1.1</span></a> except that both the input and output of the
+kernel are <span class="math notranslate nohighlight">\(3\)</span>-element <code class="docutils literal notranslate"><span class="pre">int</span></code> arrays.</p>
+</li>
+<li><p>The figure below shows the FSM generated by the HLS tool in the
+control logic extraction task to sequence the scheduled operations
+and the I/O port assignment produced in the interface generation task:
+assignments produced by the HLS tool in
+the scheduling and binding tasks:</p>
+<figure class="align-center" id="hls-tasks-4-5">
+<a class="reference internal image-reference" href="../_images/hls4-5.png"><img alt="HLS control logic extraction and interface geenration tasks" src="../_images/hls4-5.png" style="width: 800px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 2.2 </span><span class="caption-text">Example showing the FSM and I/O ports generated in the control logic
+extraction and interface generation tasks
+(image taken from <span id="id3">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>)</span><a class="headerlink" href="#hls-tasks-4-5" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
 </li>
 </ul>
 </section>
@@ -555,6 +593,7 @@ multiplication and addition together in clock cycle 1.</p></li>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scheduling-and-binding-example">2.1.1. Scheduling and Binding Example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#control-logic-extraction-and-interface-generation-example">2.1.2. Control Logic Extraction and Interface Generation Example</a></li>
 </ul>
   </nav></div>
 
