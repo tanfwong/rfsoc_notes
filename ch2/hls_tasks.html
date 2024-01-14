@@ -364,7 +364,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scheduling-and-binding-example">2.1.1. Scheduling and Binding Example</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#control-logic-extraction-and-interface-generation-example">2.1.2. Control Logic Extraction and Interface Generation Example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#control-logic-extraction-example">2.1.2. Control Logic Extraction Example</a></li>
 </ul>
             </nav>
         </div>
@@ -423,7 +423,7 @@ occur in each clock cycle and the amount of PL resources needed to
 support the operations in that clock cycle.</p></li>
 <li><p><em><strong>Binding</strong></em>: The HLS tool assigns specific PL resources to
 implement each scheduled operation as well as memories and
-registers required. ec:hls+esource sharing is also performed so that
+registers required. Resource sharing is also performed so that
 the same sets of resources can be re-used by operations scheduled
 to different clock cycles. RTL implementations of the scheduled
 operations are produced in this step.</p></li>
@@ -465,7 +465,7 @@ tasks (image taken from <span id="id2">[<a class="reference internal" href="../r
 </figcaption>
 </figure>
 </li>
-<li><p>In the scheduling task, the HLS tool determines the function <code class="docutils literal notranslate"><span class="pre">foo</span></code>
+<li><p>In the scheduling task, the HLS tool determines the function <code class="docutils literal notranslate"><span class="pre">ex1</span></code>
 can be implemented in two clock cycles:</p>
 <ul class="simple">
 <li><p>The multiplication and first addition <code class="docutils literal notranslate"><span class="pre">x*a+b</span></code> are scheduled to clock
@@ -488,13 +488,13 @@ multiplication and addition together in clock cycle 1.</p></li>
 </li>
 </ul>
 </section>
-<section id="control-logic-extraction-and-interface-generation-example">
-<h2><span class="section-number">2.1.2. </span>Control Logic Extraction and Interface Generation Example<a class="headerlink" href="#control-logic-extraction-and-interface-generation-example" title="Permalink to this headline">#</a></h2>
+<section id="control-logic-extraction-example">
+<h2><span class="section-number">2.1.2. </span>Control Logic Extraction Example<a class="headerlink" href="#control-logic-extraction-example" title="Permalink to this headline">#</a></h2>
 <ul>
 <li><p>Consider the following C/C++ function that specifies another simple DSP
 kernel:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ex2</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">out</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
-<span class="w">   </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">;</span>
+<span class="w">   </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
 <span class="w">   </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">     </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
 <span class="w">     </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="o">*</span><span class="n">x</span><span class="o">+</span><span class="n">b</span><span class="o">+</span><span class="n">c</span><span class="p">;</span>
@@ -512,15 +512,29 @@ control logic extraction task to sequence the scheduled operations
 and the I/O port assignment produced in the interface generation task:
 assignments produced by the HLS tool in
 the scheduling and binding tasks:</p>
-<figure class="align-center" id="hls-tasks-4-5">
-<a class="reference internal image-reference" href="../_images/hls4-5.png"><img alt="HLS control logic extraction and interface geenration tasks" src="../_images/hls4-5.png" style="width: 800px;" /></a>
+<figure class="align-center" id="hls-task-4">
+<a class="reference internal image-reference" href="../_images/hls4.png"><img alt="HLS control logic extraction task" src="../_images/hls4.png" style="width: 800px;" /></a>
 <figcaption>
 <p><span class="caption-number">Fig. 2.2 </span><span class="caption-text">Example showing the FSM and I/O ports generated in the control logic
-extraction and interface generation tasks
-(image taken from <span id="id3">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>)</span><a class="headerlink" href="#hls-tasks-4-5" title="Permalink to this image">#</a></p>
+extraction task (image taken from <span id="id3">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>)</span><a class="headerlink" href="#hls-task-4" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 </li>
+<li><p>In the compilation and scheduling tasks, the HLS tool constructs a
+schedule that is different than the one for the function <code class="docutils literal notranslate"><span class="pre">ex1</span></code> in
+<a class="reference internal" href="#sec-hls-tasks-ex1"><span class="std std-numref">Section 2.1.1</span></a> because the current schedule is more
+efficient foe the for-loop in <code class="docutils literal notranslate"><span class="pre">ex2</span></code> (no need to recalculate <code class="docutils literal notranslate"><span class="pre">b+c</span></code>
+in each iteration).</p></li>
+<li><p>In the binding task, the input and output arrays <code class="docutils literal notranslate"><span class="pre">in[3]</span></code> and
+<code class="docutils literal notranslate"><span class="pre">out[3]</span></code> are bound to block RAM resources external to the kernel and
+the other variables are bound to registers. Each of the parameter
+input variables <code class="docutils literal notranslate"><span class="pre">a</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span></code>, and <code class="docutils literal notranslate"><span class="pre">c</span></code> is mapped to an input 8-bit data
+port.</p></li>
+<li><p>In the control logic extraction task, control logics for accessing
+the block RAM and the input data ports for the parameters, such as
+data ports, address ports, chip-enable (ce) and  write-enable (we)
+signals are created. The HLS tool also construct the FSM as shown in
+<a class="reference internal" href="#hls-task-4"><span class="std std-numref">Fig. 2.2</span></a> to sequence the operation schedule.</p></li>
 </ul>
 </section>
 </section>
@@ -593,7 +607,7 @@ extraction and interface generation tasks
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scheduling-and-binding-example">2.1.1. Scheduling and Binding Example</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#control-logic-extraction-and-interface-generation-example">2.1.2. Control Logic Extraction and Interface Generation Example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#control-logic-extraction-example">2.1.2. Control Logic Extraction Example</a></li>
 </ul>
   </nav></div>
 

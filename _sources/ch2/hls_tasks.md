@@ -44,7 +44,7 @@
 
   3. ***Binding***: The HLS tool assigns specific PL resources to
      implement each scheduled operation as well as memories and
-     registers required. ec:hls+esource sharing is also performed so that
+     registers required. Resource sharing is also performed so that
      the same sets of resources can be re-used by operations scheduled
      to different clock cycles. RTL implementations of the scheduled
      operations are produced in this step.
@@ -89,7 +89,7 @@
   Example showing the assigments in the HLS scheduling and binding
   tasks (image taken from {cite}`ug1399`)
   ```
-* In the scheduling task, the HLS tool determines the function `foo`
+* In the scheduling task, the HLS tool determines the function `ex1`
   can be implemented in two clock cycles:
   - The multiplication and first addition `x*a+b` are scheduled to clock
     cycle 1.
@@ -106,12 +106,12 @@
      slice, in lieu of the `Mul` and `AddSub`,  to implement the
      multiplication and addition together in clock cycle 1. 
 
-## Control Logic Extraction and Interface Generation Example
+## Control Logic Extraction Example
 * Consider the following C/C++ function that specifies another simple DSP
   kernel: 
   ```c++ 
    void ex2(int in[3], char a, char b, char c, int out[3]) {
-     int x,y;
+     int x, y;
      for (int i = 0; i < 3; i++) {
        x = in[i];
        y = a*x+b+c;
@@ -128,14 +128,31 @@
   and the I/O port assignment produced in the interface generation task:
   assignments produced by the HLS tool in
   the scheduling and binding tasks:
-  ```{figure} ../figs/hls4-5.png
+  ```{figure} ../figs/hls4.png
   ---
-  name: HLS_tasks_4_5
-  alt: HLS control logic extraction and interface geenration tasks
+  name: HLS_task_4
+  alt: HLS control logic extraction task
   width: 800px
   align: center
   ---
   Example showing the FSM and I/O ports generated in the control logic
-  extraction and interface generation tasks 
-  (image taken from {cite}`ug1399`)
+  extraction task (image taken from {cite}`ug1399`)
   ```
+
+* In the compilation and scheduling tasks, the HLS tool constructs a
+  schedule that is different than the one for the function `ex1` in
+  {numref}`sec:hls_tasks_ex1` because the current schedule is more
+  efficient foe the for-loop in `ex2` (no need to recalculate `b+c`
+  in each iteration).
+
+* In the binding task, the input and output arrays `in[3]` and
+  `out[3]` are bound to block RAM resources external to the kernel and
+  the other variables are bound to registers. Each of the parameter
+  input variables `a`, `b`, and `c` is mapped to an input 8-bit data
+  port.
+
+* In the control logic extraction task, control logics for accessing
+  the block RAM and the input data ports for the parameters, such as
+  data ports, address ports, chip-enable (ce) and  write-enable (we)
+  signals are created. The HLS tool also construct the FSM as shown in
+  {numref}`HLS_task_4` to sequence the operation schedule. 
