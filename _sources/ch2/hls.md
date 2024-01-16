@@ -17,6 +17,6 @@ synthesis (HLS)* to develop DSP kernels in the PL.
    operation scheduling, creating data path and register pipeline,
    generating control logic and interfaces for the kernel, etc, from
    the high-level C/C++ description of the DSP kernel, interface, and
-   constraint specifications. The tool synthesizes the
+   constraint specifications. The tool translates the
    micro-architecture design into a RTL realization of the DSP kernel
    that can be further processed by Vitis and Vivado.
