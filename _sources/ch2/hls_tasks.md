@@ -1,3 +1,4 @@
+(sec:hls_tasks)=
 # HLS Tasks
 
 * A high-level C/C++ specification of a DSP kernel is

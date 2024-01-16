@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>3. References &#8212; Real-time DSP Notes</title>
+    <title>2.2. Vitis HLS Development Flow &#8212; Real-time DSP Notes</title>
   
   
   
@@ -19,52 +19,53 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/clipboard.min.js"></script>
-    <script src="_static/copybutton.js"></script>
-    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js"></script>
+    <script src="../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="_static/design-tabs.js"></script>
+    <script src="../_static/design-tabs.js"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
-    <script async="async" src="_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'refs';</script>
-    <link rel="shortcut icon" href="_static/logo.png"/>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="2.2. Vitis HLS Development Flow" href="ch2/hls_flow.html" />
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ch2/hls_flow';</script>
+    <link rel="shortcut icon" href="../_static/logo.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3. References" href="../refs.html" />
+    <link rel="prev" title="2.1. HLS Tasks" href="hls_tasks.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
   </head>
@@ -92,7 +93,7 @@ const thebe_selector_output = ".output, .cell_output"
     <div class="search-button__overlay"></div>
     <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
-      action="search.html"
+      action="../search.html"
       method="get">
   <i class="fa-solid fa-magnifying-glass"></i>
   <input type="search"
@@ -130,7 +131,7 @@ const thebe_selector_output = ".output, .cell_output"
         <div class="sidebar-primary-item">
   
 
-<a class="navbar-brand logo" href="intro.html">
+<a class="navbar-brand logo" href="../intro.html">
   
   
   
@@ -140,8 +141,8 @@ const thebe_selector_output = ".output, .cell_output"
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
 </a></div>
@@ -150,24 +151,24 @@ const thebe_selector_output = ".output, .cell_output"
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
-                <a class="reference internal" href="intro.html">
+                <a class="reference internal" href="../intro.html">
                     Real-Time DSP Applications
                 </a>
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="ch1/overview.html">1. Overview</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="ch1/rfsoc4x2.html">1.1. Hardware Platform</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ch1/vitis.html">1.2. Software Development Tools</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ch1/workflow.html">1.3. Vitis Application Acceleration Development</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../ch1/overview.html">1. Overview</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ch1/rfsoc4x2.html">1.1. Hardware Platform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ch1/vitis.html">1.2. Software Development Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ch1/workflow.html">1.3. Vitis Application Acceleration Development</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="ch2/hls.html">2. Introduction to HLS</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="ch2/hls_tasks.html">2.1. HLS Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ch2/hls_flow.html">2.2. Vitis HLS Development Flow</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="hls.html">2. Introduction to HLS</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="hls_tasks.html">2.1. HLS Tasks</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">2.2. Vitis HLS Development Flow</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">3. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../refs.html">3. References</a></li>
 </ul>
 
     </div>
@@ -239,7 +240,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Frefs.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Fch2/hls_flow.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -269,7 +270,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="_sources/refs.md" target="_blank"
+      <li><a href="../_sources/ch2/hls_flow.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -349,7 +350,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>References</h1>
+    <h1>Vitis HLS Development Flow</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -363,27 +364,47 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="references">
-<h1><span class="section-number">3. </span>References<a class="headerlink" href="#references" title="Permalink to this headline">#</a></h1>
-<div class="docutils container" id="id1">
-<dl class="citation">
-<dt class="label" id="id10"><span class="brackets">ARM20</span></dt>
-<dd><p><em>Introduction to AMBA AXI4</em>. ARM, Aug. 2020. URL: <a class="reference external" href="https://developer.arm.com/-/media/Arm%20Developer%20Community/PDF/Learn%20the%20Architecture/102202_0100_01_Introduction_to_AMBA_AXI.pdf?revision=369ad681-f926-47b0-81be-42813d39e132">https://developer.arm.com/-/media/Arm%20Developer%20Community/PDF/Learn%20the%20Architecture/102202_0100_01_Introduction_to_AMBA_AXI.pdf?revision=369ad681-f926-47b0-81be-42813d39e132</a>.</p>
-</dd>
-<dt class="label" id="id12"><span class="brackets">AMD-Xilinx23a</span></dt>
-<dd><p><em>Vitis High-Level Synthesis User Guide</em>. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls">https://docs.xilinx.com/r/en-US/ug1399-vitis-hls</a>.</p>
-</dd>
-<dt class="label" id="id11"><span class="brackets">AMD-Xilinx23b</span></dt>
-<dd><p><em>Vitis Unified Software Platform Documentation: Application Acceleration Development</em>. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration">https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration</a>.</p>
-</dd>
-<dt class="label" id="id8"><span class="brackets">RealDigital23</span></dt>
-<dd><p><em>RFSoC 4x2 Reference Manual</em>. RealDigital, 2023. Revision A4. URL: <a class="reference external" href="https://www.realdigital.org/downloads/f04f64ad8cc422d64a6ce85580d40834.pdf">https://www.realdigital.org/downloads/f04f64ad8cc422d64a6ce85580d40834.pdf</a>.</p>
-</dd>
-<dt class="label" id="id9"><span class="brackets">AMD-Xilinx23c</span></dt>
-<dd><p><em>Zynq UltraScale+ RFSoC Data Sheet: Overview</em>. AMD-Xilinx, June 2023. URL: <a class="reference external" href="https://docs.xilinx.com/v/u/en-US/ds889-zynq-usp-rfsoc-overview">https://docs.xilinx.com/v/u/en-US/ds889-zynq-usp-rfsoc-overview</a>.</p>
-</dd>
-</dl>
-</div>
+  <section class="tex2jax_ignore mathjax_ignore" id="vitis-hls-development-flow">
+<h1><span class="section-number">2.2. </span>Vitis HLS Development Flow<a class="headerlink" href="#vitis-hls-development-flow" title="Permalink to this headline">#</a></h1>
+<ul class="simple">
+<li><p>As discussed in <a class="reference internal" href="hls.html#sec-hls"><span class="std std-numref">Section 2</span></a>, we are responsible for the
+macro-architecture design of a DSP kernel in the HLS development
+process. Vitis HLS will then automate the micro-architecture
+design of the DSP kernel and synthesize the RTL implementation
+following the steps described in <a class="reference internal" href="hls_tasks.html#sec-hls-tasks"><span class="std std-numref">Section 2.1</span></a>.</p></li>
+<li><p>The standard sequence of steps to use Vitis HLS for DSP kernel
+development in the VAAD flow are listed blow:</p>
+<ol class="arabic simple">
+<li><p><em><strong>C/C++ Kernel Coding</strong></em>: Develop the C/C++ specification of the
+DSP kernel, and specify the external interfaces, design
+constraints, and directives.</p></li>
+<li><p><em><strong>C-Simulation</strong></em>: Verify the functionality of the C/C++ kernel
+code with the C/C++ test bench.</p></li>
+<li><p><em><strong>Code Analysis</strong></em>: Analyze the performance, parallelism, and
+legality of the C/C++ kernel code.</p></li>
+<li><p><em><strong>C-Synthesis</strong></em>: Generate the RTL specification for the given
+clock speed and input constraints using the v++ compiler.</p></li>
+<li><p><em><strong>C/RTL Co-Simulation</strong></em>: Verify the RTL code generated using
+the C/C++ test bench, and review the HLS synthesis and
+implementation timing reports. If necessary, re-run previous
+steps until performance goals are met.</p></li>
+<li><p><em><strong>Package</strong></em>: Generate the DSP kernel object (<code class="docutils literal notranslate"><span class="pre">.xo</span></code>) for use in
+the VAAD flow.</p></li>
+</ol>
+</li>
+</ul>
+<figure class="align-center" id="hls-steps">
+<a class="reference internal image-reference" href="../_images/hls_steps.png"><img alt="Steps in the HLS development flow" src="../_images/hls_steps.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 2.3 </span><span class="caption-text">Steps in the Vitis HLS development flow
+(image taken from <span id="id1">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>)</span><a class="headerlink" href="#hls-steps" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<ul class="simple">
+<li><p>In the next few sections, we will briefly describe some basic design
+principles, considerations, and techniques in writing optimized
+C/C++ code for DSP development using HLS.</p></li>
+</ul>
 </section>
 
     <script type="text/x-thebe-config">
@@ -399,7 +420,7 @@ document.write(`
         },
         kernelOptions: {
             name: "python3",
-            path: "./."
+            path: "./ch2"
         },
         predefinedOutput: true
     }
@@ -418,13 +439,22 @@ document.write(`
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="ch2/hls_flow.html"
+       href="hls_tasks.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title"><span class="section-number">2.2. </span>Vitis HLS Development Flow</p>
+        <p class="prev-next-title"><span class="section-number">2.1. </span>HLS Tasks</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="../refs.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">3. </span>References</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div></div>
   
@@ -478,8 +508,8 @@ By Tan F. Wong
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
   </footer>
