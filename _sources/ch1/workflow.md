@@ -14,9 +14,8 @@
 * In order to simplify our development process, we will employ the
   following approach:
   1. Follow the *Vitis Application Acceleration Development (VAAD) Flow*. 
-  2. Use HLS to develop DSP kernels under the Vitis Application
-     Accelerated Development Flow.  We will discuss more about the HLS
-     design process in {numref}`sec:hls`.
+  2. Use HLS to develop DSP kernels under the VAAD flow.  We will
+     discuss more about the HLS design process in {numref}`sec:hls`.
 
 ## Vitis Application Acceleration Development Flow
 * The VAAD flow {cite}`ug1393` is essentially a design process that
