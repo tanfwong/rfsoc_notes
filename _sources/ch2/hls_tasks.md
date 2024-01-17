@@ -54,8 +54,8 @@
      machine (FSM) that is responsible for sequencing the scheduled
      operations.
 
-  5. ***Extern interface generation***: The HLS generates external interfaces
-     for the DSP kernel.
+  5. ***External interface generation***: The HLS generates external
+     interfaces for the DSP kernel.
 
   6. ***RTL generation***: The HLS synthesizes the RTL specification of
      the complete DSP kernel.
