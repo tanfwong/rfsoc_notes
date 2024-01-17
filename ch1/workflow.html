@@ -411,12 +411,12 @@ all automated by Vitis.</p></li>
 <ul>
 <li><p>a <em>Vitis extensible platform</em> which serves as an abstraction of
 the PL hardware to the host application development process, and
-is composed of</p>
+the platform is composed of</p>
 <ul class="simple">
 <li><p>a <em>domain</em> with the necessary software to run Linux on the PS host</p></li>
 <li><p>a base PL hardware block with a predefined configuration of AXI4
 interfaces for PL kernel control by the PS host and for data
-transfer with between the PS host and the PL kernels via global
+transfer between the PS host and the PL kernels via global
 memory, clocks, and interrupted signals</p></li>
 </ul>
 <figure class="align-center" id="vitis-platform">
@@ -439,12 +439,12 @@ control and data transfer in host application programming.</p></li>
 <li><p>In addition, Vitis HLS can be employed to automatically synthesize
 interfaces that conform to the predefined configuration required by
 VAAD for a PL kernel.</p></li>
-<li><p>The tradeoffs for adopting VAAD are potential losses in
-flexibility of the implementation architecture and in PL utilization
+<li><p>The tradeoffs for adopting VAAD are potential losses in flexibility
+of the implementation architecture and in PL utilization
 efficiency. Nonetheless, these potential losses are rather
 acceptable for us since we will not be interested in developing
-interfaces to other peripherals, and the adoption of VAADF allows us
-to focus on only the “DSP stuff” in our development.</p></li>
+interfaces to other peripherals, and the adoption of VAAD allows us
+to focus only on the “DSP stuff” in our development.</p></li>
 </ul>
 </section>
 <section id="vaad-procedures-in-vitis">

@@ -26,11 +26,11 @@
 * It contains:
   - a *Vitis extensible platform* which serves as an abstraction of
     the PL hardware to the host application development process, and
-    is composed of
+    the platform is composed of
     - a *domain* with the necessary software to run Linux on the PS host
     - a base PL hardware block with a predefined configuration of AXI4
       interfaces for PL kernel control by the PS host and for data
-      transfer with between the PS host and the PL kernels via global
+      transfer between the PS host and the PL kernels via global
       memory, clocks, and interrupted signals
     ```{figure} ../figs/vitis_platform.png
     ---
@@ -54,12 +54,12 @@
   interfaces that conform to the predefined configuration required by
   VAAD for a PL kernel. 
 
-* The tradeoffs for adopting VAAD are potential losses in
-  flexibility of the implementation architecture and in PL utilization
+* The tradeoffs for adopting VAAD are potential losses in flexibility
+  of the implementation architecture and in PL utilization
   efficiency. Nonetheless, these potential losses are rather
   acceptable for us since we will not be interested in developing
-  interfaces to other peripherals, and the adoption of VAADF allows us
-  to focus on only the "DSP stuff" in our development. 
+  interfaces to other peripherals, and the adoption of VAAD allows us
+  to focus only on the "DSP stuff" in our development.
 
 (sec:vaadf_steps)=
 ## VAAD Procedures in Vitis
