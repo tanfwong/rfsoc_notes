@@ -1,3 +1,4 @@
+(sec:hls_steps)=
 # Vitis HLS Development Flow
 
 * As discussed in {numref}`sec:hls`, we are responsible for the
