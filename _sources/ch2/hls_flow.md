@@ -35,6 +35,6 @@
  (image taken from {cite}`ug1399`)
  ```
 
-* In the next few sections, we will briefly describe some basic design
-  principles, considerations, and techniques in writing optimized
-  C/C++ code for DSP development using HLS.
+* In {numref}`sec:hls_design`, we will briefly describe some basic
+  design principles, considerations, and techniques in writing
+  optimized C/C++ code for DSP development using HLS.
