@@ -60,6 +60,8 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'ch3/metrics';</script>
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -428,6 +430,12 @@ determined by the IIs of the operations in the pipeline.</p></li>
 <p>It is convenient for us to express both iteration latency and II in
 terms of cycles of the clock that drives a DSP kernel.</p>
 </li>
+<li><p>Consider a DSP kernel implementing an FIR filter of order <span class="math notranslate nohighlight">\(M\)</span> as an
+example. If the input sampling rate is the same as the clock rate of
+the kernel and each multiply-add operation can be performed with one
+clock cycle, then a simple shift-register based implementation of
+the FIR filter kernel will have II <span class="math notranslate nohighlight">\(=1\)</span> clock cycle and iteration
+latency <span class="math notranslate nohighlight">\(=M\)</span> clock cycles.</p></li>
 </ul>
 </section>
 

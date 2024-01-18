@@ -57,4 +57,9 @@
    It is convenient for us to express both iteration latency and II in
    terms of cycles of the clock that drives a DSP kernel.
  
-
+* Consider a DSP kernel implementing an FIR filter of order $M$ as an
+  example. If the input sampling rate is the same as the clock rate of
+  the kernel and each multiply-add operation can be performed with one
+  clock cycle, then a simple shift-register based implementation of
+  the FIR filter kernel will have II $=1$ clock cycle and iteration
+  latency $=M$ clock cycles. 
