@@ -64,7 +64,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="4. References" href="../refs.html" />
+    <link rel="next" title="3.1. Performance Metrics" href="metrics.html" />
     <link rel="prev" title="2.2. Vitis HLS Development Flow" href="../ch2/hls_flow.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
@@ -168,7 +168,10 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="../ch2/hls_flow.html">2.2. Vitis HLS Development Flow</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">3. HLS Design Basics</a></li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">3. HLS Design Basics</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="metrics.html">3.1. Performance Metrics</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">4. References</a></li>
 </ul>
 
@@ -386,8 +389,8 @@ C/C++ development may not be applicable to writing C/C++ code for
 HLS development.</p></li>
 <li><p>The two main considerations in HLS kernel code development are to:</p>
 <ol class="arabic simple">
-<li><p>Write C/C++ code that is <em>synthesizable</em>. Due to the limitations
-on the PL hardware architecture and resources, the HLS cannot
+<li><p>Write C/C++ code that is <em>synthesizable</em>. Due to limitations on
+the PL hardware architecture and resources, the HLS cannot
 synthesize some standard C/C++ constructs, such as dynamic
 memory allocation. We should avoid writing HLS code with
 non-synthesizable C/C++ constructs.</p></li>
@@ -396,10 +399,12 @@ produce efficient RTL implementation of the DSP kernel that
 meets performance targets.</p></li>
 </ol>
 </li>
-<li><p>In order to understand what constitue good HLS programming
+<li><p>In order to understand what constitute good HLS programming
 practices, we will discuss some basic HLS design principles in the
 following sections.</p></li>
 </ul>
+<div class="toctree-wrapper compound">
+</div>
 </section>
 
     <script type="text/x-thebe-config">
@@ -443,11 +448,11 @@ following sections.</p></li>
       </div>
     </a>
     <a class="right-next"
-       href="../refs.html"
+       href="metrics.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">4. </span>References</p>
+        <p class="prev-next-title"><span class="section-number">3.1. </span>Performance Metrics</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

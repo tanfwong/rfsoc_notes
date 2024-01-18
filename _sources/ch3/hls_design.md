@@ -20,8 +20,8 @@
   HLS development.
   
 * The two main considerations in HLS kernel code development are to:
-  1. Write C/C++ code that is *synthesizable*. Due to the limitations
-       on the PL hardware architecture and resources, the HLS cannot
+  1. Write C/C++ code that is *synthesizable*. Due to limitations on
+       the PL hardware architecture and resources, the HLS cannot
        synthesize some standard C/C++ constructs, such as dynamic
        memory allocation. We should avoid writing HLS code with
        non-synthesizable C/C++ constructs.
@@ -30,7 +30,7 @@
       produce efficient RTL implementation of the DSP kernel that
       meets performance targets.
 
-* In order to understand what constitue good HLS programming
+* In order to understand what constitute good HLS programming
   practices, we will discuss some basic HLS design principles in the
   following sections.
   
