@@ -143,7 +143,7 @@
 * In the compilation and scheduling tasks, the HLS tool constructs a
   schedule that is different than the one for the function `ex1` in
   {numref}`sec:hls_tasks_ex1` because the current schedule is more
-  efficient foe the for-loop in `ex2` (no need to recalculate `b+c`
+  efficient for the for-loop in `ex2` (no need to recalculate `b+c`
   in each iteration).
 
 * In the binding task, the input and output arrays `in` and
@@ -173,7 +173,7 @@
   in the clock cycle when the FSM first enters the state $C_1$ so that
   the RAM content at that address is read into the internal register `x`
   in the clock cycle  when the FSM first enters $C_2$, and
-  the address to $out[1]$ is generated at the same clock cycle so that
+  the address to `out[1]` is generated at the same clock cycle so that
   the calculation result in the clock cycle when the FSM first enters
   $C_3$ can be stored.
 

@@ -529,7 +529,7 @@ extraction task (image taken from <span id="id3">[<a class="reference internal" 
 <li><p>In the compilation and scheduling tasks, the HLS tool constructs a
 schedule that is different than the one for the function <code class="docutils literal notranslate"><span class="pre">ex1</span></code> in
 <a class="reference internal" href="#sec-hls-tasks-ex1"><span class="std std-numref">Section 2.1.1</span></a> because the current schedule is more
-efficient foe the for-loop in <code class="docutils literal notranslate"><span class="pre">ex2</span></code> (no need to recalculate <code class="docutils literal notranslate"><span class="pre">b+c</span></code>
+efficient for the for-loop in <code class="docutils literal notranslate"><span class="pre">ex2</span></code> (no need to recalculate <code class="docutils literal notranslate"><span class="pre">b+c</span></code>
 in each iteration).</p></li>
 <li><p>In the binding task, the input and output arrays <code class="docutils literal notranslate"><span class="pre">in</span></code> and
 <code class="docutils literal notranslate"><span class="pre">out</span></code> are bound to block RAM resources external to the kernel and
@@ -558,7 +558,7 @@ internal registers. For example, the address to <code class="docutils literal no
 in the clock cycle when the FSM first enters the state <span class="math notranslate nohighlight">\(C_1\)</span> so that
 the RAM content at that address is read into the internal register <code class="docutils literal notranslate"><span class="pre">x</span></code>
 in the clock cycle  when the FSM first enters <span class="math notranslate nohighlight">\(C_2\)</span>, and
-the address to <span class="math notranslate nohighlight">\(out[1]\)</span> is generated at the same clock cycle so that
+the address to <code class="docutils literal notranslate"><span class="pre">out[1]</span></code> is generated at the same clock cycle so that
 the calculation result in the clock cycle when the FSM first enters
 <span class="math notranslate nohighlight">\(C_3\)</span> can be stored.</p>
 </li>
