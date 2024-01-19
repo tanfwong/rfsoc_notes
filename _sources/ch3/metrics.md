@@ -32,15 +32,15 @@
 * Going back again to the factory analogy, a factory typically
   produces its output products in a ***pipeline***. That is, different
   tasks in the production process are carried out by different
-  stations/parts in the pipeline, and each station performs solely a
+  stations in the pipeline, and each station performs solely a
   specific task continuously in the production process. The same
   pipelining approach also applies to DSP kernels. For example, in DSP
   kernel that implements the cascade of two FIR filters, each
-  component filter acts as a station in the pipeline that performs
-  filtering through the cascade. On a finer level, one may also think
-  of each multiply-add operation corresponding to a tap in a component
-  FIR filter as a station in the pipeline that implements the FIR
-  filter.
+  component filter acts as a station in the pipeline that performs the
+  filtering tasks through the cascade. On a finer level, one may also
+  think of each multiply-add operation corresponding to an FIR tap in
+  a component FIR filter as a station in the pipeline that implements
+  the FIR filter.
 
 * Pertaining to the pipelining operation of a DSP kernel, we are
   primarily interested in two metrics, namely iteration latency
@@ -49,10 +49,11 @@
     when the first input item enters into the pipeline to the time at
     which the pipeline produces the first output item.  Iteration
     latency specifies a *transient* characteristic of the pipeline.
-  - ***Initiation interval (II)*** of a pipeline operation is the amount
-    of time required to elapse between successive operations by the
-    same station. Clearly, the throughput of the pipeline is
-    determined by the IIs of the operations in the pipeline.
+  - ***Initiation interval (II)*** of a pipeline task is the amount of
+    time required to elapse between successive operations by the same
+    station. The II of the pipeline is the duration between successive
+    output units produced by the pipeline. Clearly, the throughput of
+    the pipeline is determined by its II.
    
    It is convenient for us to express both iteration latency and II in
    terms of cycles of the clock that drives a DSP kernel.

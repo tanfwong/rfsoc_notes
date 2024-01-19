@@ -374,14 +374,16 @@ document.write(`
 <ul class="simple">
 <li><p>In a typical DSP application scenario, a signal <em>source</em> (e.g., an ADC
 or a camera) provides a stream of samples that is fed into a DSP
-kernel (e.g., an FIR filter) for processing. The DSP kernel may
+task (e.g., an FIR filter) for processing. The DSP task may
 produce an output stream of samples that is in turn fed into
-another DSP kernel (e.g., an FFT) for further processing, and so on,
-eventually reaching a signal <em>sink</em> (e.g., the PS host).</p></li>
+another DSP task (e.g., an FFT) for further processing, and so on,
+eventually reaching a signal <em>sink</em> (e.g., the PS host). We may
+perform each DSP task in a separate PL kernel, or package all DSP
+tasks into a single PL kernel in HLS.</p></li>
 <li><p>This configuration naturally leads to the <em><strong>producer-consumer
-model</strong></em> in which a DSP kernel acts as a <em>producer</em> of samples and
-another DSP kernel downstreams acts as a <em>consumer</em> of the samples
-supplied by the producer kernel.</p></li>
+model</strong></em> in which a DSP task acts as a <em>producer</em> of samples and
+another DSP task downstreams acts as a <em>consumer</em> of the samples
+supplied by the producer task.</p></li>
 </ul>
 </section>
 
