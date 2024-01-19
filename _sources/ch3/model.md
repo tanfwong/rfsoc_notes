@@ -12,5 +12,7 @@
 * This configuration naturally leads to the ***producer-consumer
   model*** in which a DSP task acts as a *producer* of samples and
   another DSP task downstreams acts as a *consumer* of the samples
-  supplied by the producer task. 
+  supplied by the producer task. Similarly, we may also consider the
+  same producer-consumer model at the finer level for operations with
+  a DSP task.
 
