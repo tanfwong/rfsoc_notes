@@ -69,7 +69,7 @@
   kernel: 
    ```c++ 
    int ex1(char x, char a, char b, char c) { 
-     char y; 
+     int y; 
      y = x*a+b+c; 
      return y; 
    }
