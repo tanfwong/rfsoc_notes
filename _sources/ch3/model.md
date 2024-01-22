@@ -29,14 +29,17 @@
 * Task-level pipelining is best explained by considering an
   example. Suppose the function of a DSP kernel can be decomposed into
   a sequence of three tasks, namely tasks A, B, and C in that order.
-  The data flow graph of the DSP kernel is then simply 
-  \begin{equation*}
-  \boxed{\text{Source}} \rightarrow A \rightarrow B \rightarrow C
-  \rightarrow \boxed{\text{Sink}}
+  The data flow graph of the DSP kernel is then simply
+  \begin{equation*} 
+  \boxed{I} \rightarrow A \rightarrow B
+  \rightarrow C \rightarrow \boxed{O} 
   \end{equation*}
-  The IIs of the three tasks are $\tau_A$, $\tau_B$, and $\tau_C$
-  clock cycles, respectively. For illustration below, let us assume
-  $\tau_B > \tau_A > \tau_C$.
+  where $\boxed{I}$ is the input to the kernel, $\boxed{O}$ is the
+  kernel output, and each directed edge $\rightarrow$ shows the
+  direction of the producer-consumer relation and buffering between
+  two connected tasks.  The IIs of the three tasks are $\tau_A$,
+  $\tau_B$, and $\tau_C$ clock cycles, respectively. For illustration
+  below, let us assume $\tau_B > \tau_A > \tau_C$.
 
 * If the producer-consumer model is not followed when developing the
   DSP kernel that task A has to wait for both tasks B and C to complete their
@@ -75,3 +78,26 @@
   build time for the HLS tool to construct the pipelining schedule*.
 
 ## Parallelization
+* When two DSP tasks are *fully independent*, i.e., their operations
+  do not depend on one another, they do not communicate, and they do
+  not access any shared memory or computational resource, they can be
+  executed in parallel; thus reducing the II and increasing the
+  throughput of the DSP kernel.
+
+* A piece of C/C++ code written in the producer-consumer model helps
+  the HLS tool to identify opportunities for task-level
+  parallelization. For example, the following data flow graph shows
+  that tasks B and C are fully independent and hence can be executed
+  in parallel: 
+  \begin{equation*} 
+  \boxed{I} \rightarrow A \
+  \begin{array}{c} 
+  \nearrow {}^{\displaystyle B} \searrow \\ 
+  \searrow {}_{\displaystyle C} \nearrow 
+  \end{array} 
+  \ D \rightarrow \boxed{O}
+  \end{equation*}
+
+* With task-level parallelization, independent tasks are executed
+  simultaneously on different PL resources. Hence, unlike pipelining, 
+  parallelization does require more PL resources. 

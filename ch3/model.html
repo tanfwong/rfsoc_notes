@@ -416,13 +416,16 @@ example. Suppose the function of a DSP kernel can be decomposed into
 a sequence of three tasks, namely tasks A, B, and C in that order.
 The data flow graph of the DSP kernel is then simply</p>
 <div class="amsmath math notranslate nohighlight">
-\[\begin{equation*}
-  \boxed{\text{Source}} \rightarrow A \rightarrow B \rightarrow C
-  \rightarrow \boxed{\text{Sink}}
+\[\begin{equation*} 
+  \boxed{I} \rightarrow A \rightarrow B
+  \rightarrow C \rightarrow \boxed{O} 
   \end{equation*}\]</div>
-<p>The IIs of the three tasks are <span class="math notranslate nohighlight">\(\tau_A\)</span>, <span class="math notranslate nohighlight">\(\tau_B\)</span>, and <span class="math notranslate nohighlight">\(\tau_C\)</span>
-clock cycles, respectively. For illustration below, let us assume
-<span class="math notranslate nohighlight">\(\tau_B &gt; \tau_A &gt; \tau_C\)</span>.</p>
+<p>where <span class="math notranslate nohighlight">\(\boxed{I}\)</span> is the input to the kernel, <span class="math notranslate nohighlight">\(\boxed{O}\)</span> is the
+kernel output, and each directed edge <span class="math notranslate nohighlight">\(\rightarrow\)</span> shows the
+direction of the producer-consumer relation and buffering between
+two connected tasks.  The IIs of the three tasks are <span class="math notranslate nohighlight">\(\tau_A\)</span>,
+<span class="math notranslate nohighlight">\(\tau_B\)</span>, and <span class="math notranslate nohighlight">\(\tau_C\)</span> clock cycles, respectively. For illustration
+below, let us assume <span class="math notranslate nohighlight">\(\tau_B &gt; \tau_A &gt; \tau_C\)</span>.</p>
 </li>
 <li><p>If the producer-consumer model is not followed when developing the
 DSP kernel that task A has to wait for both tasks B and C to complete their
@@ -459,6 +462,31 @@ build time for the HLS tool to construct the pipelining schedule</em>.</p></li>
 </section>
 <section id="parallelization">
 <h2><span class="section-number">3.2.2. </span>Parallelization<a class="headerlink" href="#parallelization" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>When two DSP tasks are <em>fully independent</em>, i.e., their operations
+do not depend on one another, they do not communicate, and they do
+not access any shared memory or computational resource, they can be
+executed in parallel; thus reducing the II and increasing the
+throughput of the DSP kernel.</p></li>
+<li><p>A piece of C/C++ code written in the producer-consumer model helps
+the HLS tool to identify opportunities for task-level
+parallelization. For example, the following data flow graph shows
+that tasks B and C are fully independent and hence can be executed
+in parallel:</p>
+<div class="amsmath math notranslate nohighlight">
+\[\begin{equation*} 
+  \boxed{I} \rightarrow A \
+  \begin{array}{c} 
+  \nearrow {}^{\displaystyle B} \searrow \\ 
+  \searrow {}_{\displaystyle C} \nearrow 
+  \end{array} 
+  \ D \rightarrow \boxed{O}
+  \end{equation*}\]</div>
+</li>
+<li><p>With task-level parallelization, independent tasks are executed
+simultaneously on different PL resources. Hence, unlike pipelining,
+parallelization does require more PL resources.</p></li>
+</ul>
 </section>
 </section>
 
