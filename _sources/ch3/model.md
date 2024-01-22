@@ -13,9 +13,11 @@
   model*** in which a DSP task acts as a *producer* of samples and
   another DSP task downstream acts as a *consumer* of the samples
   supplied by the producer task. Some form of *buffering* is typically
-  applied between the producer and consumer. Similarly, we may also
-  consider the same producer-consumer model at the finer level for
-  operations with a DSP task.
+  applied between the producer and consumer. The operation of a DSP
+  kernel may then be described by a directed graph, called the
+  ***signal/data flow graph***, representing a network of connected
+  producer and consumer tasks from the input (source) of the DSP
+  kernel to its output (sink).
 
 * It is advantageous for us to develop our C/C++ design of a DSP
   kernel following this producer-consumer model because it allows the
@@ -27,6 +29,11 @@
 * Task-level pipelining is best explained by considering an
   example. Suppose the function of a DSP kernel can be decomposed into
   a sequence of three tasks, namely tasks A, B, and C in that order.
+  The data flow graph of the DSP kernel is then simply 
+  \begin{equation*}
+  \boxed{\text{Source}} \rightarrow A \rightarrow B \rightarrow C
+  \rightarrow \boxed{\text{Sink}}
+  \end{equation*}
   The IIs of the three tasks are $\tau_A$, $\tau_B$, and $\tau_C$
   clock cycles, respectively. For illustration below, let us assume
   $\tau_B > \tau_A > \tau_C$.
@@ -67,3 +74,4 @@
   pipelining does require the IIs of all tasks to be known at the
   build time for the HLS tool to construct the pipelining schedule*.
 
+## Parallelization
