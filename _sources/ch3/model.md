@@ -30,10 +30,13 @@
   example. Suppose the function of a DSP kernel can be decomposed into
   a sequence of three tasks, namely tasks A, B, and C in that order.
   The data flow graph of the DSP kernel is then simply
-  \begin{equation*} 
+  ```{math}
+  :label: linear
+  \begin{equation} 
   \boxed{I} \rightarrow A \rightarrow B
   \rightarrow C \rightarrow \boxed{O} 
-  \end{equation*}
+  \end{equation}
+  ```
   where $\boxed{I}$ is the input to the kernel, $\boxed{O}$ is the
   kernel output, and each directed edge $\rightarrow$ shows the
   direction of the producer-consumer relation and buffering between
@@ -89,15 +92,66 @@
   parallelization. For example, the following data flow graph shows
   that tasks B and C are fully independent and hence can be executed
   in parallel: 
-  \begin{equation*} 
+  ```{math}
+  :label: diamond
+  \begin{equation}
   \boxed{I} \rightarrow A \
   \begin{array}{c} 
   \nearrow {}^{\displaystyle B} \searrow \\ 
   \searrow {}_{\displaystyle C} \nearrow 
   \end{array} 
   \ D \rightarrow \boxed{O}
-  \end{equation*}
+  \end{equation}
+  ```
 
 * With task-level parallelization, independent tasks are executed
   simultaneously on different PL resources. Hence, unlike pipelining, 
   parallelization does require more PL resources. 
+
+
+## FIFO & PIPO
+* For the producer-consumer model to function properly, the producer
+  and consumer tasks need to synchronize with each other. That is,
+  there must be a handshake process for the producer to tell the
+  consumer that a piece of data is ready to be consumed and for the
+  consumer to tell the producer that the piece of data has been
+  consumed. As one would see, such synchronization among producers and
+  consumers in a complex data flow graph could get rather
+  complicated. The synchronization complexity could be further
+  aggravated by pipelining and parallelization as they require
+  different tasks to simultaneosuly operate on different pieces of
+  data. 
+
+* The standard solution to this synchronization problem is to insert a
+  *streaming buffer* between each pair of producer and consumer. The
+  streaming buffer streamlines synchronization between the producer
+  and consumer by allowing the producer to simply push its output data
+  to the buffer (if the buffer is not full) and the consumer to pop
+  its input data (if it is available) from the buffer. No direct
+  handshaking is needed between the producer and consumer. With the
+  streaming buffer, synchronization between each producer-consumer
+  pair in the data flow graph is implicitly achieved, regardless of
+  how complex the data flow graph may be and whether task-level
+  pipelining is employed. Nevertheless, care must be taken in the
+  design process such that the insertion rate of data by the producer
+  into the streaming buffer can not be higher than the retrieving rate
+  of data by the consumer; otherwise, the buffer length will need to
+  grow indefinitely to avoid dropping data or deadlock.
+
+* First-in first-out (FIFO) buffer and ping-pong (PIPO) buffer are the
+  two common implementations for a streaming buffer:
+  ```{glossary}
+  FIFO
+    A FIFO buffer is a queue with a pre-determined depth in which
+    elements must be retrieved (popped) sequentially from the queue in
+    the same order that they are inserted into the queue.
+
+  PIPO
+    A PIPO buffer is a pair of buffers with a pre-determined size 
+    where one buffer is used to hold a block of the producer's old 
+    output data for the consumer to consume while the producer 
+    inserts new data to the other buffer. The roles of the two buffers
+    switch after the consumer finishes consuming the data in the old
+    buffer and producer completes inserting data into the new buffer.
+  ```
+ 

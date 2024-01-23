@@ -371,6 +371,7 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipelining">3.2.1. Pipelining</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parallelization">3.2.2. Parallelization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fifo-pipo">3.2.3. FIFO &amp; PIPO</a></li>
 </ul>
             </nav>
         </div>
@@ -415,11 +416,11 @@ sections.</p></li>
 example. Suppose the function of a DSP kernel can be decomposed into
 a sequence of three tasks, namely tasks A, B, and C in that order.
 The data flow graph of the DSP kernel is then simply</p>
-<div class="amsmath math notranslate nohighlight">
-\[\begin{equation*} 
-  \boxed{I} \rightarrow A \rightarrow B
-  \rightarrow C \rightarrow \boxed{O} 
-  \end{equation*}\]</div>
+<div class="math notranslate nohighlight" id="equation-linear">
+<span class="eqno">(3.1)<a class="headerlink" href="#equation-linear" title="Permalink to this equation">#</a></span>\[\begin{equation} 
+\boxed{I} \rightarrow A \rightarrow B
+\rightarrow C \rightarrow \boxed{O} 
+\end{equation}\]</div>
 <p>where <span class="math notranslate nohighlight">\(\boxed{I}\)</span> is the input to the kernel, <span class="math notranslate nohighlight">\(\boxed{O}\)</span> is the
 kernel output, and each directed edge <span class="math notranslate nohighlight">\(\rightarrow\)</span> shows the
 direction of the producer-consumer relation and buffering between
@@ -473,19 +474,66 @@ the HLS tool to identify opportunities for task-level
 parallelization. For example, the following data flow graph shows
 that tasks B and C are fully independent and hence can be executed
 in parallel:</p>
-<div class="amsmath math notranslate nohighlight">
-\[\begin{equation*} 
-  \boxed{I} \rightarrow A \
-  \begin{array}{c} 
-  \nearrow {}^{\displaystyle B} \searrow \\ 
-  \searrow {}_{\displaystyle C} \nearrow 
-  \end{array} 
-  \ D \rightarrow \boxed{O}
-  \end{equation*}\]</div>
+<div class="math notranslate nohighlight" id="equation-diamond">
+<span class="eqno">(3.2)<a class="headerlink" href="#equation-diamond" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{equation}
+\boxed{I} \rightarrow A \
+\begin{array}{c} 
+\nearrow {}^{\displaystyle B} \searrow \\ 
+\searrow {}_{\displaystyle C} \nearrow 
+\end{array} 
+\ D \rightarrow \boxed{O}
+\end{equation}\end{split}\]</div>
 </li>
 <li><p>With task-level parallelization, independent tasks are executed
 simultaneously on different PL resources. Hence, unlike pipelining,
 parallelization does require more PL resources.</p></li>
+</ul>
+</section>
+<section id="fifo-pipo">
+<h2><span class="section-number">3.2.3. </span>FIFO &amp; PIPO<a class="headerlink" href="#fifo-pipo" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>For the producer-consumer model to function properly, the producer
+and consumer tasks need to synchronize with each other. That is,
+there must be a handshake process for the producer to tell the
+consumer that a piece of data is ready to be consumed and for the
+consumer to tell the producer that the piece of data has been
+consumed. As one would see, such synchronization among producers and
+consumers in a complex data flow graph could get rather
+complicated. The synchronization complexity could be further
+aggravated by pipelining and parallelization as they require
+different tasks to simultaneosuly operate on different pieces of
+data.</p></li>
+<li><p>The standard solution to this synchronization problem is to insert a
+<em>streaming buffer</em> between each pair of producer and consumer. The
+streaming buffer streamlines synchronization between the producer
+and consumer by allowing the producer to simply push its output data
+to the buffer (if the buffer is not full) and the consumer to pop
+its input data (if it is available) from the buffer. No direct
+handshaking is needed between the producer and consumer. With the
+streaming buffer, synchronization between each producer-consumer
+pair in the data flow graph is implicitly achieved, regardless of
+how complex the data flow graph may be and whether task-level
+pipelining is employed. Nevertheless, care must be taken in the
+design process such that the insertion rate of data by the producer
+into the streaming buffer can not be higher than the retrieving rate
+of data by the consumer; otherwise, the buffer length will need to
+grow indefinitely to avoid dropping data or deadlock.</p></li>
+<li><p>First-in first-out (FIFO) buffer and ping-pong (PIPO) buffer are the
+two common implementations for a streaming buffer:</p>
+<dl class="glossary simple">
+<dt id="term-FIFO">FIFO<a class="headerlink" href="#term-FIFO" title="Permalink to this term">#</a></dt><dd><p>A FIFO buffer is a queue with a pre-determined depth in which
+elements must be retrieved (popped) sequentially from the queue in
+the same order that they are inserted into the queue.</p>
+</dd>
+<dt id="term-PIPO">PIPO<a class="headerlink" href="#term-PIPO" title="Permalink to this term">#</a></dt><dd><p>A PIPO buffer is a pair of buffers with a pre-determined size
+where one buffer is used to hold a block of the producer’s old
+output data for the consumer to consume while the producer
+inserts new data to the other buffer. The roles of the two buffers
+switch after the consumer finishes consuming the data in the old
+buffer and producer completes inserting data into the new buffer.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </section>
 </section>
@@ -559,6 +607,7 @@ parallelization does require more PL resources.</p></li>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipelining">3.2.1. Pipelining</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parallelization">3.2.2. Parallelization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fifo-pipo">3.2.3. FIFO &amp; PIPO</a></li>
 </ul>
   </nav></div>
 
