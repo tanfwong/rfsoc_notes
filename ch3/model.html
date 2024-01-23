@@ -66,7 +66,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="4. References" href="../refs.html" />
+    <link rel="next" title="3.3. Deadlock" href="deadlock.html" />
     <link rel="prev" title="3.1. Performance Metrics" href="metrics.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
@@ -173,6 +173,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="hls_design.html">3. HLS Design Basics</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="metrics.html">3.1. Performance Metrics</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">3.2. Producer-Consumer Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deadlock.html">3.3. Deadlock</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">4. References</a></li>
@@ -414,7 +415,7 @@ sections.</p></li>
 <ul>
 <li><p>Task-level pipelining is best explained by considering an
 example. Suppose the function of a DSP kernel can be decomposed into
-a sequence of three tasks, namely tasks A, B, and C in that order.
+a sequence of three tasks, namely tasks <span class="math notranslate nohighlight">\(A\)</span>, <span class="math notranslate nohighlight">\(B\)</span>, and <span class="math notranslate nohighlight">\(C\)</span> in that order.
 The data flow graph of the DSP kernel is then simply</p>
 <div class="math notranslate nohighlight" id="equation-linear">
 <span class="eqno">(3.1)<a class="headerlink" href="#equation-linear" title="Permalink to this equation">#</a></span>\[\begin{equation} 
@@ -472,7 +473,7 @@ throughput of the DSP kernel.</p></li>
 <li><p>A piece of C/C++ code written in the producer-consumer model helps
 the HLS tool to identify opportunities for task-level
 parallelization. For example, the following data flow graph shows
-that tasks B and C are fully independent and hence can be executed
+that tasks <span class="math notranslate nohighlight">\(B\)</span> and <span class="math notranslate nohighlight">\(C\)</span> are fully independent and hence can be executed
 in parallel:</p>
 <div class="math notranslate nohighlight" id="equation-diamond">
 <span class="eqno">(3.2)<a class="headerlink" href="#equation-diamond" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{equation}
@@ -534,6 +535,33 @@ buffer and producer completes inserting data into the new buffer.</p>
 </dd>
 </dl>
 </li>
+<li><p><strong>FIFO vs. PIPO</strong>:</p>
+<ul class="simple">
+<li><p><em>PL resource usage</em>: A PIPO requires more PL resources
+than a FIFO of the same size/depth as a PIPO contains a pair of
+buffers while a FIFO contains a single one.</p></li>
+<li><p><em>Random access</em>: The data in a FIFO must be accessed sequentially
+while a PIPO often supports random access of the data.</p></li>
+<li><p><em>Elementwise access</em>: In a PIPO, the data in a buffer can not be
+consumed by the consumer until the producer has completed filling
+up that buffer with its output data. On the other hand, a FIFO
+does not have this block access restriction in that a piece of
+data is immediately available for the consumer to access after it
+has been inserted into the FIFO queue by the producer. This
+elementwise access capability of the FIFO could be advantageous in
+reducing the iteration latency and II with pipelining.</p></li>
+<li><p><em>Simultaneous access</em>: In a PIPO, since the producer accesses one
+buffer and the consumer accesses the other at any time, they can
+simultaneously access the PIPO. However, since there is only a
+single buffer in a FIFO, each element in the FIFO can either be
+read or written at a time. Thus, using a PIPO may increase the
+throughput.</p></li>
+<li><p><em>Deadlock</em>: The use of FIFOs of insufficient depth in a data flow
+graph may cause a deadlock (see the discussions in
+<a class="reference internal" href="deadlock.html#sec-deadlock"><span class="std std-numref">Section 3.3</span></a>). The use of PIPOs, on the other hand,
+guarantees the data flow graph to be deadlock-free.</p></li>
+</ul>
+</li>
 </ul>
 </section>
 </section>
@@ -579,11 +607,11 @@ buffer and producer completes inserting data into the new buffer.</p>
       </div>
     </a>
     <a class="right-next"
-       href="../refs.html"
+       href="deadlock.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">4. </span>References</p>
+        <p class="prev-next-title"><span class="section-number">3.3. </span>Deadlock</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

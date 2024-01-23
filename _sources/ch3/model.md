@@ -28,7 +28,7 @@
 ## Pipelining
 * Task-level pipelining is best explained by considering an
   example. Suppose the function of a DSP kernel can be decomposed into
-  a sequence of three tasks, namely tasks A, B, and C in that order.
+  a sequence of three tasks, namely tasks $A$, $B$, and $C$ in that order.
   The data flow graph of the DSP kernel is then simply
   ```{math}
   :label: linear
@@ -90,7 +90,7 @@
 * A piece of C/C++ code written in the producer-consumer model helps
   the HLS tool to identify opportunities for task-level
   parallelization. For example, the following data flow graph shows
-  that tasks B and C are fully independent and hence can be executed
+  that tasks $B$ and $C$ are fully independent and hence can be executed
   in parallel: 
   ```{math}
   :label: diamond
@@ -154,4 +154,29 @@
     switch after the consumer finishes consuming the data in the old
     buffer and producer completes inserting data into the new buffer.
   ```
- 
+
+* **FIFO vs. PIPO**:
+  - *PL resource usage*: A PIPO requires more PL resources
+    than a FIFO of the same size/depth as a PIPO contains a pair of
+    buffers while a FIFO contains a single one.
+  - *Random access*: The data in a FIFO must be accessed sequentially
+    while a PIPO often supports random access of the data.
+  - *Elementwise access*: In a PIPO, the data in a buffer can not be
+    consumed by the consumer until the producer has completed filling
+    up that buffer with its output data. On the other hand, a FIFO
+    does not have this block access restriction in that a piece of
+    data is immediately available for the consumer to access after it
+    has been inserted into the FIFO queue by the producer. This
+    elementwise access capability of the FIFO could be advantageous in
+    reducing the iteration latency and II with pipelining.
+  - *Simultaneous access*: In a PIPO, since the producer accesses one
+    buffer and the consumer accesses the other at any time, they can
+    simultaneously access the PIPO. However, since there is only a
+    single buffer in a FIFO, each element in the FIFO can either be
+    read or written at a time. Thus, using a PIPO may increase the
+    throughput.
+  - *Deadlock*: The use of FIFOs of insufficient depth in a data flow
+    graph may cause a deadlock (see the discussions in
+    {numref}`sec:deadlock`). The use of PIPOs, on the other hand,
+    guarantees the data flow graph to be deadlock-free.
+    

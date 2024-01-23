@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>2. Introduction to HLS &#8212; Real-time DSP Notes</title>
+    <title>3.3. Deadlock &#8212; Real-time DSP Notes</title>
   
   
   
@@ -60,12 +60,14 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'ch2/hls';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ch3/deadlock';</script>
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="2.1. HLS Tasks" href="hls_tasks.html" />
-    <link rel="prev" title="1.3. Vitis Application Acceleration Development" href="../ch1/workflow.html" />
+    <link rel="next" title="4. References" href="../refs.html" />
+    <link rel="prev" title="3.2. Producer-Consumer Model" href="model.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
   </head>
@@ -163,15 +165,15 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="../ch1/workflow.html">1.3. Vitis Application Acceleration Development</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">2. Introduction to HLS</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="hls_tasks.html">2.1. HLS Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hls_flow.html">2.2. Vitis HLS Development Flow</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../ch2/hls.html">2. Introduction to HLS</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ch2/hls_tasks.html">2.1. HLS Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ch2/hls_flow.html">2.2. Vitis HLS Development Flow</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../ch3/hls_design.html">3. HLS Design Basics</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../ch3/metrics.html">3.1. Performance Metrics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../ch3/model.html">3.2. Producer-Consumer Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../ch3/deadlock.html">3.3. Deadlock</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="hls_design.html">3. HLS Design Basics</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="metrics.html">3.1. Performance Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html">3.2. Producer-Consumer Model</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">3.3. Deadlock</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">4. References</a></li>
@@ -246,7 +248,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Fch2/hls.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Fch3/deadlock.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -276,7 +278,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../_sources/ch2/hls.md" target="_blank"
+      <li><a href="../_sources/ch3/deadlock.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -356,7 +358,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Introduction to HLS</h1>
+    <h1>Deadlock</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -370,32 +372,67 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="introduction-to-hls">
-<span id="sec-hls"></span><h1><span class="section-number">2. </span>Introduction to HLS<a class="headerlink" href="#introduction-to-hls" title="Permalink to this headline">#</a></h1>
-<ul class="simple">
-<li><p>As discussed in <a class="reference internal" href="../ch1/workflow.html#sec-vaad"><span class="std std-numref">Section 1.3</span></a>, we will employ <em>high-level
-synthesis (HLS)</em> to develop DSP kernels in the PL.</p></li>
-<li><p>In the HLS design process of a DSP kernel <span id="id1">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>, we specify
-the <em><strong>macro-architecture</strong></em> of the kernel, including:</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="deadlock">
+<span id="sec-deadlock"></span><h1><span class="section-number">3.3. </span>Deadlock<a class="headerlink" href="#deadlock" title="Permalink to this headline">#</a></h1>
 <ul>
-<li><p>the behavioral description of the DSP kernel in a high-level
-language, such as C/C++,</p></li>
-<li><p>the ways that the DSP kernel interfaces with other components
-in the system, and</p></li>
-<li><p>design constraints such as clock period, latency, throughput, etc.</p></li>
-</ul>
+<li><p>A <em><strong>deadlock</strong></em> in a data flow graph refers to the situation in
+which two or more tasks are waiting for one another to release the
+streaming buffers connecting them, resulting in no tasks can access
+any data and continue their operations indefinitely.</p></li>
+<li><p>Let reconsider the diamond-shaped data flow graph in
+<a class="reference internal" href="model.html#equation-diamond">(3.2)</a> to see how the use of FIFOs of insufficient depth
+can cause a deadlock:</p>
+<div class="math notranslate nohighlight" id="equation-deadlock">
+<span class="eqno">(3.3)<a class="headerlink" href="#equation-deadlock" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{equation}
+\boxed{I} \rightarrow A \
+\begin{array}{c} 
+\stackrel{(1)}{\nearrow} {}^{\displaystyle B} \searrow \\ 
+\stackrel{(1)}{\searrow} {}_{\displaystyle C} \nearrow 
+\end{array} 
+\ D \rightarrow \boxed{O}
+\end{equation}\end{split}\]</div>
+<p>where both the FIFO connecting task <span class="math notranslate nohighlight">\(A\)</span> to task <span class="math notranslate nohighlight">\(B\)</span>,
+<span class="math notranslate nohighlight">\(\mathcal{B}_{A,B}\)</span>, and the FIFO connecting task <span class="math notranslate nohighlight">\(A\)</span> to task <span class="math notranslate nohighlight">\(C\)</span>,
+<span class="math notranslate nohighlight">\(\mathcal{B}_{A,C}\)</span>, have depth one. Further, assume that task A
+produces a piece of data (e.g., a signal sample) each clock cycle
+and insert pieces of data alternatively into <span class="math notranslate nohighlight">\(\mathcal{B}_{A,B}\)</span> and
+<span class="math notranslate nohighlight">\(\mathcal{B}_{A,C}\)</span>, and that tasks <span class="math notranslate nohighlight">\(B\)</span> and <span class="math notranslate nohighlight">\(C\)</span> are each able to
+consume a piece of data from their respective FIFO every two clock
+cycles. Note that the insertion rate matches the consumption rate for
+<span class="math notranslate nohighlight">\(\mathcal{B}_{A,B}\)</span> and <span class="math notranslate nohighlight">\(\mathcal{B}_{A,C}\)</span>.</p>
 </li>
-<li><p>The Vitis HLS tool then automates the <em><strong>micro-architecture</strong></em>
-design of the DSP kernel, including state machine generation,
-operation scheduling, creating data path and register pipeline,
-generating control logic and interfaces for the kernel, etc, from
-the high-level C/C++ description of the DSP kernel, interface, and
-constraint specifications. The tool translates the
-micro-architecture design into a RTL realization of the DSP kernel
-that can be further processed by Vitis and Vivado.</p></li>
+<li><p>Let us denote four consecutive clock cycles by <span class="math notranslate nohighlight">\(C_1, C_2, C_3,\)</span> and
+<span class="math notranslate nohighlight">\(C_4\)</span>.  Consider now task <span class="math notranslate nohighlight">\(A\)</span> generates data <span class="math notranslate nohighlight">\(d_{A}[1]\)</span> and inserts
+it into <span class="math notranslate nohighlight">\(\mathcal{B}_{A,B}\)</span> in <span class="math notranslate nohighlight">\(C_1\)</span>. Task <span class="math notranslate nohighlight">\(B\)</span> then reads <span class="math notranslate nohighlight">\(d_{A}[1]\)</span>
+starting at <span class="math notranslate nohighlight">\(C_2\)</span> until the end of <span class="math notranslate nohighlight">\(C_3\)</span>. In <span class="math notranslate nohighlight">\(C_3\)</span>, task <span class="math notranslate nohighlight">\(A\)</span>
+generates another piece of data <span class="math notranslate nohighlight">\(d_{A}[2]\)</span> and tries to insert it
+into <span class="math notranslate nohighlight">\(\mathcal{B}_{A,B}\)</span>. However, with a depth of <span class="math notranslate nohighlight">\(1\)</span>,
+<span class="math notranslate nohighlight">\(\mathcal{B}_{A,B}\)</span> is still full in <span class="math notranslate nohighlight">\(C_3\)</span>, the write is blocked and
+task <span class="math notranslate nohighlight">\(A\)</span> will continue to hold the write request in <span class="math notranslate nohighlight">\(C_4\)</span> (if a
+blocking write is issued by task <span class="math notranslate nohighlight">\(A\)</span> rather than dropping
+<span class="math notranslate nohighlight">\(d_{A}[2]\)</span>). At the same time in <span class="math notranslate nohighlight">\(C_4\)</span>, task <span class="math notranslate nohighlight">\(B\)</span> is scheduled to
+read again from the <span class="math notranslate nohighlight">\(\mathcal{B}_{A,B}\)</span>. As a result, tasks <span class="math notranslate nohighlight">\(A\)</span> and
+<span class="math notranslate nohighlight">\(B\)</span> will both be waiting for each other to release the FIFO to
+continue their respective operations, creating a deadlock situation.
+The same deadlock situation also happens between tasks <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(C\)</span>
+with <span class="math notranslate nohighlight">\(\mathcal{B}_{A,C}\)</span>.</p></li>
+<li><p>The deadlock above can be resolved by increasing the FIFO depth to
+<span class="math notranslate nohighlight">\(2\)</span> or more for <span class="math notranslate nohighlight">\(\mathcal{B}_{A,B}\)</span> and <span class="math notranslate nohighlight">\(\mathcal{B}_{A,C}\)</span>. With a
+larger FIFO depth, task <span class="math notranslate nohighlight">\(A\)</span> will be able to insert <span class="math notranslate nohighlight">\(d_{A}[2]\)</span> into
+<span class="math notranslate nohighlight">\(\mathcal{B}_{A,B}\)</span> in <span class="math notranslate nohighlight">\(C_3\)</span>, and task <span class="math notranslate nohighlight">\(B\)</span> will be able to continue
+its schedule of reading <span class="math notranslate nohighlight">\(d_{A}[2]\)</span> from <span class="math notranslate nohighlight">\(\mathcal{B}_{A,B}\)</span>. The
+writing and reading sequence continues without any deadlock.</p></li>
+<li><p>The deadlock situation will also be prevented if PIPOs of size <span class="math notranslate nohighlight">\(1\)</span>
+are used for both <span class="math notranslate nohighlight">\(\mathcal{B}_{A,B}\)</span> and <span class="math notranslate nohighlight">\(\mathcal{B}_{A,C}\)</span>
+instead. To see that, let <span class="math notranslate nohighlight">\((B_1,B_2)\)</span> be the pair of buffers of size
+<span class="math notranslate nohighlight">\(1\)</span> used in the PIPO <span class="math notranslate nohighlight">\(\mathcal{B}_{A,B}\)</span>. As before, task <span class="math notranslate nohighlight">\(A\)</span> writes
+<span class="math notranslate nohighlight">\(d_{A}[1]\)</span> to <span class="math notranslate nohighlight">\(B_1\)</span> in <span class="math notranslate nohighlight">\(C_1\)</span>, and task <span class="math notranslate nohighlight">\(B\)</span> reads <span class="math notranslate nohighlight">\(d_{A}[1]\)</span> from
+<span class="math notranslate nohighlight">\(B_1\)</span> in <span class="math notranslate nohighlight">\(C_2\)</span> and <span class="math notranslate nohighlight">\(C_3\)</span>. In <span class="math notranslate nohighlight">\(C_3\)</span>, task <span class="math notranslate nohighlight">\(A\)</span> writes <span class="math notranslate nohighlight">\(d_{A}[2]\)</span> to
+<span class="math notranslate nohighlight">\(B_2\)</span>, and task <span class="math notranslate nohighlight">\(B\)</span> then reads <span class="math notranslate nohighlight">\(d_{A}[2]\)</span> starting at <span class="math notranslate nohighlight">\(C_4\)</span> and so
+on. The writing and reading sequence continues without any deadlock.</p></li>
+<li><p>Vitis HLS has the capability to detect deadlocks during C/RTL
+co-simulation.</p></li>
 </ul>
-<div class="toctree-wrapper compound">
-</div>
 </section>
 
     <script type="text/x-thebe-config">
@@ -411,7 +448,7 @@ that can be further processed by Vitis and Vivado.</p></li>
         },
         kernelOptions: {
             name: "python3",
-            path: "./ch2"
+            path: "./ch3"
         },
         predefinedOutput: true
     }
@@ -430,20 +467,20 @@ that can be further processed by Vitis and Vivado.</p></li>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../ch1/workflow.html"
+       href="model.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title"><span class="section-number">1.3. </span>Vitis Application Acceleration Development</p>
+        <p class="prev-next-title"><span class="section-number">3.2. </span>Producer-Consumer Model</p>
       </div>
     </a>
     <a class="right-next"
-       href="hls_tasks.html"
+       href="../refs.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">2.1. </span>HLS Tasks</p>
+        <p class="prev-next-title"><span class="section-number">4. </span>References</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
