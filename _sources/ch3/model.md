@@ -190,6 +190,10 @@
   streaming buffers, which are also often referred to as
   ***channels***.
 
+* To support this data flow graph architecture, each task needs to be
+  constructed in accordance to the model depicted in the figure below:
+  
+
 %## Vitis HLS Dataflow Directive
 %* The following piece of C++ code snippet shows a simple way to
 %  employ the producer-consumer model and the dataflow directive in
