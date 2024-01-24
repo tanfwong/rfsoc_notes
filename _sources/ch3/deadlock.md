@@ -62,6 +62,6 @@
   $B_2$, and task $B$ then reads $d_{A}[2]$ starting at $C_4$ and so
   on. The writing and reading sequence continues without any deadlock.
 
-* Vitis HLS has the capability to detect deadlocks during C/RTL
-  co-simulation.
+* Vitis HLS has the capability to detect deadlocks during C simulation
+  and/or C/RTL co-simulation.
 

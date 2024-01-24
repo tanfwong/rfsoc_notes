@@ -180,22 +180,23 @@
     graph may cause a deadlock (see the discussions in
     {numref}`sec:deadlock`). The use of PIPOs, on the other hand,
     guarantees the data flow graph to be deadlock-free.
-    
-## Vitis HLS Dataflow Directive
-* The following piece of C++ code snippet shows a simple way to
-  employ the producer-consumer model and the dataflow directive in
-  Vitis HLS to invoke task-level pipelining and parallelization of the
-  diamond-shape data flow graph in {eq}`diamond`:
-  ```c++
-  void diamond(int In[N], int Out[N]) {
-    int c1[N], c2[N], c3[N], c4[N];
-  #pragma HLS dataflow
-    A(In, c1, c2);
-    B(c1, c3);
-    C(c2, c4);
-    D(c3, c4, Out);
-  }
-  ```
-  where each task is written as a function to help the HLS tool to
-  infer the opportunity for pipelining and the independency between
-  tasks $B$ and $C$ for parallelization.
+
+
+%## Vitis HLS Dataflow Directive
+%* The following piece of C++ code snippet shows a simple way to
+%  employ the producer-consumer model and the dataflow directive in
+%  Vitis HLS to invoke task-level pipelining and parallelization of the
+%  diamond-shape data flow graph in {eq}`diamond`:
+%  ```c++
+%  void diamond(int In[N], int Out[N]) {
+%    int c1[N], c2[N], c3[N], c4[N];
+%  #pragma HLS dataflow
+%    A(In, c1, c2);
+%    B(c1, c3);
+%    C(c2, c4);
+%    D(c3, c4, Out);
+%  }
+%  ```
+%  where each task is written as a function to help the HLS tool to
+%  infer the opportunity for pipelining and the independency between
+%  tasks $B$ and $C$ for parallelization.

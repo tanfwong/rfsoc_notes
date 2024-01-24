@@ -373,7 +373,6 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipelining">3.2.1. Pipelining</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parallelization">3.2.2. Parallelization</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fifo-pipo">3.2.3. FIFO &amp; PIPO</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vitis-hls-dataflow-directive">3.2.4. Vitis HLS Dataflow Directive</a></li>
 </ul>
             </nav>
         </div>
@@ -566,29 +565,6 @@ guarantees the data flow graph to be deadlock-free.</p></li>
 </li>
 </ul>
 </section>
-<section id="vitis-hls-dataflow-directive">
-<h2><span class="section-number">3.2.4. </span>Vitis HLS Dataflow Directive<a class="headerlink" href="#vitis-hls-dataflow-directive" title="Permalink to this headline">#</a></h2>
-<ul>
-<li><p>The following piece of C++ code snippet shows a simple way to
-employ the producer-consumer model and the dataflow directive in
-Vitis HLS to invoke task-level pipelining and parallelization of the
-diamond-shape data flow graph in <a class="reference internal" href="#equation-diamond">(3.2)</a>:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">diamond</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">In</span><span class="p">[</span><span class="n">N</span><span class="p">],</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">Out</span><span class="p">[</span><span class="n">N</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">c1</span><span class="p">[</span><span class="n">N</span><span class="p">],</span><span class="w"> </span><span class="n">c2</span><span class="p">[</span><span class="n">N</span><span class="p">],</span><span class="w"> </span><span class="n">c3</span><span class="p">[</span><span class="n">N</span><span class="p">],</span><span class="w"> </span><span class="n">c4</span><span class="p">[</span><span class="n">N</span><span class="p">];</span>
-<span class="cp">#pragma HLS dataflow</span>
-<span class="w">  </span><span class="n">A</span><span class="p">(</span><span class="n">In</span><span class="p">,</span><span class="w"> </span><span class="n">c1</span><span class="p">,</span><span class="w"> </span><span class="n">c2</span><span class="p">);</span>
-<span class="w">  </span><span class="n">B</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span><span class="w"> </span><span class="n">c3</span><span class="p">);</span>
-<span class="w">  </span><span class="n">C</span><span class="p">(</span><span class="n">c2</span><span class="p">,</span><span class="w"> </span><span class="n">c4</span><span class="p">);</span>
-<span class="w">  </span><span class="n">D</span><span class="p">(</span><span class="n">c3</span><span class="p">,</span><span class="w"> </span><span class="n">c4</span><span class="p">,</span><span class="w"> </span><span class="n">Out</span><span class="p">);</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>where each task is written as a function to help the HLS tool to
-infer the opportunity for pipelining and the independency between
-tasks <span class="math notranslate nohighlight">\(B\)</span> and <span class="math notranslate nohighlight">\(C\)</span> for parallelization.</p>
-</li>
-</ul>
-</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -661,7 +637,6 @@ tasks <span class="math notranslate nohighlight">\(B\)</span> and <span class="m
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipelining">3.2.1. Pipelining</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parallelization">3.2.2. Parallelization</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fifo-pipo">3.2.3. FIFO &amp; PIPO</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vitis-hls-dataflow-directive">3.2.4. Vitis HLS Dataflow Directive</a></li>
 </ul>
   </nav></div>
 
