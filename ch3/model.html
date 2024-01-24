@@ -373,6 +373,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipelining">3.2.1. Pipelining</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parallelization">3.2.2. Parallelization</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fifo-pipo">3.2.3. FIFO &amp; PIPO</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#task-model">3.2.4. Task Model</a></li>
 </ul>
             </nav>
         </div>
@@ -565,6 +566,18 @@ guarantees the data flow graph to be deadlock-free.</p></li>
 </li>
 </ul>
 </section>
+<section id="task-model">
+<h2><span class="section-number">3.2.4. </span>Task Model<a class="headerlink" href="#task-model" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>As discussed in the sections above, it is preferable to follow the
+producer-consumer model in the HLS development of a DSP kernel in
+that the kernel is decomposed into a network of tasks connected
+together by streaming buffers to form a data flow graph.
+Communications and synchronization between the tasks are through the
+streaming buffers, which are also often referred to as
+<em><strong>channels</strong></em>.</p></li>
+</ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -637,6 +650,7 @@ guarantees the data flow graph to be deadlock-free.</p></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipelining">3.2.1. Pipelining</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parallelization">3.2.2. Parallelization</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fifo-pipo">3.2.3. FIFO &amp; PIPO</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#task-model">3.2.4. Task Model</a></li>
 </ul>
   </nav></div>
 

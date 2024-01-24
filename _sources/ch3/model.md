@@ -181,6 +181,14 @@
     {numref}`sec:deadlock`). The use of PIPOs, on the other hand,
     guarantees the data flow graph to be deadlock-free.
 
+## Task Model
+* As discussed in the sections above, it is preferable to follow the
+  producer-consumer model in the HLS development of a DSP kernel in
+  that the kernel is decomposed into a network of tasks connected
+  together by streaming buffers to form a data flow graph.
+  Communications and synchronization between the tasks are through the
+  streaming buffers, which are also often referred to as
+  ***channels***.
 
 %## Vitis HLS Dataflow Directive
 %* The following piece of C++ code snippet shows a simple way to
