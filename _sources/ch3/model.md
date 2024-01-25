@@ -201,6 +201,16 @@
   ---
   Task Model.
   ```
+  Based on this model, a task consists of:
+  - an *execution unit* which performs the DSP function of the task,
+  - some local memory (BRAM, URAM, and/or registers) that stores data
+    accessible only within the task, and
+  - a collection of input and output ports that respectively connect
+    to streaming buffers (channels) and other connections input to and
+    output from the task.
+
+
+  
 
 %## Vitis HLS Dataflow Directive
 %* The following piece of C++ code snippet shows a simple way to
