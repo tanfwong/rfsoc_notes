@@ -568,7 +568,7 @@ guarantees the data flow graph to be deadlock-free.</p></li>
 </section>
 <section id="task-model">
 <h2><span class="section-number">3.2.4. </span>Task Model<a class="headerlink" href="#task-model" title="Permalink to this headline">#</a></h2>
-<ul class="simple">
+<ul>
 <li><p>As discussed in the sections above, it is preferable to follow the
 producer-consumer model in the HLS development of a DSP kernel in
 that the kernel is decomposed into a network of tasks connected
@@ -576,8 +576,15 @@ together by streaming buffers to form a data flow graph.
 Communications and synchronization between the tasks are through the
 streaming buffers, which are also often referred to as
 <em><strong>channels</strong></em>.</p></li>
-<li><p>To support this data flow graph architecture, each task needs to be
-constructed in accordance to the model depicted in the figure below:</p></li>
+<li><p>To support this data flow graph architecture, each task should be
+constructed in accordance to the model depicted in the figure below:</p>
+<figure class="align-center" id="task">
+<a class="reference internal image-reference" href="../_images/task.jpg"><img alt="task" src="../_images/task.jpg" style="width: 800px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 3.2 </span><span class="caption-text">Task Model.</span><a class="headerlink" href="#task" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+</li>
 </ul>
 </section>
 </section>

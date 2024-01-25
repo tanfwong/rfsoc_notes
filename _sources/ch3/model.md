@@ -190,9 +190,17 @@
   streaming buffers, which are also often referred to as
   ***channels***.
 
-* To support this data flow graph architecture, each task needs to be
+* To support this data flow graph architecture, each task should be
   constructed in accordance to the model depicted in the figure below:
-  
+  ```{figure} ../figs/task.jpg
+  ---
+  name: task
+  alt: task
+  width: 800px
+  align: center
+  ---
+  Task Model.
+  ```
 
 %## Vitis HLS Dataflow Directive
 %* The following piece of C++ code snippet shows a simple way to
