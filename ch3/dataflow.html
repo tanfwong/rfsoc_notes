@@ -442,7 +442,7 @@ also mixed in a data flow graph.</p></li>
 </section>
 <section id="data-driven-execution-model">
 <h2><span class="section-number">3.4.2. </span>Data-driven Execution Model<a class="headerlink" href="#data-driven-execution-model" title="Permalink to this headline">#</a></h2>
-<ul class="simple">
+<ul>
 <li><p>Under the data-driven model, each task waits for and then executes
 when there is input data for it to process. The tasks in the data
 flow graph do not need to be controlled by any actions, such as
@@ -452,6 +452,44 @@ class objects and connect them using streaming buffers to specify
 the data flow graph explicitly in the C++ specification of the DSP
 kernel. Only FIFOs, declared using the templatized C++ classes
 <code class="docutils literal notranslate"><span class="pre">hls::stream&lt;type,</span> <span class="pre">depth&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">hls::stream_of_blocks&lt;block_type,</span> <span class="pre">depth&gt;</span></code>, may be used as streaming buffers for data-driven tasks.</p></li>
+<li><p>Consider the C++ code snipplet (taken from
+<a class="reference external" href="https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/master/Task_level_Parallelism/Data_driven/simple_data_driven/test.cpp">this example</a>)
+below</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">splitter</span><span class="p">(</span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">odds_buf</span><span class="p">,</span>
+<span class="w">            </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">evens_buf</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">data</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">  </span><span class="n">evens_buf</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+<span class="k">else</span>
+<span class="w">  </span><span class="n">odds_buf</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">odds</span><span class="p">(</span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">out</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">read</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">evens</span><span class="p">(</span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">out</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">in</span><span class="p">.</span><span class="n">read</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">odds_and_evens</span><span class="p">(</span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">out1</span><span class="p">,</span>
+<span class="w">                  </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">out2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="n">hls_thread_local</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">s1</span><span class="p">;</span><span class="w"> </span><span class="c1">// channel connecting t1 and t2</span>
+<span class="n">hls_thread_local</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">s2</span><span class="p">;</span><span class="w"> </span><span class="c1">// channel connecting t1 and t3</span>
+
+<span class="c1">// t1 infinitely runs func1, with input in and outputs s1 and s2</span>
+<span class="n">hls_thread_local</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">task</span><span class="w"> </span><span class="n">t1</span><span class="p">(</span><span class="n">splitter</span><span class="p">,</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">s1</span><span class="p">,</span><span class="w"> </span><span class="n">s2</span><span class="p">);</span>
+
+<span class="c1">// t2 infinitely runs func2, with input s1 and output out1</span>
+<span class="n">hls_thread_local</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">task</span><span class="w"> </span><span class="n">t2</span><span class="p">(</span><span class="n">odds</span><span class="p">,</span><span class="w"> </span><span class="n">s1</span><span class="p">,</span><span class="w"> </span><span class="n">out1</span><span class="p">);</span>
+
+<span class="c1">// t3 infinitely runs func3, with input s2 and output out2</span>
+<span class="n">hls_thread_local</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">task</span><span class="w"> </span><span class="n">t3</span><span class="p">(</span><span class="n">evens</span><span class="p">,</span><span class="w"> </span><span class="n">s2</span><span class="p">,</span><span class="w"> </span><span class="n">out2</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>that specifies the following data-driven data flow graph:</p>
+</li>
 </ul>
 </section>
 </section>
