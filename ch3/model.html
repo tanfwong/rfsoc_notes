@@ -174,6 +174,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="metrics.html">3.1. Performance Metrics</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">3.2. Producer-Consumer Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="deadlock.html">3.3. Deadlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dataflow.html">3.4. Data Flow Graph Execution</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">4. References</a></li>
@@ -373,7 +374,6 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipelining">3.2.1. Pipelining</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parallelization">3.2.2. Parallelization</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fifo-pipo">3.2.3. FIFO &amp; PIPO</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#task-model">3.2.4. Task Model</a></li>
 </ul>
             </nav>
         </div>
@@ -386,7 +386,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="producer-consumer-model">
-<h1><span class="section-number">3.2. </span>Producer-Consumer Model<a class="headerlink" href="#producer-consumer-model" title="Permalink to this headline">#</a></h1>
+<span id="sec-pro-con"></span><h1><span class="section-number">3.2. </span>Producer-Consumer Model<a class="headerlink" href="#producer-consumer-model" title="Permalink to this headline">#</a></h1>
 <ul class="simple">
 <li><p>In a typical DSP application scenario, a signal <em>source</em> (e.g., an ADC
 or a camera) provides a stream of samples that is fed into a DSP
@@ -566,51 +566,6 @@ guarantees the data flow graph to be deadlock-free.</p></li>
 </li>
 </ul>
 </section>
-<section id="task-model">
-<h2><span class="section-number">3.2.4. </span>Task Model<a class="headerlink" href="#task-model" title="Permalink to this headline">#</a></h2>
-<ul>
-<li><p>As discussed in the sections above, it is preferable to follow the
-producer-consumer model in the HLS development of a DSP kernel in
-that the kernel is decomposed into a network of tasks connected
-together by streaming buffers to form a data flow graph.
-Communications and synchronization between the tasks are through the
-streaming buffers, which are also often referred to as
-<em><strong>channels</strong></em>.</p></li>
-<li><p>To support this data flow graph architecture, each task should be
-constructed in accordance to the model depicted in the figure below:</p>
-<figure class="align-center" id="task">
-<a class="reference internal image-reference" href="../_images/task.jpg"><img alt="task" src="../_images/task.jpg" style="width: 800px;" /></a>
-<figcaption>
-<p><span class="caption-number">Fig. 3.2 </span><span class="caption-text">Task Model.</span><a class="headerlink" href="#task" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
-<p>Based on this model, a task consists of:</p>
-<ul class="simple">
-<li><p>an <em>execution unit</em> which performs the DSP function of the task,</p></li>
-<li><p>some local memory (BRAM, URAM, and/or registers) that stores data
-accessible only within the task, and</p></li>
-<li><p>a collection of input and output ports that respectively connect
-to streaming buffers (channels) and other connections input to and
-output from the task.</p></li>
-</ul>
-</li>
-<li><p>To conform to the task model in <a class="reference internal" href="#task"><span class="std std-numref">Fig. 3.2</span></a>, a task can be
-specified by a C/C++ function. Vitis HLS infers the various
-components of a task function in the following way:</p>
-<ul class="simple">
-<li><p>The execution unit is specified by the operations defined in the
-body of the function.</p></li>
-<li><p>The variables in the body of the function are mapped to local
-memory. Vitis determines the types of PL resources to be used for
-different types of variables. Registers and RAM are typically used
-to implement scalar variables and arrays, respectively.</p></li>
-<li><p>The arguments of the task function are mapped to I/O ports. Input
-ports for scalar arguments are connected to registers and ports
-for arrays and streams are connected to streaming buffers.</p></li>
-</ul>
-</li>
-</ul>
-</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -683,7 +638,6 @@ for arrays and streams are connected to streaming buffers.</p></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipelining">3.2.1. Pipelining</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parallelization">3.2.2. Parallelization</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fifo-pipo">3.2.3. FIFO &amp; PIPO</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#task-model">3.2.4. Task Model</a></li>
 </ul>
   </nav></div>
 

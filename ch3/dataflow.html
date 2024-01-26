@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>3.1. Performance Metrics &#8212; Real-time DSP Notes</title>
+    <title>3.4. Data Flow Graph Execution &#8212; Real-time DSP Notes</title>
   
   
   
@@ -60,14 +60,12 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'ch3/metrics';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ch3/dataflow';</script>
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="3.2. Producer-Consumer Model" href="model.html" />
-    <link rel="prev" title="3. HLS Design Basics" href="hls_design.html" />
+    <link rel="next" title="4. References" href="../refs.html" />
+    <link rel="prev" title="3.3. Deadlock" href="deadlock.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
   </head>
@@ -171,10 +169,10 @@ const thebe_selector_output = ".output, .cell_output"
 </ul>
 </li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="hls_design.html">3. HLS Design Basics</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">3.1. Performance Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics.html">3.1. Performance Metrics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="model.html">3.2. Producer-Consumer Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="deadlock.html">3.3. Deadlock</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dataflow.html">3.4. Data Flow Graph Execution</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">3.4. Data Flow Graph Execution</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">4. References</a></li>
@@ -249,7 +247,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Fch3/metrics.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Fch3/dataflow.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -279,7 +277,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../_sources/ch3/metrics.md" target="_blank"
+      <li><a href="../_sources/ch3/dataflow.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -348,7 +346,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -359,11 +359,19 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Performance Metrics</h1>
+    <h1>Data Flow Graph Execution</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#task-model">3.4.1. Task Model</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -373,74 +381,60 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="performance-metrics">
-<h1><span class="section-number">3.1. </span>Performance Metrics<a class="headerlink" href="#performance-metrics" title="Permalink to this headline">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="data-flow-graph-execution">
+<h1><span class="section-number">3.4. </span>Data Flow Graph Execution<a class="headerlink" href="#data-flow-graph-execution" title="Permalink to this headline">#</a></h1>
+<p>As discussed in <a class="reference internal" href="model.html#sec-pro-con"><span class="std std-numref">Section 3.2</span></a>, it is preferable to follow the
+producer-consumer model in the HLS development of a DSP kernel by
+decomposing the kernel into a network of tasks connected together by
+streaming buffers to form a data flow graph.  Communications and
+synchronization between the tasks are through the streaming buffers,
+which are also often referred to as <em><strong>channels</strong></em>.</p>
+<section id="task-model">
+<h2><span class="section-number">3.4.1. </span>Task Model<a class="headerlink" href="#task-model" title="Permalink to this headline">#</a></h2>
 <ul>
-<li><p>In order to explain the principles that will leads to <em>good</em> HLS
-design, we need to first discuss the performance metrics that are
-commonly used to guage the “<em>goodness</em>” of a DSP kernel.</p></li>
-<li><p>One may consider a factory, which takes in a continuous stream of input
-materials and produces a continuous stream of output products, as an
-analogy to a DSP kernel. A common performance metric for the
-factory is the <em><strong>throughput</strong></em> which is the number of products that
-it produces per unit time. In the context of DSP, for example:</p>
+<li><p>To support this data flow graph architecture, each task should be
+constructed in accordance to the model depicted in the figure below:</p>
+<figure class="align-center" id="task">
+<a class="reference internal image-reference" href="../_images/task.jpg"><img alt="task" src="../_images/task.jpg" style="width: 800px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 3.2 </span><span class="caption-text">Task Model.</span><a class="headerlink" href="#task" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<p>Based on this model, a task consists of:</p>
 <ul class="simple">
-<li><p>If the DSP kernel implements an FIR/IIR filter, the input and output are
-both streams of signal samples, and hence the throughput of the kernel
-is simply the rate of the output sample stream.</p></li>
-<li><p>If the DSP kernel implements FFT, the input is a stream of signal
-samples and the output is a stream of FFT blocks, and hence the
-throughput of the kernel is the number of FFT blocks that the
-kernel calculates per second.</p></li>
+<li><p>an <em>execution unit</em> which performs the DSP function of the task,</p></li>
+<li><p>some local memory (BRAM, URAM, and/or registers) that stores data
+accessible only within the task, and</p></li>
+<li><p>a collection of input and output ports that respectively connect
+to streaming buffers (channels) and other connections input to and
+output from the task.</p></li>
 </ul>
-<p>Using DSP terminology, the throughput measures the <em>steady-state</em>
-production rate of a DSP kernel.</p>
 </li>
-<li><p>As in the factory analogy, the throughput achieved by a DSP kernel
-depends on the amount of resources that it consumes. More resources
-are often needed to achieve a higher throughput. We will be
-particularly interested in the amount of CLBs, DSP slices, and RAM
-consumed by a DSP kernel as well as the amount of power needed to
-sustain the operations of these PL hardware resources. A standard
-HLS development strategy is to minimize the amount of PL hardware
-resources (and power consumption) required to achieve a throughput
-goal.</p></li>
-<li><p>Going back again to the factory analogy, a factory typically
-produces its output products in a <em><strong>pipeline</strong></em>. That is, different
-tasks in the production process are carried out by different
-stations in the pipeline, and each station performs solely a
-specific task continuously in the production process. The same
-pipelining approach also applies to DSP kernels. For example, in DSP
-kernel that implements the cascade of two FIR filters, each
-component filter acts as a station in the pipeline that performs the
-filtering tasks through the cascade. On a finer level, one may also
-think of each multiply-add operation corresponding to an FIR tap in
-a component FIR filter as a station in the pipeline that implements
-the FIR filter.</p></li>
-<li><p>Pertaining to the pipelining operation of a DSP kernel, we are
-primarily interested in two metrics, namely iteration latency
-and initiation interval:</p>
+<li><p>To conform to the task model in <a class="reference internal" href="#task"><span class="std std-numref">Fig. 3.2</span></a>, a task can be
+specified by a C/C++ function. Vitis HLS infers the various
+components of a task function in the following way:</p>
 <ul class="simple">
-<li><p><em><strong>Iteration latency</strong></em> of a pipeline is the duration taken from
-when the first input item enters into the pipeline to the time at
-which the pipeline produces the first output item.  Iteration
-latency specifies a <em>transient</em> characteristic of the pipeline.</p></li>
-<li><p><em><strong>Initiation interval (II)</strong></em> of a pipeline task is the amount of
-time required to elapse between successive operations by the same
-station. The II of the pipeline is the duration between successive
-output units produced by the pipeline. Clearly, the throughput of
-the pipeline is determined by its II.</p></li>
+<li><p>The execution unit is specified by the operations defined in the
+body of the function.</p></li>
+<li><p>The variables in the body of the function are mapped to local
+memory. Vitis determines the types of PL resources to be used for
+different types of variables. Registers and RAM are typically used
+to implement scalar variables and arrays, respectively.</p></li>
+<li><p>The arguments of the task function are mapped to I/O ports. Input
+ports for scalar arguments are connected to registers and ports
+for arrays and streams are connected to streaming buffers.</p></li>
 </ul>
-<p>It is convenient for us to express both iteration latency and II in
-terms of cycles of the clock that drives a DSP kernel.</p>
 </li>
-<li><p>Consider a DSP kernel implementing an FIR filter of order <span class="math notranslate nohighlight">\(M\)</span> as an
-example. If the input sampling rate is the same as the clock rate of
-the kernel and each multiply-add operation can be performed with one
-clock cycle, then a simple shift-register based implementation of
-the FIR filter kernel will have II <span class="math notranslate nohighlight">\(=1\)</span> clock cycle and iteration
-latency <span class="math notranslate nohighlight">\(=M\)</span> clock cycles.</p></li>
+<li><p>Vitis HLS supports both <em>blocking</em> and <em>non-blocking</em> read and write
+semantics for accessing the connected streaming buffers in a
+task. A blocking read from an empty buffer holds the reading
+process until the buffer becomes non-empty. A non-blocking read
+from an empty buffer returns uninitialized or the last read data.
+Similarly, a blocking write to a full buffer holds the writing
+process until the buffer becomes not full. A non-blocking write to
+a full buffer results in the data being dropped.</p></li>
 </ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -475,20 +469,20 @@ latency <span class="math notranslate nohighlight">\(=M\)</span> clock cycles.</
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="hls_design.html"
+       href="deadlock.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title"><span class="section-number">3. </span>HLS Design Basics</p>
+        <p class="prev-next-title"><span class="section-number">3.3. </span>Deadlock</p>
       </div>
     </a>
     <a class="right-next"
-       href="model.html"
+       href="../refs.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">3.2. </span>Producer-Consumer Model</p>
+        <p class="prev-next-title"><span class="section-number">4. </span>References</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -501,6 +495,20 @@ latency <span class="math notranslate nohighlight">\(=M\)</span> clock cycles.</
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#task-model">3.4.1. Task Model</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
