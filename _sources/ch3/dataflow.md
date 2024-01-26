@@ -67,7 +67,7 @@ which are also often referred to as ***channels***.
   `hls::stream<type, depth>` and `hls::stream_of_blocks<block_type,
   depth>`, may be used as streaming buffers for data-driven tasks.
 
-* Consider the C++ code snipplet (taken from
+* Consider the C++ code snippet (taken from
   [this example](https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/master/Task_level_Parallelism/Data_driven/simple_data_driven/test.cpp))
   below
   ```c++
@@ -116,6 +116,14 @@ which are also often referred to as ***channels***.
   \end{array} 
   \end{equation}
   ```
+  
+  - The function `odds_and_evens()` is the top-level function of the
+    DSP kernel. It has an input FIFO `in` and two output FIFOs `out1`
+    and `out2`. Connections of these I/O FIFOs are specified using the
+    Vitis tools. For example, we may connect the input FIFO `in` to
+    the ADC on the class Vitis platform described in
+    {numref}`sec:class_platform`.
+
 
 %## Vitis HLS Dataflow Directive
 %* The following piece of C++ code snippet shows a simple way to

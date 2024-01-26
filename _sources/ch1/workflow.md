@@ -106,7 +106,7 @@ align: center
 VAAD Procedures in Vitis
 (image modified from {cite}`ug1393`)
 ```
-
+(sec:class_platform)=
 ## Class Vitis Extensible Platform
 * To ease the development process, I have built a simple Vitis
   extensible platform described in step 1 of {numref}`sec:vaadf_steps`

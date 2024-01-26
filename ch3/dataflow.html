@@ -454,7 +454,7 @@ class objects and connect them using streaming buffers to specify
 the data flow graph explicitly in the C++ specification of the DSP
 kernel. Only FIFOs, declared using the templatized C++ classes
 <code class="docutils literal notranslate"><span class="pre">hls::stream&lt;type,</span> <span class="pre">depth&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">hls::stream_of_blocks&lt;block_type,</span> <span class="pre">depth&gt;</span></code>, may be used as streaming buffers for data-driven tasks.</p></li>
-<li><p>Consider the C++ code snipplet (taken from
+<li><p>Consider the C++ code snippet (taken from
 <a class="reference external" href="https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/master/Task_level_Parallelism/Data_driven/simple_data_driven/test.cpp">this example</a>)
 below</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">splitter</span><span class="p">(</span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">odds_buf</span><span class="p">,</span>
@@ -501,6 +501,14 @@ below</p>
 \boxed{\text{out}_2}} 
 \end{array} 
 \end{equation}\end{split}\]</div>
+<ul class="simple">
+<li><p>The function <code class="docutils literal notranslate"><span class="pre">odds_and_evens()</span></code> is the top-level function of the
+DSP kernel. It has an input FIFO <code class="docutils literal notranslate"><span class="pre">in</span></code> and two output FIFOs <code class="docutils literal notranslate"><span class="pre">out1</span></code>
+and <code class="docutils literal notranslate"><span class="pre">out2</span></code>. Connections of these I/O FIFOs are specified using the
+Vitis tools. For example, we may connect the input FIFO <code class="docutils literal notranslate"><span class="pre">in</span></code> to
+the ADC on the class Vitis platform described in
+<a class="reference internal" href="../ch1/workflow.html#sec-class-platform"><span class="std std-numref">Section 1.3.3</span></a>.</p></li>
+</ul>
 </li>
 </ul>
 </section>
