@@ -209,7 +209,18 @@
     to streaming buffers (channels) and other connections input to and
     output from the task.
 
-
+* To conform to the task model in {numref}`task`, a task can be
+  specified by a C/C++ function. Vitis HLS infers the various
+  components of a task function in the following way:
+  - The execution unit is specified by the operations defined in the
+    body of the function.
+  - The variables in the body of the function are mapped to local
+    memory. Vitis determines the types of PL resources to be used for
+    different types of variables. Registers and RAM are typically used
+    to implement scalar variables and arrays, respectively.
+  - The arguments of the task function are mapped to I/O ports. Input
+    ports for scalar arguments are connected to registers and ports
+    for arrays and streams are connected to streaming buffers.
   
 
 %## Vitis HLS Dataflow Directive
