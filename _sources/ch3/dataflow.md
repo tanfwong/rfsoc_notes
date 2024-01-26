@@ -48,7 +48,24 @@ which are also often referred to as ***channels***.
     Similarly, a blocking write to a full buffer holds the writing
     process until the buffer becomes not full. A non-blocking write to
     a full buffer results in the data being dropped.
-  
+
+* Vitis HLS supports a data-driven model and a control-driven model to
+  structure the execution of tasks in a data flow graph. Details of
+  these models will be discussed below. The use of the two models can
+  also mixed in a data flow graph.
+
+## Data-driven Execution Model
+* Under the data-driven model, each task waits for and then executes
+  when there is input data for it to process. The tasks in the data
+  flow graph do not need to be controlled by any actions, such as
+  function calls and data transfer, of the PS host.
+
+* The developer needs to instantiate data-driven tasks as `hls::task`
+  class objects and connect them using streaming buffers to specify
+  the data flow graph explicitly in the C++ specification of the DSP
+  kernel. Only FIFOs, declared using the templatized C++ classes
+  `hls::stream<type, depth>` and `hls::stream_of_blocks<block_type,
+  depth>`, may be used as streaming buffers for data-driven tasks.
 
 %## Vitis HLS Dataflow Directive
 %* The following piece of C++ code snippet shows a simple way to

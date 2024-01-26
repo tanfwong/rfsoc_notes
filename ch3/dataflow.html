@@ -370,6 +370,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#task-model">3.4.1. Task Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-driven-execution-model">3.4.2. Data-driven Execution Model</a></li>
 </ul>
             </nav>
         </div>
@@ -433,6 +434,24 @@ from an empty buffer returns uninitialized or the last read data.
 Similarly, a blocking write to a full buffer holds the writing
 process until the buffer becomes not full. A non-blocking write to
 a full buffer results in the data being dropped.</p></li>
+<li><p>Vitis HLS supports a data-driven model and a control-driven model to
+structure the execution of tasks in a data flow graph. Details of
+these models will be discussed below. The use of the two models can
+also mixed in a data flow graph.</p></li>
+</ul>
+</section>
+<section id="data-driven-execution-model">
+<h2><span class="section-number">3.4.2. </span>Data-driven Execution Model<a class="headerlink" href="#data-driven-execution-model" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Under the data-driven model, each task waits for and then executes
+when there is input data for it to process. The tasks in the data
+flow graph do not need to be controlled by any actions, such as
+function calls and data transfer, of the PS host.</p></li>
+<li><p>The developer needs to instantiate data-driven tasks as <code class="docutils literal notranslate"><span class="pre">hls::task</span></code>
+class objects and connect them using streaming buffers to specify
+the data flow graph explicitly in the C++ specification of the DSP
+kernel. Only FIFOs, declared using the templatized C++ classes
+<code class="docutils literal notranslate"><span class="pre">hls::stream&lt;type,</span> <span class="pre">depth&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">hls::stream_of_blocks&lt;block_type,</span> <span class="pre">depth&gt;</span></code>, may be used as streaming buffers for data-driven tasks.</p></li>
 </ul>
 </section>
 </section>
@@ -505,6 +524,7 @@ a full buffer results in the data being dropped.</p></li>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#task-model">3.4.1. Task Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-driven-execution-model">3.4.2. Data-driven Execution Model</a></li>
 </ul>
   </nav></div>
 
