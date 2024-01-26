@@ -109,9 +109,9 @@ which are also often referred to as ***channels***.
   \begin{equation}
   \boxed{\text{in}} \rightarrow t_1 \
   \begin{array}{c} 
-  \nearrow {}^{\displaystyle t_2 \rightarrow 
+  \stackrel{s_1}{\nearrow} {}^{\displaystyle t_2 \rightarrow 
   \boxed{\text{out}_1}} \\
-  \searrow {}_{\displaystyle t_3 \rightarrow 
+  \stackrel{s_2}{\searrow} {}_{\displaystyle t_3 \rightarrow 
   \boxed{\text{out}_2}} 
   \end{array} 
   \end{equation}
