@@ -121,7 +121,7 @@ which are also often referred to as ***channels***.
     DSP kernel. It has an input FIFO `in` and two output FIFOs `out1`
     and `out2`. Connections of these I/O FIFOs are specified using the
     Vitis tools. For example, we may connect the input FIFO `in` to
-    the ADC on the class Vitis platform described in
+    the ADC activated in the class Vitis platform described in
     {numref}`sec:class_platform`.
 
 
