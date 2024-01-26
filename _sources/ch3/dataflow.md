@@ -104,7 +104,18 @@ which are also often referred to as ***channels***.
   }
   ```
   that specifies the following data-driven data flow graph:
-
+  ```{math}
+  :label: even_odd
+  \begin{equation}
+  \boxed{\text{in}} \rightarrow t_1 \
+  \begin{array}{c} 
+  \nearrow {}^{\displaystyle t_2 \rightarrow 
+  \boxed{\text{out}_1}} \\
+  \searrow {}_{\displaystyle t_3 \rightarrow 
+  \boxed{\text{out}_2}} 
+  \end{array} 
+  \end{equation}
+  ```
 
 %## Vitis HLS Dataflow Directive
 %* The following piece of C++ code snippet shows a simple way to

@@ -60,6 +60,8 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'ch3/dataflow';</script>
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -489,6 +491,16 @@ below</p>
 </pre></div>
 </div>
 <p>that specifies the following data-driven data flow graph:</p>
+<div class="math notranslate nohighlight" id="equation-even-odd">
+<span class="eqno">(3.4)<a class="headerlink" href="#equation-even-odd" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{equation}
+\boxed{\text{in}} \rightarrow t_1 \
+\begin{array}{c} 
+\nearrow {}^{\displaystyle t_2 \rightarrow 
+\boxed{\text{out}_1}} \\
+\searrow {}_{\displaystyle t_3 \rightarrow 
+\boxed{\text{out}_2}} 
+\end{array} 
+\end{equation}\end{split}\]</div>
 </li>
 </ul>
 </section>
