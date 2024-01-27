@@ -38,7 +38,10 @@ which are also often referred to as ***channels***.
     to implement scalar variables and arrays, respectively.
   - The arguments of the task function are mapped to I/O ports. Input
     ports for scalar arguments are connected to registers and ports
-    for arrays and streams are connected to streaming buffers. 
+    for arrays and streams are connected to streaming buffers. The
+    directions of the ports are inferred from the read/write
+    operations on the streaming buffers defined in the body of the
+    function.
 
 * Vitis HLS supports both *blocking* and *non-blocking* read and write
     semantics for accessing the connected streaming buffers in a
@@ -67,12 +70,14 @@ which are also often referred to as ***channels***.
   `hls::stream<type, depth>` and `hls::stream_of_blocks<block_type,
   depth>`, may be used as streaming buffers for data-driven tasks.
 
-* Consider the C++ code snippet (taken from
-  [this example](https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/master/Task_level_Parallelism/Data_driven/simple_data_driven/test.cpp))
-  below
+* For an illustrative example of how to construct a data flow graph
+ operating under the data-driven model, consider the C++ code snippet
+ (taken from [this
+ example](https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/master/Task_level_Parallelism/Data_driven/simple_data_driven/test.cpp))
+ below
   ```c++
   void splitter(hls::stream<int>& in, hls::stream<int>& odds_buf,
-              hls::stream<int>& evens_buf) {
+                hls::stream<int>& evens_buf) {
   int data = in.read();
   if (data % 2 == 0)
     evens_buf.write(data);
@@ -89,7 +94,7 @@ which are also often referred to as ***channels***.
   }
 
   void odds_and_evens(hls::stream<int>& in, hls::stream<int>& out1,
-                    hls::stream<int>& out2) {
+                      hls::stream<int>& out2) {
   hls_thread_local hls::stream<int, N / 2> s1; // channel connecting t1 and t2
   hls_thread_local hls::stream<int, N / 2> s2; // channel connecting t1 and t3
 
@@ -116,14 +121,30 @@ which are also often referred to as ***channels***.
   \end{array} 
   \end{equation}
   ```
-  
   - The function `odds_and_evens()` is the top-level function of the
     DSP kernel. It has an input FIFO `in` and two output FIFOs `out1`
-    and `out2`. Connections of these I/O FIFOs are specified using the
-    Vitis tools. For example, we may connect the input FIFO `in` to
-    the ADC activated in the class Vitis platform described in
-    {numref}`sec:class_platform`.
-
+    and `out2`. Connections of these I/O FIFOs to outside hardware
+    components are specified using the Vitis tool. For example, we
+    may connect the input FIFO `in` to the ADC activated in the class
+    Vitis platform described in {numref}`sec:class_platform`.
+  - The data-driven tasks `t1`, `t2`, and `t3` are instantiated as
+    `hls::task` class objects as discussed above. The three tasks are
+    specified by the functions `splitter()`, `odd()`, and `even()`,
+    respectively. The syntax of instantiation of the data-driven tasks
+    is similar to that of instantiating threads in standard
+    C++. Indeed, the qualifier `hls_thread_local` before each
+    instantiation of an `hls::task` object is used to ensure the
+    thread that emulates that data-driven task starts only once and
+    keeps the same state when called multiple times in the C
+    simulation of the HLS code above.
+  - The data flow graph in {eq}`even_odd`is explicitly connected by
+    setting the `hls::stream` objects `s1` and `s2` as output FIFOs
+    for task `t1` and input FIFOs for tasks `t2` and `t3`. Note that
+    the qualifier `hls_thread_local` also needs to be used for each
+    instantiation of the local (to the DSP kernel) `hls::stream`
+    objects.
+  
+    
 
 %## Vitis HLS Dataflow Directive
 %* The following piece of C++ code snippet shows a simple way to
