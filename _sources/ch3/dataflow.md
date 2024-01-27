@@ -135,13 +135,12 @@ which are also often referred to as ***channels***.
   - The data-driven tasks `t1`, `t2`, and `t3` are instantiated as
     `hls::task` class objects as discussed above. The three tasks are
     specified by the functions `splitter()`, `odd()`, and `even()`,
-    respectively. The syntax of instantiation of the data-driven tasks
-    is similar to that of instantiating threads in standard
-    C++. Indeed, the qualifier `hls_thread_local` before each
-    instantiation of an `hls::task` object is used to ensure the
-    thread that emulates that data-driven task starts only once and
-    keeps the same state when called multiple times in the C
-    simulation of the HLS code above.
+    respectively. The instantiation of the data-driven tasks is
+    similar to that of instantiating threads in standard C++. Indeed,
+    the qualifier `hls_thread_local` before each instantiation of an
+    `hls::task` object is used to ensure the thread that emulates that
+    data-driven task starts only once and keeps the same state when
+    called multiple times in the C simulation of the HLS code above.
   - The data flow graph in {eq}`even_odd`is explicitly connected by
     setting the `hls::stream<int>` objects `s1` and `s2` as output
     FIFOs for task `t1` and input FIFOs for tasks `t2` and `t3`. Note
@@ -149,7 +148,12 @@ which are also often referred to as ***channels***.
     each instantiation of the local (to the DSP kernel)
     `hls::stream<int>` objects.
   
-    
+## Control-driven Execution Model 
+* Under the control-driven model, execution of tasks in a DSP kernel
+  is controlled by the PS host through interactions with the kernel,
+  such function calls and parameter passing. Tasks may also access
+  global memory in this model. 
+
 
 %## Vitis HLS Dataflow Directive
 %* The following piece of C++ code snippet shows a simple way to

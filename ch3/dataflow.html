@@ -373,6 +373,7 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#task-model">3.4.1. Task Model</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-driven-execution-model">3.4.2. Data-driven Execution Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#control-driven-execution-model">3.4.3. Control-driven Execution Model</a></li>
 </ul>
             </nav>
         </div>
@@ -520,13 +521,12 @@ Vitis platform described in <a class="reference internal" href="../ch1/workflow.
 <li><p>The data-driven tasks <code class="docutils literal notranslate"><span class="pre">t1</span></code>, <code class="docutils literal notranslate"><span class="pre">t2</span></code>, and <code class="docutils literal notranslate"><span class="pre">t3</span></code> are instantiated as
 <code class="docutils literal notranslate"><span class="pre">hls::task</span></code> class objects as discussed above. The three tasks are
 specified by the functions <code class="docutils literal notranslate"><span class="pre">splitter()</span></code>, <code class="docutils literal notranslate"><span class="pre">odd()</span></code>, and <code class="docutils literal notranslate"><span class="pre">even()</span></code>,
-respectively. The syntax of instantiation of the data-driven tasks
-is similar to that of instantiating threads in standard
-C++. Indeed, the qualifier <code class="docutils literal notranslate"><span class="pre">hls_thread_local</span></code> before each
-instantiation of an <code class="docutils literal notranslate"><span class="pre">hls::task</span></code> object is used to ensure the
-thread that emulates that data-driven task starts only once and
-keeps the same state when called multiple times in the C
-simulation of the HLS code above.</p></li>
+respectively. The instantiation of the data-driven tasks is
+similar to that of instantiating threads in standard C++. Indeed,
+the qualifier <code class="docutils literal notranslate"><span class="pre">hls_thread_local</span></code> before each instantiation of an
+<code class="docutils literal notranslate"><span class="pre">hls::task</span></code> object is used to ensure the thread that emulates that
+data-driven task starts only once and keeps the same state when
+called multiple times in the C simulation of the HLS code above.</p></li>
 <li><p>The data flow graph in <a class="reference internal" href="#equation-even-odd">(3.4)</a>is explicitly connected by
 setting the <code class="docutils literal notranslate"><span class="pre">hls::stream&lt;int&gt;</span></code> objects <code class="docutils literal notranslate"><span class="pre">s1</span></code> and <code class="docutils literal notranslate"><span class="pre">s2</span></code> as output
 FIFOs for task <code class="docutils literal notranslate"><span class="pre">t1</span></code> and input FIFOs for tasks <code class="docutils literal notranslate"><span class="pre">t2</span></code> and <code class="docutils literal notranslate"><span class="pre">t3</span></code>. Note
@@ -535,6 +535,15 @@ each instantiation of the local (to the DSP kernel)
 <code class="docutils literal notranslate"><span class="pre">hls::stream&lt;int&gt;</span></code> objects.</p></li>
 </ul>
 </li>
+</ul>
+</section>
+<section id="control-driven-execution-model">
+<h2><span class="section-number">3.4.3. </span>Control-driven Execution Model<a class="headerlink" href="#control-driven-execution-model" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Under the control-driven model, execution of tasks in a DSP kernel
+is controlled by the PS host through interactions with the kernel,
+such function calls and parameter passing. Tasks may also access
+global memory in this model.</p></li>
 </ul>
 </section>
 </section>
@@ -608,6 +617,7 @@ each instantiation of the local (to the DSP kernel)
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#task-model">3.4.1. Task Model</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-driven-execution-model">3.4.2. Data-driven Execution Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#control-driven-execution-model">3.4.3. Control-driven Execution Model</a></li>
 </ul>
   </nav></div>
 
