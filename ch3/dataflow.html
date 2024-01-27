@@ -457,6 +457,10 @@ class objects and connect them using streaming buffers to specify
 the data flow graph explicitly in the C++ specification of the DSP
 kernel. Only FIFOs, declared using the templatized C++ classes
 <code class="docutils literal notranslate"><span class="pre">hls::stream&lt;type,</span> <span class="pre">depth&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">hls::stream_of_blocks&lt;block_type,</span> <span class="pre">depth&gt;</span></code>, may be used as streaming buffers for data-driven tasks.</p></li>
+<li><p>The use of FIFOs and explicit connections of the data flow graph in
+the data-driven model allows Vitis HLS to infer opportunities for
+pipelining and parallelization when converting the C++ specification
+to RTL.</p></li>
 <li><p>For an illustrative example of how to construct a data flow graph
 operating under the data-driven model, consider the C++ code snippet
 (taken from <a class="reference external" href="https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/master/Task_level_Parallelism/Data_driven/simple_data_driven/test.cpp">this
@@ -524,11 +528,11 @@ thread that emulates that data-driven task starts only once and
 keeps the same state when called multiple times in the C
 simulation of the HLS code above.</p></li>
 <li><p>The data flow graph in <a class="reference internal" href="#equation-even-odd">(3.4)</a>is explicitly connected by
-setting the <code class="docutils literal notranslate"><span class="pre">hls::stream</span></code> objects <code class="docutils literal notranslate"><span class="pre">s1</span></code> and <code class="docutils literal notranslate"><span class="pre">s2</span></code> as output FIFOs
-for task <code class="docutils literal notranslate"><span class="pre">t1</span></code> and input FIFOs for tasks <code class="docutils literal notranslate"><span class="pre">t2</span></code> and <code class="docutils literal notranslate"><span class="pre">t3</span></code>. Note that
-the qualifier <code class="docutils literal notranslate"><span class="pre">hls_thread_local</span></code> also needs to be used for each
-instantiation of the local (to the DSP kernel) <code class="docutils literal notranslate"><span class="pre">hls::stream</span></code>
-objects.</p></li>
+setting the <code class="docutils literal notranslate"><span class="pre">hls::stream&lt;int&gt;</span></code> objects <code class="docutils literal notranslate"><span class="pre">s1</span></code> and <code class="docutils literal notranslate"><span class="pre">s2</span></code> as output
+FIFOs for task <code class="docutils literal notranslate"><span class="pre">t1</span></code> and input FIFOs for tasks <code class="docutils literal notranslate"><span class="pre">t2</span></code> and <code class="docutils literal notranslate"><span class="pre">t3</span></code>. Note
+that the qualifier <code class="docutils literal notranslate"><span class="pre">hls_thread_local</span></code> also needs to be used for
+each instantiation of the local (to the DSP kernel)
+<code class="docutils literal notranslate"><span class="pre">hls::stream&lt;int&gt;</span></code> objects.</p></li>
 </ul>
 </li>
 </ul>

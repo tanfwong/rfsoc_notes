@@ -70,6 +70,11 @@ which are also often referred to as ***channels***.
   `hls::stream<type, depth>` and `hls::stream_of_blocks<block_type,
   depth>`, may be used as streaming buffers for data-driven tasks.
 
+* The use of FIFOs and explicit connections of the data flow graph in
+  the data-driven model allows Vitis HLS to infer opportunities for
+  pipelining and parallelization when converting the C++ specification
+  to RTL.
+
 * For an illustrative example of how to construct a data flow graph
  operating under the data-driven model, consider the C++ code snippet
  (taken from [this
@@ -138,11 +143,11 @@ which are also often referred to as ***channels***.
     keeps the same state when called multiple times in the C
     simulation of the HLS code above.
   - The data flow graph in {eq}`even_odd`is explicitly connected by
-    setting the `hls::stream` objects `s1` and `s2` as output FIFOs
-    for task `t1` and input FIFOs for tasks `t2` and `t3`. Note that
-    the qualifier `hls_thread_local` also needs to be used for each
-    instantiation of the local (to the DSP kernel) `hls::stream`
-    objects.
+    setting the `hls::stream<int>` objects `s1` and `s2` as output
+    FIFOs for task `t1` and input FIFOs for tasks `t2` and `t3`. Note
+    that the qualifier `hls_thread_local` also needs to be used for
+    each instantiation of the local (to the DSP kernel)
+    `hls::stream<int>` objects.
   
     
 
