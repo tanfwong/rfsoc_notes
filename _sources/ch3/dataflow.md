@@ -6,7 +6,7 @@ streaming buffers to form a data flow graph.  Communications and
 synchronization between the tasks are through the streaming buffers,
 which are also often referred to as ***channels***.
 
-
+(sec:task_model)=
 ## Task Model
 * To support this data flow graph architecture, each task should be
   constructed in accordance to the model depicted in the figure below:
@@ -53,9 +53,9 @@ which are also often referred to as ***channels***.
     a full buffer results in the data being dropped.
 
 * Vitis HLS supports a data-driven model and a control-driven model to
-  structure the execution of tasks in a data flow graph. Details of
-  these models will be discussed below. The use of the two models can
-  also mixed in a data flow graph.
+  structure the execution of tasks in a data flow graph
+  {cite}`ug1399`. Details of these models will be discussed below. The
+  use of the two models can also mixed in a data flow graph.
 
 ## Data-driven Execution Model
 * Under the data-driven model, each task waits for and then executes
@@ -63,9 +63,9 @@ which are also often referred to as ***channels***.
   flow graph do not need to be controlled by any actions, such as
   function calls and data transfer, of the PS host.
 
-* The developer needs to instantiate data-driven tasks as `hls::task`
-  class objects and connect them using streaming buffers to specify
-  the data flow graph explicitly in the C++ specification of the DSP
+* We need to instantiate data-driven tasks as `hls::task` class
+  objects and connect them using streaming buffers to specify the data
+  flow graph explicitly in the C++ specification of the DSP
   kernel. Only FIFOs, declared using the templatized C++ classes
   `hls::stream<type, depth>` and `hls::stream_of_blocks<block_type,
   depth>`, may be used as streaming buffers for data-driven tasks.
@@ -152,7 +152,41 @@ which are also often referred to as ***channels***.
 * Under the control-driven model, execution of tasks in a DSP kernel
   is controlled by the PS host through interactions with the kernel,
   such function calls and parameter passing. Tasks may also access
-  global memory in this model. 
+  global memory in this model.
+
+* Unlike in the data-driven case, we do not need to explicitly
+  instantiate the tasks and connect them to form the data flow
+  graph. Instead, we may use regular sequential C++ semantics to
+  specify the DSP kernel and indicate using the *dataflow*
+  pragma/directive the code region for which we want Vitis HLS to
+  infer and construct an efficient (acyclic) data flow graph with
+  pipelining and parallelization.
+
+* Decomposing the C++ specification of the *dataflow region* into a
+  sequence of task functions conforming to the task model in
+  {numref}`sec:task_model` can help Vitis HLS to infer a more
+  optimized data flow graph. In particular, it is recommended that the
+  dataflow region should be written in the *canonical* form
+  {cite}`ug1399` for more predictable inferencing by Vitis HLS.
+
+* A dataflow region is in the canonical form if:
+  - The task functions should not be inlined. 
+  - Each task function's return type must be `void`.
+  - Each task function should only use local and non-static variables. 
+  - The sequence of task functions should pass data forward such that
+    an acyclic data flow graph can be inferred from the
+    sequence. Standard C++ scalar and array arguments can be employed
+    to pass data from one task function to the next in the
+    sequence. The array arguments will be mapped to streaming buffers
+    (FIFOs or PIPOs). If a cyclic data flow graph is required, the
+    feedback connections must use `hls::stream` or
+    `hls::stream_of_blocks` arguments.
+  - Array argument variables linking a producer task to a consumer
+     task must be written before read.
+  - No conditional, loop, return, goto, exception can be used to
+    control the data flow in the sequence of task functions. 
+
+
 
 
 %## Vitis HLS Dataflow Directive

@@ -394,7 +394,7 @@ streaming buffers to form a data flow graph.  Communications and
 synchronization between the tasks are through the streaming buffers,
 which are also often referred to as <em><strong>channels</strong></em>.</p>
 <section id="task-model">
-<h2><span class="section-number">3.4.1. </span>Task Model<a class="headerlink" href="#task-model" title="Permalink to this headline">#</a></h2>
+<span id="sec-task-model"></span><h2><span class="section-number">3.4.1. </span>Task Model<a class="headerlink" href="#task-model" title="Permalink to this headline">#</a></h2>
 <ul>
 <li><p>To support this data flow graph architecture, each task should be
 constructed in accordance to the model depicted in the figure below:</p>
@@ -441,9 +441,9 @@ Similarly, a blocking write to a full buffer holds the writing
 process until the buffer becomes not full. A non-blocking write to
 a full buffer results in the data being dropped.</p></li>
 <li><p>Vitis HLS supports a data-driven model and a control-driven model to
-structure the execution of tasks in a data flow graph. Details of
-these models will be discussed below. The use of the two models can
-also mixed in a data flow graph.</p></li>
+structure the execution of tasks in a data flow graph
+<span id="id1">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>. Details of these models will be discussed below. The
+use of the two models can also mixed in a data flow graph.</p></li>
 </ul>
 </section>
 <section id="data-driven-execution-model">
@@ -453,9 +453,9 @@ also mixed in a data flow graph.</p></li>
 when there is input data for it to process. The tasks in the data
 flow graph do not need to be controlled by any actions, such as
 function calls and data transfer, of the PS host.</p></li>
-<li><p>The developer needs to instantiate data-driven tasks as <code class="docutils literal notranslate"><span class="pre">hls::task</span></code>
-class objects and connect them using streaming buffers to specify
-the data flow graph explicitly in the C++ specification of the DSP
+<li><p>We need to instantiate data-driven tasks as <code class="docutils literal notranslate"><span class="pre">hls::task</span></code> class
+objects and connect them using streaming buffers to specify the data
+flow graph explicitly in the C++ specification of the DSP
 kernel. Only FIFOs, declared using the templatized C++ classes
 <code class="docutils literal notranslate"><span class="pre">hls::stream&lt;type,</span> <span class="pre">depth&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">hls::stream_of_blocks&lt;block_type,</span> <span class="pre">depth&gt;</span></code>, may be used as streaming buffers for data-driven tasks.</p></li>
 <li><p>The use of FIFOs and explicit connections of the data flow graph in
@@ -544,6 +544,38 @@ each instantiation of the local (to the DSP kernel)
 is controlled by the PS host through interactions with the kernel,
 such function calls and parameter passing. Tasks may also access
 global memory in this model.</p></li>
+<li><p>Unlike in the data-driven case, we do not need to explicitly
+instantiate the tasks and connect them to form the data flow
+graph. Instead, we may use regular sequential C++ semantics to
+specify the DSP kernel and indicate using the <em>dataflow</em>
+pragma/directive the code region for which we want Vitis HLS to
+infer and construct an efficient (acyclic) data flow graph with
+pipelining and parallelization.</p></li>
+<li><p>Decomposing the C++ specification of the <em>dataflow region</em> into a
+sequence of task functions conforming to the task model in
+<a class="reference internal" href="#sec-task-model"><span class="std std-numref">Section 3.4.1</span></a> can help Vitis HLS to infer a more
+optimized data flow graph. In particular, it is recommended that the
+dataflow region should be written in the <em>canonical</em> form
+<span id="id2">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span> for more predictable inferencing by Vitis HLS.</p></li>
+<li><p>A dataflow region is in the canonical form if:</p>
+<ul>
+<li><p>The task functions should not be inlined.</p></li>
+<li><p>Each task function’s return type must be <code class="docutils literal notranslate"><span class="pre">void</span></code>.</p></li>
+<li><p>Each task function should only use local and non-static variables.</p></li>
+<li><p>The sequence of task functions should pass data forward such that
+an acyclic data flow graph can be inferred from the
+sequence. Standard C++ scalar and array arguments can be employed
+to pass data from one task function to the next in the
+sequence. The array arguments will be mapped to streaming buffers
+(FIFOs or PIPOs). If a cyclic data flow graph is required, the
+feedback connections must use <code class="docutils literal notranslate"><span class="pre">hls::stream</span></code> or
+<code class="docutils literal notranslate"><span class="pre">hls::stream_of_blocks</span></code> arguments.</p></li>
+<li><p>Array argument variables linking a producer task to a consumer
+task must be written before read.</p></li>
+<li><p>No conditional, loop, return, goto, exception can be used to
+control the data flow in the sequence of task functions.</p></li>
+</ul>
+</li>
 </ul>
 </section>
 </section>
