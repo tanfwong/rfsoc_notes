@@ -315,18 +315,22 @@ which are also often referred to as ***channels***.
     `worker` tasks.
   - The `hls::split` and `hls::merge` class objects `split1` and
     `merge1` are demultiplexing and multiplexing FIFOs, respectively. 
-  - For the case of `NP=2`, the data flow graph inferred by Vitis HLS
+  - For the case of `NP=4`, the data flow graph inferred by Vitis HLS
     is shown below:
   ```{math}
   :label: split_merge
   \begin{equation}
-  \boxed{\text{in}} \rightarrow \text{read_in} \ 
+  \boxed{\text{in}} \rightarrow \text{read_in} \ \  
   \begin{array}{c} 
   \nearrow {}^{\displaystyle t[0]} \searrow
   \\
-  \searrow {}_{\displaystyle t[1]} \nearrow 
+  \rightarrow {\displaystyle t[1]} \rightarrow
+  \\
+  \rightarrow {\displaystyle t[2]} \rightarrow
+  \\
+  \searrow {}_{\displaystyle t[3]} \nearrow 
   \end{array}
-  \ \text{write_out}
+  \ \ \text{write_out}
   \rightarrow \boxed{\text{out}}
   \end{equation}
   ```
