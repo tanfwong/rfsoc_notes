@@ -186,24 +186,148 @@ which are also often referred to as ***channels***.
   - No conditional, loop, return, goto, exception can be used to
     control the data flow in the sequence of task functions. 
 
+* Again, it is more illustrative to consider the following piece of
+  C++ code snippet (taken from [this
+  example](https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/master/Task_level_Parallelism/Control_driven/Channels/simple_fifos/diamond.cpp))
+  showing how to specify a control-driven data flow graph using the
+  dataflow pragma:
+  ```c++
+  typedef unsigned char data_t;
 
+  void diamond(data_t I[N], data_t O[N]) {
+    data_t c1[N], c2[N], c3[N], c4[N];
+  #pragma HLS dataflow
+    A(I, c1, c2);
+    B(c1, c3);
+    C(c2, c4);
+    D(c3, c4, O);
+  }
+  
+  void A(data_t* in, data_t* out1, data_t* out2) {
+  #pragma HLS inline off
+  Loop0:
+    for (int i = 0; i < N; i++) {
+  #pragma HLS pipeline
+      data_t t = in[i] * 3;
+      out1[i] = t;
+      out2[i] = t;
+    }
+  }
 
+  void B(data_t* in, data_t* out) {
+  #pragma HLS inline off
+  Loop0:
+    for (int i = 0; i < N; i++) {
+  #pragma HLS pipeline
+      out[i] = in[i] + 25;
+    }
+  }
 
-%## Vitis HLS Dataflow Directive
-%* The following piece of C++ code snippet shows a simple way to
-%  employ the producer-consumer model and the dataflow directive in
-%  Vitis HLS to invoke task-level pipelining and parallelization of the
-%  diamond-shape data flow graph in {eq}`diamond`:
-%  ```c++
-%  void diamond(int In[N], int Out[N]) {
-%    int c1[N], c2[N], c3[N], c4[N];
-%  #pragma HLS dataflow
-%    A(In, c1, c2);
-%    B(c1, c3);
-%    C(c2, c4);
-%    D(c3, c4, Out);
-%  }
-%  ```
-%  where each task is written as a function to help the HLS tool to
-%  infer the opportunity for pipelining and the independency between
-%  tasks $B$ and $C$ for parallelization.
+  void C(data_t* in, data_t* out) {
+  #pragma HLS inline off
+  Loop0:
+    for (data_t i = 0; i < N; i++) {
+  #pragma HLS pipeline
+      out[i] = in[i] * 2;
+    }
+  }
+
+  void D(data_t* in1, data_t* in2, data_t* out) {
+  #pragma HLS inline off
+  Loop0:
+    for (int i = 0; i < N; i++) {
+  #pragma HLS pipeline
+      out[i] = in1[i] + in2[i] * 2;
+    }
+  }
+  ```
+  - The top-level function of the DSP kernel is `diamond()`. The
+    dataflow region is specified as the scope of the function by the
+    dataflow pragma inside the function. The arrays `I` and `O` in the
+    function arguments are mapped to global memory. The PS host
+    calls this top-level function to start the DSP kernel, and
+    transfers data in and out of the kernel by accessing the global
+    memory. 
+  - The functions `A`, `B`, `C`, and `D` define four tasks. The way
+    that the arrays `c1`, `c2`, `c3`, and `c4` enter as the arguments
+    of the task functions let Vitis HLS infer the diamond-shape data
+    flow graph in {eq}`diamond` with task-level pipelining and the
+    independency between tasks $B$ and $C$ for parallelization.
+  - By default, the arrays `c1`, `c2`, `c3`, and `c4` are mapped to
+    PIPOs (while scalar arguments are mapped to FIFOs). In this
+    example, users can also choose to map the arrays to FIFOs as they
+    are accessed sequentially as shown in the bodies of the task
+    functions.
+  - It can be easily check that the dataflow region is specified in
+    the canonical form in this example. Instruction-level pipelining
+    is also requested by the pipeline pragma in each task function. 
+
+## Mixed Data- and Control-driven model
+* We can also mix the two execution models in a data flow graph of a
+  DSP kernel. As a matter of fact, since we usually need to save the
+  output of our DSP kernel to the global memory, we must use either a
+  pure control-driven data flow graph or a mixed-model one. 
+
+* Below is a piece of C++ code snippet specifying a simple
+  [example](https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/master/Task_level_Parallelism/Data_driven/mixed_control_and_data_driven/test.cpp)
+  of a mixed-model data flow graph:
+  
+  ```c++
+  void worker(hls::stream<int>& in, hls::stream<int>& out) {
+    int i = in.read();
+    int o = i * 2 + 1;
+    out.write(o);
+  }
+
+  void read_in(int* in, int n, hls::stream<int>& out) {
+    for (int i = 0; i < n; i++) {
+      out.write(in[i]);
+    }
+  }
+
+  void write_out(hls::stream<int>& in, int* out, int n) {
+    for (int i = 0; i < n; i++) {
+      out[i] = in.read();
+    }
+  }
+
+  void dut(int in[N], int out[N], int n) {
+    hls_thread_local hls::split::round_robin<int, NP> split1;
+    hls_thread_local hls::merge::round_robin<int, NP> merge1;
+  #pragma HLS dataflow
+
+    read_in(in, n, split1.in);
+
+    // Task-Channels
+    hls_thread_local hls::task t[NP];
+    for (int i = 0; i < NP; i++) {
+  #pragma HLS unroll
+      t[i](worker, split1.out[i], merge1.in[i]);
+    }
+
+    write_out(merge1.out, out, n);
+  }
+  ```
+  - The top-level function of the kernel is `dut()` with array
+    arguments `in` and `out` are mapped to global memory. The dataflow
+    region is specified to be the scope of `dut()` within which there
+    is a data-driven region specified by the array `t[NP]` of `NP`
+    `worker` tasks.
+  - The `hls::split` and `hls::merge` class objects `split1` and
+    `merge1` are demultiplexing and multiplexing FIFOs, respectively. 
+  - For the case of `NP=2`, the data flow graph inferred by Vitis HLS
+    is shown below:
+  ```{math}
+  :label: split_merge
+  \begin{equation}
+  \boxed{\text{in}} \rightarrow \text{read_in} \ 
+  \begin{array}{c} 
+  \nearrow {}^{\displaystyle t[0]} \searrow
+  \\
+  \searrow {}_{\displaystyle t[1]} \nearrow 
+  \end{array}
+  \ \text{write_out}
+  \rightarrow \boxed{\text{out}}
+  \end{equation}
+  ```
+

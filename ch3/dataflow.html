@@ -374,6 +374,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#task-model">3.4.1. Task Model</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-driven-execution-model">3.4.2. Data-driven Execution Model</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#control-driven-execution-model">3.4.3. Control-driven Execution Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mixed-data-and-control-driven-model">3.4.4. Mixed Data- and Control-driven model</a></li>
 </ul>
             </nav>
         </div>
@@ -539,7 +540,7 @@ each instantiation of the local (to the DSP kernel)
 </section>
 <section id="control-driven-execution-model">
 <h2><span class="section-number">3.4.3. </span>Control-driven Execution Model<a class="headerlink" href="#control-driven-execution-model" title="Permalink to this headline">#</a></h2>
-<ul class="simple">
+<ul>
 <li><p>Under the control-driven model, execution of tasks in a DSP kernel
 is controlled by the PS host through interactions with the kernel,
 such function calls and parameter passing. Tasks may also access
@@ -558,7 +559,7 @@ optimized data flow graph. In particular, it is recommended that the
 dataflow region should be written in the <em>canonical</em> form
 <span id="id2">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span> for more predictable inferencing by Vitis HLS.</p></li>
 <li><p>A dataflow region is in the canonical form if:</p>
-<ul>
+<ul class="simple">
 <li><p>The task functions should not be inlined.</p></li>
 <li><p>Each task function’s return type must be <code class="docutils literal notranslate"><span class="pre">void</span></code>.</p></li>
 <li><p>Each task function should only use local and non-static variables.</p></li>
@@ -575,6 +576,155 @@ task must be written before read.</p></li>
 <li><p>No conditional, loop, return, goto, exception can be used to
 control the data flow in the sequence of task functions.</p></li>
 </ul>
+</li>
+<li><p>Again, it is more illustrative to consider the following piece of
+C++ code snippet (taken from <a class="reference external" href="https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/master/Task_level_Parallelism/Control_driven/Channels/simple_fifos/diamond.cpp">this
+example</a>)
+showing how to specify a control-driven data flow graph using the
+dataflow pragma:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">data_t</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">diamond</span><span class="p">(</span><span class="n">data_t</span><span class="w"> </span><span class="n">I</span><span class="p">[</span><span class="n">N</span><span class="p">],</span><span class="w"> </span><span class="n">data_t</span><span class="w"> </span><span class="n">O</span><span class="p">[</span><span class="n">N</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">data_t</span><span class="w"> </span><span class="n">c1</span><span class="p">[</span><span class="n">N</span><span class="p">],</span><span class="w"> </span><span class="n">c2</span><span class="p">[</span><span class="n">N</span><span class="p">],</span><span class="w"> </span><span class="n">c3</span><span class="p">[</span><span class="n">N</span><span class="p">],</span><span class="w"> </span><span class="n">c4</span><span class="p">[</span><span class="n">N</span><span class="p">];</span>
+<span class="cp">#pragma HLS dataflow</span>
+<span class="w">  </span><span class="n">A</span><span class="p">(</span><span class="n">I</span><span class="p">,</span><span class="w"> </span><span class="n">c1</span><span class="p">,</span><span class="w"> </span><span class="n">c2</span><span class="p">);</span>
+<span class="w">  </span><span class="n">B</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span><span class="w"> </span><span class="n">c3</span><span class="p">);</span>
+<span class="w">  </span><span class="n">C</span><span class="p">(</span><span class="n">c2</span><span class="p">,</span><span class="w"> </span><span class="n">c4</span><span class="p">);</span>
+<span class="w">  </span><span class="n">D</span><span class="p">(</span><span class="n">c3</span><span class="p">,</span><span class="w"> </span><span class="n">c4</span><span class="p">,</span><span class="w"> </span><span class="n">O</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">A</span><span class="p">(</span><span class="n">data_t</span><span class="o">*</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">data_t</span><span class="o">*</span><span class="w"> </span><span class="n">out1</span><span class="p">,</span><span class="w"> </span><span class="n">data_t</span><span class="o">*</span><span class="w"> </span><span class="n">out2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS inline off</span>
+<span class="nl">Loop0</span><span class="p">:</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS pipeline</span>
+<span class="w">    </span><span class="n">data_t</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<span class="w">    </span><span class="n">out1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t</span><span class="p">;</span>
+<span class="w">    </span><span class="n">out2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">B</span><span class="p">(</span><span class="n">data_t</span><span class="o">*</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">data_t</span><span class="o">*</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS inline off</span>
+<span class="nl">Loop0</span><span class="p">:</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS pipeline</span>
+<span class="w">    </span><span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">25</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">C</span><span class="p">(</span><span class="n">data_t</span><span class="o">*</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">data_t</span><span class="o">*</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS inline off</span>
+<span class="nl">Loop0</span><span class="p">:</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">data_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS pipeline</span>
+<span class="w">    </span><span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">D</span><span class="p">(</span><span class="n">data_t</span><span class="o">*</span><span class="w"> </span><span class="n">in1</span><span class="p">,</span><span class="w"> </span><span class="n">data_t</span><span class="o">*</span><span class="w"> </span><span class="n">in2</span><span class="p">,</span><span class="w"> </span><span class="n">data_t</span><span class="o">*</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS inline off</span>
+<span class="nl">Loop0</span><span class="p">:</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS pipeline</span>
+<span class="w">    </span><span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">in2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The top-level function of the DSP kernel is <code class="docutils literal notranslate"><span class="pre">diamond()</span></code>. The
+dataflow region is specified as the scope of the function by the
+dataflow pragma inside the function. The arrays <code class="docutils literal notranslate"><span class="pre">I</span></code> and <code class="docutils literal notranslate"><span class="pre">O</span></code> in the
+function arguments are mapped to global memory. The PS host
+calls this top-level function to start the DSP kernel, and
+transfers data in and out of the kernel by accessing the global
+memory.</p></li>
+<li><p>The functions <code class="docutils literal notranslate"><span class="pre">A</span></code>, <code class="docutils literal notranslate"><span class="pre">B</span></code>, <code class="docutils literal notranslate"><span class="pre">C</span></code>, and <code class="docutils literal notranslate"><span class="pre">D</span></code> define four tasks. The way
+that the arrays <code class="docutils literal notranslate"><span class="pre">c1</span></code>, <code class="docutils literal notranslate"><span class="pre">c2</span></code>, <code class="docutils literal notranslate"><span class="pre">c3</span></code>, and <code class="docutils literal notranslate"><span class="pre">c4</span></code> enter as the arguments
+of the task functions let Vitis HLS infer the diamond-shape data
+flow graph in <a class="reference internal" href="model.html#equation-diamond">(3.2)</a> with task-level pipelining and the
+independency between tasks <span class="math notranslate nohighlight">\(B\)</span> and <span class="math notranslate nohighlight">\(C\)</span> for parallelization.</p></li>
+<li><p>By default, the arrays <code class="docutils literal notranslate"><span class="pre">c1</span></code>, <code class="docutils literal notranslate"><span class="pre">c2</span></code>, <code class="docutils literal notranslate"><span class="pre">c3</span></code>, and <code class="docutils literal notranslate"><span class="pre">c4</span></code> are mapped to
+PIPOs (while scalar arguments are mapped to FIFOs). In this
+example, users can also choose to map the arrays to FIFOs as they
+are accessed sequentially as shown in the bodies of the task
+functions.</p></li>
+<li><p>It can be easily check that the dataflow region is specified in
+the canonical form in this example. Instruction-level pipelining
+is also requested by the pipeline pragma in each task function.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="mixed-data-and-control-driven-model">
+<h2><span class="section-number">3.4.4. </span>Mixed Data- and Control-driven model<a class="headerlink" href="#mixed-data-and-control-driven-model" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>We can also mix the two execution models in a data flow graph of a
+DSP kernel. As a matter of fact, since we usually need to save the
+output of our DSP kernel to the global memory, we must use either a
+pure control-driven data flow graph or a mixed-model one.</p></li>
+<li><p>Below is a piece of C++ code snippet specifying a simple
+<a class="reference external" href="https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/master/Task_level_Parallelism/Data_driven/mixed_control_and_data_driven/test.cpp">example</a>
+of a mixed-model data flow graph:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">worker</span><span class="p">(</span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">  </span><span class="n">out</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">o</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">read_in</span><span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">out</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">in</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">write_out</span><span class="p">(</span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="o">*</span><span class="w"> </span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">dut</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">N</span><span class="p">],</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">out</span><span class="p">[</span><span class="n">N</span><span class="p">],</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">hls_thread_local</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">split</span><span class="o">::</span><span class="n">round_robin</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">NP</span><span class="o">&gt;</span><span class="w"> </span><span class="n">split1</span><span class="p">;</span>
+<span class="w">  </span><span class="n">hls_thread_local</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">merge</span><span class="o">::</span><span class="n">round_robin</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">NP</span><span class="o">&gt;</span><span class="w"> </span><span class="n">merge1</span><span class="p">;</span>
+<span class="cp">#pragma HLS dataflow</span>
+
+<span class="w">  </span><span class="n">read_in</span><span class="p">(</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">split1</span><span class="p">.</span><span class="n">in</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Task-Channels</span>
+<span class="w">  </span><span class="n">hls_thread_local</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">task</span><span class="w"> </span><span class="n">t</span><span class="p">[</span><span class="n">NP</span><span class="p">];</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">NP</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS unroll</span>
+<span class="w">    </span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">](</span><span class="n">worker</span><span class="p">,</span><span class="w"> </span><span class="n">split1</span><span class="p">.</span><span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w"> </span><span class="n">merge1</span><span class="p">.</span><span class="n">in</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">write_out</span><span class="p">(</span><span class="n">merge1</span><span class="p">.</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The top-level function of the kernel is <code class="docutils literal notranslate"><span class="pre">dut()</span></code> with array
+arguments <code class="docutils literal notranslate"><span class="pre">in</span></code> and <code class="docutils literal notranslate"><span class="pre">out</span></code> are mapped to global memory. The dataflow
+region is specified to be the scope of <code class="docutils literal notranslate"><span class="pre">dut()</span></code> within which there
+is a data-driven region specified by the array <code class="docutils literal notranslate"><span class="pre">t[NP]</span></code> of <code class="docutils literal notranslate"><span class="pre">NP</span></code>
+<code class="docutils literal notranslate"><span class="pre">worker</span></code> tasks.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">hls::split</span></code> and <code class="docutils literal notranslate"><span class="pre">hls::merge</span></code> class objects <code class="docutils literal notranslate"><span class="pre">split1</span></code> and
+<code class="docutils literal notranslate"><span class="pre">merge1</span></code> are demultiplexing and multiplexing FIFOs, respectively.</p></li>
+<li><p>For the case of <code class="docutils literal notranslate"><span class="pre">NP=2</span></code>, the data flow graph inferred by Vitis HLS
+is shown below:</p></li>
+</ul>
+<div class="math notranslate nohighlight" id="equation-split-merge">
+<span class="eqno">(3.5)<a class="headerlink" href="#equation-split-merge" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{equation}
+\boxed{\text{in}} \rightarrow \text{read_in} \ 
+\begin{array}{c} 
+\nearrow {}^{\displaystyle t[0]} \searrow
+\\
+\searrow {}_{\displaystyle t[1]} \nearrow 
+\end{array}
+\ \text{write_out}
+\rightarrow \boxed{\text{out}}
+\end{equation}\end{split}\]</div>
 </li>
 </ul>
 </section>
@@ -650,6 +800,7 @@ control the data flow in the sequence of task functions.</p></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#task-model">3.4.1. Task Model</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-driven-execution-model">3.4.2. Data-driven Execution Model</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#control-driven-execution-model">3.4.3. Control-driven Execution Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mixed-data-and-control-driven-model">3.4.4. Mixed Data- and Control-driven model</a></li>
 </ul>
   </nav></div>
 
