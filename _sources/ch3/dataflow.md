@@ -262,7 +262,7 @@ which are also often referred to as ***channels***.
     the canonical form in this example. Instruction-level pipelining
     is also requested by the pipeline pragma in each task function. 
 
-## Mixed Data- and Control-driven model
+## Mixed Data- and Control-driven Execution Model
 * We can also mix the two execution models in a data flow graph of a
   DSP kernel. As a matter of fact, since we usually need to save the
   output of our DSP kernel to the global memory, we must use either a
@@ -320,7 +320,7 @@ which are also often referred to as ***channels***.
   ```{math}
   :label: split_merge
   \begin{equation}
-  \boxed{\text{in}} \rightarrow \text{read_in} \ \  
+  \boxed{\text{in}} \rightarrow \text{read_in} \ \ 
   \begin{array}{c} 
   \nearrow {}^{\displaystyle t[0]} \searrow
   \\
