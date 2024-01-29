@@ -46,9 +46,9 @@
   $\tau_B$, and $\tau_C$ clock cycles, respectively. For illustration
   below, let us assume $\tau_B > \tau_A > \tau_C$.
 
-* If the producer-consumer model is not followed when developing the
-  DSP kernel that task A has to wait for both tasks B and C to complete their
-  respective operations on the output unit itself produces before it
+* If the producer-consumer model is not followed in the development of
+  the DSP kernel that task $A$ has to wait for both tasks $B$ and $C$
+  to complete their respective operations on its output unit before it
   starts to work on another input unit, then both the iteration
   latency and II of the DSP kernel will be $\tau_A + \tau_B + \tau_C$,
   and the throughput cannot be higher than $\frac{1}{\tau_A + \tau_B +
@@ -56,7 +56,7 @@
 
 * Under the producer-consumer model, with sufficient buffering between
   the tasks, instead of sitting idle waiting for the other two downstream
-  tasks to complete their processing on its output, task A can
+  tasks to complete their processing on its output, task $A$ can
   start processing the next input unit in a *pipelining* fashion as
   shown in the figure below:
   ```{figure} ../figs/pipeline.jpg
@@ -107,22 +107,22 @@
   ```
 
 * With task-level parallelization, independent tasks are executed
-  simultaneously on different PL resources. Hence, unlike pipelining, 
-  parallelization does require more PL resources. 
+  simultaneously on different PL resource. Hence, unlike pipelining, 
+  parallelization does require more PL resource usage. 
 
 
 ## FIFO & PIPO
 * For the producer-consumer model to function properly, the producer
   and consumer tasks need to synchronize with each other. That is,
-  there must be a handshake process for the producer to tell the
-  consumer that a piece of data is ready to be consumed and for the
-  consumer to tell the producer that the piece of data has been
-  consumed. As one would see, such synchronization among producers and
-  consumers in a complex data flow graph could get rather
-  complicated. The synchronization complexity could be further
+  there must be a handshaking process for the producer to tell the
+  consumer that a piece of data is ready to be consumed and after that
+  for the consumer to tell the producer that the piece of data has
+  been consumed. As one would see, such synchronization among
+  producers and consumers in a complex data flow graph could get
+  rather complicated. The synchronization complexity could be further
   aggravated by pipelining and parallelization as they require
   different tasks to simultaneosuly operate on different pieces of
-  data. 
+  data.
 
 * The standard solution to this synchronization problem is to insert a
   *streaming buffer* between each pair of producer and consumer. The
@@ -158,7 +158,7 @@
   ```
 
 * **FIFO vs. PIPO**:
-  - *PL resource usage*: A PIPO requires more PL resources
+  - *PL resource usage*: A PIPO requires more PL resource
     than a FIFO of the same size/depth as a PIPO contains a pair of
     buffers while a FIFO contains a single one.
   - *Random access*: The data in a FIFO must be accessed sequentially
@@ -174,9 +174,9 @@
   - *Simultaneous access*: In a PIPO, since the producer accesses one
     buffer and the consumer accesses the other at any time, they can
     simultaneously access the PIPO. However, since there is only a
-    single buffer in a FIFO, each element in the FIFO can either be
-    read or written at a time. Thus, using a PIPO may increase the
-    throughput.
+    single buffer in a FIFO, each element in the FIFO can only be
+    either read or written at a time. Thus, using a PIPO may increase
+    the throughput.
   - *Deadlock*: The use of FIFOs of insufficient depth in a data flow
     graph may cause a deadlock (see the discussions in
     {numref}`sec:deadlock`). The use of PIPOs, on the other hand,
