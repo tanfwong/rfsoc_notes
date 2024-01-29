@@ -26,7 +26,7 @@
   produces a piece of data (e.g., a signal sample) each clock cycle
   and insert pieces of data alternatively into $\mathcal{B}_{A,B}$ and
   $\mathcal{B}_{A,C}$, and that tasks $B$ and $C$ are each able to
-  consume a piece of data from their respective FIFO every two clock
+  consume a piece of data from their respective FIFOs every two clock
   cycles. Note that the insertion rate matches the consumption rate for
   $\mathcal{B}_{A,B}$ and $\mathcal{B}_{A,C}$.
 
