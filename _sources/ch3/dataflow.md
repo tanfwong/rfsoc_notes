@@ -160,7 +160,8 @@ which are also often referred to as ***channels***.
   specify the DSP kernel and indicate using the *dataflow*
   pragma/directive the code region for which we want Vitis HLS to
   infer and construct an efficient (acyclic) data flow graph with
-  pipelining and parallelization.
+  pipelining.  Vitis HLS also automatically applies task-level
+  parallelization to fully independent tasks that it detects.
 
 * Decomposing the C++ specification of the *dataflow region* into a
   sequence of task functions conforming to the task model in

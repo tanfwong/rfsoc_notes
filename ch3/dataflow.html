@@ -551,7 +551,8 @@ graph. Instead, we may use regular sequential C++ semantics to
 specify the DSP kernel and indicate using the <em>dataflow</em>
 pragma/directive the code region for which we want Vitis HLS to
 infer and construct an efficient (acyclic) data flow graph with
-pipelining and parallelization.</p></li>
+pipelining.  Vitis HLS also automatically applies task-level
+parallelization to fully independent tasks that it detects.</p></li>
 <li><p>Decomposing the C++ specification of the <em>dataflow region</em> into a
 sequence of task functions conforming to the task model in
 <a class="reference internal" href="#sec-task-model"><span class="std std-numref">Section 3.4.1</span></a> can help Vitis HLS to infer a more
