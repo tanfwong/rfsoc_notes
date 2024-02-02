@@ -136,7 +136,7 @@ which are also often referred to as ***channels***.
     `hls::task` class objects as discussed above. The three tasks are
     specified by the functions `splitter()`, `odd()`, and `even()`,
     respectively. The instantiation of the data-driven tasks is
-    similar to that of instantiating threads in standard C++. Indeed,
+    similar to instantiating threads in standard C++. Indeed,
     the qualifier `hls_thread_local` before each instantiation of an
     `hls::task` object is used to ensure the thread that emulates that
     data-driven task starts only once and keeps the same state when
