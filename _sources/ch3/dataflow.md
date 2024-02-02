@@ -55,7 +55,7 @@ which are also often referred to as ***channels***.
 * Vitis HLS supports a data-driven model and a control-driven model to
   structure the execution of tasks in a data flow graph
   {cite}`ug1399`. Details of these models will be discussed below. The
-  use of the two models can also mixed in a data flow graph.
+  use of the two models can also be mixed in a data flow graph.
 
 ## Data-driven Execution Model
 * Under the data-driven model, each task waits for and then executes
