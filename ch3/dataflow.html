@@ -528,7 +528,7 @@ the qualifier <code class="docutils literal notranslate"><span class="pre">hls_t
 <code class="docutils literal notranslate"><span class="pre">hls::task</span></code> object is used to ensure the thread that emulates that
 data-driven task starts only once and keeps the same state when
 called multiple times in the C simulation of the HLS code above.</p></li>
-<li><p>The data flow graph in <a class="reference internal" href="#equation-even-odd">(3.4)</a>is explicitly connected by
+<li><p>The data flow graph in <a class="reference internal" href="#equation-even-odd">(3.4)</a> is explicitly connected by
 setting the <code class="docutils literal notranslate"><span class="pre">hls::stream&lt;int&gt;</span></code> objects <code class="docutils literal notranslate"><span class="pre">s1</span></code> and <code class="docutils literal notranslate"><span class="pre">s2</span></code> as output
 FIFOs for task <code class="docutils literal notranslate"><span class="pre">t1</span></code> and input FIFOs for tasks <code class="docutils literal notranslate"><span class="pre">t2</span></code> and <code class="docutils literal notranslate"><span class="pre">t3</span></code>. Note
 that the qualifier <code class="docutils literal notranslate"><span class="pre">hls_thread_local</span></code> also needs to be used for

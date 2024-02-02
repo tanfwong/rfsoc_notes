@@ -141,7 +141,7 @@ which are also often referred to as ***channels***.
     `hls::task` object is used to ensure the thread that emulates that
     data-driven task starts only once and keeps the same state when
     called multiple times in the C simulation of the HLS code above.
-  - The data flow graph in {eq}`even_odd`is explicitly connected by
+  - The data flow graph in {eq}`even_odd` is explicitly connected by
     setting the `hls::stream<int>` objects `s1` and `s2` as output
     FIFOs for task `t1` and input FIFOs for tasks `t2` and `t3`. Note
     that the qualifier `hls_thread_local` also needs to be used for
