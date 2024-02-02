@@ -61,7 +61,7 @@ which are also often referred to as ***channels***.
 * Under the data-driven model, each task waits for and then executes
   when there is input data for it to process. The tasks in the data
   flow graph do not need to be controlled by any actions, such as
-  function calls and data transfer, of the PS host.
+  function calls and data transfer, by the PS host.
 
 * We need to instantiate data-driven tasks as `hls::task` class
   objects and connect them using streaming buffers to specify the data
