@@ -1,3 +1,4 @@
+(sec:dataflow)=
 # Data Flow Graph Execution
 As discussed in {numref}`sec:pro-con`, it is preferable to follow the
 producer-consumer model in the HLS development of a DSP kernel by
@@ -150,7 +151,7 @@ which are also often referred to as ***channels***.
   
 ## Control-driven Execution Model 
 * Under the control-driven model, execution of tasks in a DSP kernel
-  is controlled by the PS host through interactions with the kernel,
+  is controlled by the PS host through its interactions with the kernel,
   such function calls and parameter passing. Tasks may also access
   global memory in this model.
 
@@ -251,7 +252,7 @@ which are also often referred to as ***channels***.
     memory. 
   - The functions `A`, `B`, `C`, and `D` define four tasks. The way
     that the arrays `c1`, `c2`, `c3`, and `c4` enter as the arguments
-    of the task functions let Vitis HLS infer the diamond-shape data
+    of the task functions lets Vitis HLS infer the diamond-shape data
     flow graph in {eq}`diamond` with task-level pipelining and the
     independency between tasks $B$ and $C$ for parallelization.
   - By default, the arrays `c1`, `c2`, `c3`, and `c4` are mapped to

@@ -66,7 +66,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="4. References" href="../refs.html" />
+    <link rel="next" title="4. HLS Programming" href="../ch4/hls_prog.html" />
     <link rel="prev" title="3.3. Deadlock" href="deadlock.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
@@ -177,7 +177,10 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">3.4. Data Flow Graph Execution</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../refs.html">4. References</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../ch4/hls_prog.html">4. HLS Programming</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../refs.html">5. References</a></li>
 </ul>
 
     </div>
@@ -387,7 +390,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="data-flow-graph-execution">
-<h1><span class="section-number">3.4. </span>Data Flow Graph Execution<a class="headerlink" href="#data-flow-graph-execution" title="Permalink to this headline">#</a></h1>
+<span id="sec-dataflow"></span><h1><span class="section-number">3.4. </span>Data Flow Graph Execution<a class="headerlink" href="#data-flow-graph-execution" title="Permalink to this headline">#</a></h1>
 <p>As discussed in <a class="reference internal" href="model.html#sec-pro-con"><span class="std std-numref">Section 3.2</span></a>, it is preferable to follow the
 producer-consumer model in the HLS development of a DSP kernel by
 decomposing the kernel into a network of tasks connected together by
@@ -542,7 +545,7 @@ each instantiation of the local (to the DSP kernel)
 <h2><span class="section-number">3.4.3. </span>Control-driven Execution Model<a class="headerlink" href="#control-driven-execution-model" title="Permalink to this headline">#</a></h2>
 <ul>
 <li><p>Under the control-driven model, execution of tasks in a DSP kernel
-is controlled by the PS host through interactions with the kernel,
+is controlled by the PS host through its interactions with the kernel,
 such function calls and parameter passing. Tasks may also access
 global memory in this model.</p></li>
 <li><p>Unlike in the data-driven case, we do not need to explicitly
@@ -643,7 +646,7 @@ transfers data in and out of the kernel by accessing the global
 memory.</p></li>
 <li><p>The functions <code class="docutils literal notranslate"><span class="pre">A</span></code>, <code class="docutils literal notranslate"><span class="pre">B</span></code>, <code class="docutils literal notranslate"><span class="pre">C</span></code>, and <code class="docutils literal notranslate"><span class="pre">D</span></code> define four tasks. The way
 that the arrays <code class="docutils literal notranslate"><span class="pre">c1</span></code>, <code class="docutils literal notranslate"><span class="pre">c2</span></code>, <code class="docutils literal notranslate"><span class="pre">c3</span></code>, and <code class="docutils literal notranslate"><span class="pre">c4</span></code> enter as the arguments
-of the task functions let Vitis HLS infer the diamond-shape data
+of the task functions lets Vitis HLS infer the diamond-shape data
 flow graph in <a class="reference internal" href="model.html#equation-diamond">(3.2)</a> with task-level pipelining and the
 independency between tasks <span class="math notranslate nohighlight">\(B\)</span> and <span class="math notranslate nohighlight">\(C\)</span> for parallelization.</p></li>
 <li><p>By default, the arrays <code class="docutils literal notranslate"><span class="pre">c1</span></code>, <code class="docutils literal notranslate"><span class="pre">c2</span></code>, <code class="docutils literal notranslate"><span class="pre">c3</span></code>, and <code class="docutils literal notranslate"><span class="pre">c4</span></code> are mapped to
@@ -776,11 +779,11 @@ is shown below:</p></li>
       </div>
     </a>
     <a class="right-next"
-       href="../refs.html"
+       href="../ch4/hls_prog.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">4. </span>References</p>
+        <p class="prev-next-title"><span class="section-number">4. </span>HLS Programming</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
