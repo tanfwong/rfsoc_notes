@@ -113,3 +113,31 @@
     pragma provides us finer control on the tradeoff between PL
     resource utilization and iteration latency of the kernel.
   
+## Function Instantiation
+* Function instantiation locally optimizes the RTL implementation for
+  each instance of a function by exploiting the situation in which
+  some inputs to the function are constant values when the
+  function. This optimization may simplify the surrounding control
+  structures and produce smaller more optimized function blocks.
+
+* Function instantiation is involved by using [`#pragma HLS
+  function_instantiate`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-function_instantiate)
+  as shown in the following [example](https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/2023.2/Pipelining/Functions/function_instantiate/example.cpp):
+  ```c++
+  char foo(char inval, char incr) {
+  #pragma HLS INLINE OFF
+  #pragma HLS FUNCTION_INSTANTIATE variable = incr
+    return inval + incr;
+  }
+
+  void top(char inval1, char inval2, char inval3, char* outval1, char* outval2,
+           char* outval3) {
+    *outval1 = foo(inval1, 0);
+    *outval2 = foo(inval2, 1);
+    *outval3 = foo(inval3, 100);
+  }
+  ```
+    where each instance of `foo()` is independently optimized for the
+    specific input constant value to the argument `incr`. The
+    resulting RTL code implements calls to three
+    differently optimized versions of `foo()`.
