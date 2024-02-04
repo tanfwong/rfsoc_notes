@@ -29,11 +29,11 @@
 
   * - Scalar (pass by value)
     - Register
-    - AXI4-Lite (`s_axilite`)
+    - AXI4 Lite (`s_axilite`)
 
   * - Pointer to scalar
     - Register
-    - AXI4-Lite (`s_axilite`)
+    - AXI4 Lite (`s_axilite`)
 
   * - Array
     - Memory
@@ -45,7 +45,7 @@
   
   * - Reference
     - Register
-    - AXI4-Lite (`s_axilite`)
+    - AXI4 Lite (`s_axilite`)
 
   * - `hls::stream`
     - Stream

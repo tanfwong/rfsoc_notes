@@ -85,7 +85,7 @@ which are also often referred to as ***channels***.
   void splitter(hls::stream<int>& in, hls::stream<int>& odds_buf,
                 hls::stream<int>& evens_buf) {
   int data = in.read();
-  if (data % 2 == 0)
+  if (data % 2 == 0))
     evens_buf.write(data);
   else
     odds_buf.write(data);
@@ -158,11 +158,13 @@ which are also often referred to as ***channels***.
 * Unlike in the data-driven case, we do not need to explicitly
   instantiate the tasks and connect them to form the data flow
   graph. Instead, we may use regular sequential C++ semantics to
-  specify the DSP kernel and indicate using the *dataflow*
-  pragma/directive the code region for which we want Vitis HLS to
-  infer and construct an efficient (acyclic) data flow graph with
-  pipelining.  Vitis HLS also automatically applies task-level
-  parallelization to fully independent tasks that it detects.
+  specify the DSP kernel and indicate using
+  [`#pragma HLS
+  dataflow`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-dataflow)
+  the code region for which we want Vitis HLS to infer and construct
+  an efficient (acyclic) data flow graph with pipelining.  Vitis HLS
+  also automatically applies task-level parallelization to fully
+  independent tasks that it detects.
 
 * Decomposing the C++ specification of the *dataflow region* into a
   sequence of task functions conforming to the task model in
