@@ -89,7 +89,7 @@
     foo(p1, q); //foo_3
   }
   
-  void diamond(int &a, int &b, int &c, int &d) {
+  void top(int &a, int &b, int &c, int &d) {
   #pragma HLS allocation function instances=foo limit=1 
     foo(a, b); //foo_1
     foo(c, d); //foo_2
