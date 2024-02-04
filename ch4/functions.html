@@ -374,6 +374,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#top-level-function">4.1.1. Top-level Function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#function-inlining">4.1.2. Function Inlining</a></li>
 </ul>
             </nav>
         </div>
@@ -449,6 +450,68 @@ different argument types are listed in the table below:</p>
 </li>
 </ul>
 </section>
+<section id="function-inlining">
+<h2><span class="section-number">4.1.2. </span>Function Inlining<a class="headerlink" href="#function-inlining" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>Inlining a function is a standard C++ optimization technique that
+dissolves the function logic into the calling function. In HLS,
+after a function is inlined, it will not be synthesized into a
+separate RTL module; instead the function logic is embedded into
+that of the calling function.</p></li>
+<li><p>Inlining a function could improve the usage efficiency of PL
+resources by sharing the logic components in the function with the
+calling function as well as by optimizing the control logic of the
+calling function. It may potentially reduce the II of the calling
+function.  However, since an inlined function is no longer
+synthesized as a separate RTL module, it can not be shared or
+reused. Thus, multiple calls to the inlined function may consume
+more PL resources due to replication. Often, we may need to use Vitis
+HLS to synthesize different designs with and without inlining to
+determine if any advantage in the PL resource utilization can be
+achieved with function inlining.</p></li>
+<li><p>Function inlining is automatically performed by Vitis HLS for small
+functions. We can involve or turn off function inlining in Vitis HLS
+using <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-inline"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">inline</span></code></a>
+as shown in the example below:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">foo</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">&amp;</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">&amp;</span><span class="n">q</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS inline off</span>
+<span class="w">  </span><span class="n">q</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">p</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="w">  </span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">sub</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">&amp;</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">&amp;</span><span class="n">q</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS inline</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">p1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">  </span><span class="n">foo</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">);</span><span class="w"> </span><span class="c1">//foo_3</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">diamond</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">&amp;</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">&amp;</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">&amp;</span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">&amp;</span><span class="n">d</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS allocation function instances=foo limit=1 </span>
+<span class="w">  </span><span class="n">foo</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">);</span><span class="w"> </span><span class="c1">//foo_1</span>
+<span class="w">  </span><span class="n">foo</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">);</span><span class="w"> </span><span class="c1">//foo_2</span>
+<span class="w">  </span><span class="n">sub</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The instance <code class="docutils literal notranslate"><span class="pre">sub(b,</span> <span class="pre">d)</span></code> of the function <code class="docutils literal notranslate"><span class="pre">sub()</span></code> is inlined into the
+top-level function <code class="docutils literal notranslate"><span class="pre">top()</span></code> as directed by the inline pragma in the
+body of <code class="docutils literal notranslate"><span class="pre">sub()</span></code>.</p></li>
+<li><p>By default, inlining a function applies only to the level of the
+function body; hence inlining of <code class="docutils literal notranslate"><span class="pre">sub()</span></code> does not recursively
+apply to the call to <code class="docutils literal notranslate"><span class="pre">foo()</span></code> inside <code class="docutils literal notranslate"><span class="pre">sub()</span></code>. In this example,
+inlining of <code class="docutils literal notranslate"><span class="pre">foo()</span></code> is explicitly turned off. Removing the line
+<code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">inline</span> <span class="pre">off</span></code> from <code class="docutils literal notranslate"><span class="pre">foo()</span></code> will cause Vitis HLS to
+automatically inline <code class="docutils literal notranslate"><span class="pre">foo()</span></code> due to its simplicity.</p></li>
+<li><p>The pragma <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-allocation"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">allocation</span></code></a>
+in <code class="docutils literal notranslate"><span class="pre">top()</span></code> limits that only a single instance of <code class="docutils literal notranslate"><span class="pre">foo()</span></code> will be
+synthesized. Without it, two instances of <code class="docutils literal notranslate"><span class="pre">foo()</span></code> will be
+synthesized by Vitis HLS for task-level parallelization. This
+pragma provides us finer control on the tradeoff between PL
+resource utilization and iteration latency of the kernel.</p></li>
+</ul>
+</li>
+</ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -519,6 +582,7 @@ different argument types are listed in the table below:</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#top-level-function">4.1.1. Top-level Function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#function-inlining">4.1.2. Function Inlining</a></li>
 </ul>
   </nav></div>
 
