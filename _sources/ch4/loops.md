@@ -22,9 +22,14 @@ task-level pipelining and parallelization discussed in
     c[i] = a[i] + b[i];
   } 
   ```
-  - The pipeline pragma tells Vitis HLS to target at achieving an II
-     of one clock cycle for the pipeline (not specifying the `II=1`
-     option also set the target II to $1$ as well).
+   
+  ```{tip}
+  It is recommended that we label each loop in the C++ code to 
+  ease the processing and reporting processes by Vitis HLS.
+  ```
+
+  - The pipeline pragma above tells Vitis HLS to target at achieving an II
+     of one clock cycle for the pipeline.
   - Suppose it takes one clock cycle to read `a[i]` and `b[i]`, one
      clock cycle to add them, and one clock cycle to write to
      `c[i]`. Without the pipeline pragma, each iteration of loop
@@ -33,20 +38,24 @@ task-level pipelining and parallelization discussed in
      of the loop may begin before the current iteration completes, the
      target II=1 can be achieved by pipelining the loop `vadd` as
      shown in the example above.
- 
-  ```{tip}
-  It is recommended that we label each loop in the C++ code to 
-  ease the processing and reporting processes by Vitis HLS.
-  ```
+
 
 * Hardware constraints, data dependencies within an iteration, and/or
   loop dependencies may prohibit Vitis HLS to achieve the specified II
-  value for a loop. In such case, Vitis HLS will generate a design
-  that achieves the lowest possible II instead. In some cases, we may
-  be able to re-factor the C++ code forming the loop to achieve a
-  lower II.  In some extreme cases, loop dependencies may render
-  pipelining a loop impossible. For example, see the following example
-  from {cite}`ug1399`: 
+  value for a loop.
+  ```{tip}
+  If the target II value specified in the pipeline pragma can not be
+  achieved, Vitis HLS will produce a timing vilation warning message
+  during synthesis. 
+  Not specifying the `II=1` option in the pipeline pragma also sets
+  the target II to 1; however by not specifying the target II, 
+  Vitis HLS will generate a design that achieves the lowest possible
+  II and issue an II violation message instead.
+  ```
+* In some cases, we may be able to re-factor the C++ code forming the
+  loop to achieve a lower II.  In some extreme cases, loop
+  dependencies may render pipelining a loop impossible. For example,
+  see the following example from {cite}`ug1399`:
   ```c++ 
   Minim_Loop: while (a != b) {
     if (a > b)

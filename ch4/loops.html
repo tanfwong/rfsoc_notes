@@ -411,10 +411,14 @@ as shown in the following C++ code snippet from <span id="id1">[<a class="refere
 <span class="p">}</span><span class="w"> </span>
 </pre></div>
 </div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>It is recommended that we label each loop in the C++ code to
+ease the processing and reporting processes by Vitis HLS.</p>
+</div>
 <ul class="simple">
-<li><p>The pipeline pragma tells Vitis HLS to target at achieving an II
-of one clock cycle for the pipeline (not specifying the <code class="docutils literal notranslate"><span class="pre">II=1</span></code>
-option also set the target II to <span class="math notranslate nohighlight">\(1\)</span> as well).</p></li>
+<li><p>The pipeline pragma above tells Vitis HLS to target at achieving an II
+of one clock cycle for the pipeline.</p></li>
 <li><p>Suppose it takes one clock cycle to read <code class="docutils literal notranslate"><span class="pre">a[i]</span></code> and <code class="docutils literal notranslate"><span class="pre">b[i]</span></code>, one
 clock cycle to add them, and one clock cycle to write to
 <code class="docutils literal notranslate"><span class="pre">c[i]</span></code>. Without the pipeline pragma, each iteration of loop
@@ -424,20 +428,25 @@ of the loop may begin before the current iteration completes, the
 target II=1 can be achieved by pipelining the loop <code class="docutils literal notranslate"><span class="pre">vadd</span></code> as
 shown in the example above.</p></li>
 </ul>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>It is recommended that we label each loop in the C++ code to
-ease the processing and reporting processes by Vitis HLS.</p>
-</div>
 </li>
 <li><p>Hardware constraints, data dependencies within an iteration, and/or
 loop dependencies may prohibit Vitis HLS to achieve the specified II
-value for a loop. In such case, Vitis HLS will generate a design
-that achieves the lowest possible II instead. In some cases, we may
-be able to re-factor the C++ code forming the loop to achieve a
-lower II.  In some extreme cases, loop dependencies may render
-pipelining a loop impossible. For example, see the following example
-from <span id="id2">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>:</p>
+value for a loop.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If the target II value specified in the pipeline pragma can not be
+achieved, Vitis HLS will produce a timing vilation warning message
+during synthesis.
+Not specifying the <code class="docutils literal notranslate"><span class="pre">II=1</span></code> option in the pipeline pragma also sets
+the target II to 1; however by not specifying the target II,
+Vitis HLS will generate a design that achieves the lowest possible
+II and issue an II violation message instead.</p>
+</div>
+</li>
+<li><p>In some cases, we may be able to re-factor the C++ code forming the
+loop to achieve a lower II.  In some extreme cases, loop
+dependencies may render pipelining a loop impossible. For example,
+see the following example from <span id="id2">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="nl">Minim_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
 <span class="w">    </span><span class="n">a</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"> </span>
