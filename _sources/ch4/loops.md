@@ -42,20 +42,22 @@ task-level pipelining and parallelization discussed in
 * Hardware constraints, data dependencies within an iteration, and/or
   loop dependencies may prohibit Vitis HLS to achieve the specified II
   value for a loop. In such case, Vitis HLS will generate a design
-  that achieves the lowest possible II instead. In some extreme cases,
-  loop dependencies may render pipelining a loop impossible. For
-  example, see the following example from {cite}`ug1399`:
-  ```c++
+  that achieves the lowest possible II instead. In some cases, we may
+  be able to re-factor the C++ code forming the loop to achieve a
+  lower II.  In some extreme cases, loop dependencies may render
+  pipelining a loop impossible. For example, see the following example
+  from {cite}`ug1399`: 
+  ```c++ 
   Minim_Loop: while (a != b) {
     if (a > b)
-      a -= b;
+      a -= b; 
     else 
-      b -= a;
-  }
-  ```
-  where each iteration in `Minim_Loop` can not start before the
-  previous iteration completes. As a result, this loop can not be
-  pipelined.
+      b -= a; 
+  } 
+  ``` 
+  where each iteration in `Minim_Loop` can
+  not start before the previous iteration completes. As a result, this
+  loop can not be pipelined.
 
 * We may *rewind* a pipelined loop to effect continuous execution of
   successive calls to the loop by using the option `#pragma HLS

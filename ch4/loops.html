@@ -433,20 +433,22 @@ ease its processing and reporting processes.</p>
 <li><p>Hardware constraints, data dependencies within an iteration, and/or
 loop dependencies may prohibit Vitis HLS to achieve the specified II
 value for a loop. In such case, Vitis HLS will generate a design
-that achieves the lowest possible II instead. In some extreme cases,
-loop dependencies may render pipelining a loop impossible. For
-example, see the following example from <span id="id2">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>:</p>
+that achieves the lowest possible II instead. In some cases, we may
+be able to re-factor the C++ code forming the loop to achieve a
+lower II.  In some extreme cases, loop dependencies may render
+pipelining a loop impossible. For example, see the following example
+from <span id="id2">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="nl">Minim_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
-<span class="w">    </span><span class="n">a</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="w">    </span><span class="n">a</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"> </span>
 <span class="w">  </span><span class="k">else</span><span class="w"> </span>
-<span class="w">    </span><span class="n">b</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="w">    </span><span class="n">b</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">a</span><span class="p">;</span><span class="w"> </span>
+<span class="p">}</span><span class="w"> </span>
 </pre></div>
 </div>
-<p>where each iteration in <code class="docutils literal notranslate"><span class="pre">Minim_Loop</span></code> can not start before the
-previous iteration completes. As a result, this loop can not be
-pipelined.</p>
+<p>where each iteration in <code class="docutils literal notranslate"><span class="pre">Minim_Loop</span></code> can
+not start before the previous iteration completes. As a result, this
+loop can not be pipelined.</p>
 </li>
 <li><p>We may <em>rewind</em> a pipelined loop to effect continuous execution of
 successive calls to the loop by using the option <code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">pipeline</span> <span class="pre">rewind</span></code>.  Rewinding can only apply if there is one single
