@@ -1,3 +1,4 @@
+(sec:loops)=
 # Loops
 Loops are standard C/C++ constructs that are ubiquitous in specifying
 repetitive operations in a DSP kernel. The two main HLS optimization
@@ -34,6 +35,30 @@ task-level pipelining and parallelization discussed in
      shown in the example above.
  
   ```{tip}
-  It is recommended to label each loop in the C++ code to 
-  ease the processing and reporting processes of Vitis HLS.
+  Vitis HLS requires us to label each loop in the C++ code to 
+  ease its processing and reporting processes.
   ```
+
+* Hardware constraints, data dependencies within an iteration, and/or
+  loop dependencies may prohibit Vitis HLS to achieve the specified II
+  value for a loop. In such case, Vitis HLS will generate a design
+  that achieves the lowest possible II instead. In some extreme cases,
+  loop dependencies may render pipelining a loop impossible. For
+  example, see the following example from {cite}`ug1399`:
+  ```c++
+  Minim_Loop: while (a != b) {
+    if (a > b)
+      a -= b;
+    else 
+      b -= a;
+  }
+  ```
+  where each iteration in `Minim_Loop` can not start before the
+  previous iteration completes. As a result, this loop can not be
+  pipelined.
+
+* We may *rewind* a pipelined loop to effect continuous execution of
+  successive calls to the loop by using the option `#pragma HLS
+  pipeline rewind`.  Rewinding can only apply if there is one single
+  loop inside the top-level function and the code segment before the
+  loop is executed only once in the pipeline without any conditionals.

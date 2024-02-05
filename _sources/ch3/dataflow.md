@@ -264,7 +264,8 @@ which are also often referred to as ***channels***.
     functions.
   - It can be easily check that the dataflow region is specified in
     the canonical form in this example. Instruction-level pipelining
-    is also requested by the pipeline pragma in each task function. 
+    is also requested by the pipeline pragma in the loop in each task
+    function (see {numref}`sec:loops` for more discussion).
 
 ## Mixed Data- and Control-driven Execution Model
 * We can also mix the two execution models in a data flow graph of a
