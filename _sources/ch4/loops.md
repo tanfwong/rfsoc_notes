@@ -35,7 +35,7 @@ task-level pipelining and parallelization discussed in
      shown in the example above.
  
   ```{tip}
-  It is recommended to label each loop in the C++ code to 
+  It is recommended that we label each loop in the C++ code to 
   ease the processing and reporting processes by Vitis HLS.
   ```
 
