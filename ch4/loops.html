@@ -423,7 +423,7 @@ of one clock cycle for the pipeline.</p></li>
 clock cycle to add them, and one clock cycle to write to
 <code class="docutils literal notranslate"><span class="pre">c[i]</span></code>. Without the pipeline pragma, each iteration of loop
 will take 3 clock cycles and the loop’s II=3.</p></li>
-<li><p>Since there is no <em><strong>loop dependency</strong></em>, i.e., the next iteration
+<li><p>Since there is no <em><strong>loop dependence</strong></em>, i.e., the next iteration
 of the loop may begin before the current iteration completes, the
 target II=1 can be achieved by pipelining the loop <code class="docutils literal notranslate"><span class="pre">vadd</span></code> as
 shown in the example above.</p></li>
@@ -434,30 +434,57 @@ loop dependencies may prohibit Vitis HLS to achieve the specified II
 value for a loop.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>If the target II value specified in the pipeline pragma can not be
-achieved, Vitis HLS will produce a timing vilation warning message
-during synthesis.
-Not specifying the <code class="docutils literal notranslate"><span class="pre">II=1</span></code> option in the pipeline pragma also sets
+<ul class="simple">
+<li><p>If the target II value specified in the pipeline pragma can not be
+achieved, Vitis HLS will produce a design with the specified II
+value and issue a timing vilation warning message during synthesis.</p></li>
+<li><p>Not specifying the <code class="docutils literal notranslate"><span class="pre">II=1</span></code> option in the pipeline pragma also sets
 the target II to 1; however by not specifying the target II,
 Vitis HLS will generate a design that achieves the lowest possible
-II and issue an II violation message instead.</p>
+II and issue an II violation message instead.</p></li>
+</ul>
 </div>
 </li>
 <li><p>In some cases, we may be able to re-factor the C++ code forming the
-loop to achieve a lower II.  In some extreme cases, loop
-dependencies may render pipelining a loop impossible. For example,
-see the following example from <span id="id2">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="nl">Minim_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
-<span class="w">    </span><span class="n">a</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"> </span>
-<span class="w">  </span><span class="k">else</span><span class="w"> </span>
-<span class="w">    </span><span class="n">b</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">a</span><span class="p">;</span><span class="w"> </span>
-<span class="p">}</span><span class="w"> </span>
+loop to achieve a lower II. For example, consider the loop <code class="docutils literal notranslate"><span class="pre">iir1</span></code>
+below that implements a simple first-order IIR filter:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="nl">iir1</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="mi">100</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS pipeline II=1</span>
+<span class="w">  </span><span class="n">y</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">[</span><span class="n">n</span><span class="mi">-1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<p>where each iteration in <code class="docutils literal notranslate"><span class="pre">Minim_Loop</span></code> can
-not start before the previous iteration completes. As a result, this
-loop can not be pipelined.</p>
+<p>where <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> are both <code class="docutils literal notranslate"><span class="pre">int</span></code> arrays containing 100 elements. The
+loop <code class="docutils literal notranslate"><span class="pre">iir1</span></code> carries a type of loop dependence called <em>cyclic
+dependence</em> where the current iteration of the loop depends on the
+results obtained in the previous iterations. The cyclic dependence
+could render the specified II=1 not achievable in the <code class="docutils literal notranslate"><span class="pre">iir1</span></code>
+loop. Nevertheless, consider re-factoring the loop as below:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">tmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="nl">iir2</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="mi">100</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS pipeline II=1</span>
+<span class="w">  </span><span class="n">tmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tmp</span><span class="o">/</span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+<span class="w">  </span><span class="n">y</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tmp</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Assume that each iteration in <code class="docutils literal notranslate"><span class="pre">iir2</span></code> can be completed in 3 clock cycles:</p>
+<ul class="simple">
+<li><p>In the first clock cycle, <code class="docutils literal notranslate"><span class="pre">x[n]</span></code> is read.</p></li>
+<li><p>In the second clock cycle, the division of <code class="docutils literal notranslate"><span class="pre">tmp</span></code>, the addition
+with <code class="docutils literal notranslate"><span class="pre">x[n]</span></code>, and the update of <code class="docutils literal notranslate"><span class="pre">tmp</span></code> in the line
+<code class="docutils literal notranslate"><span class="pre">tmp</span> <span class="pre">=</span> <span class="pre">tmp/2</span> <span class="pre">+</span> <span class="pre">x[n]</span></code> can all be done. (Note that <code class="docutils literal notranslate"><span class="pre">tmp</span></code> is
+instantiated as a register rather than RAM and thus can speed
+the operations in this line.)</p></li>
+<li><p>In the third clock cycle, <code class="docutils literal notranslate"><span class="pre">y[n]</span></code> is written.</p></li>
+</ul>
+<p>Then, the specified II=1 can be achieved in spite of the cyclic
+dependence. As a matter of fact, Vitis HLS is smart enough to
+perform the re-factoring for <code class="docutils literal notranslate"><span class="pre">iir1</span></code> automatically during
+synthesis. See Lab 3 for a more in-depth treatment of the above
+example.</p>
 </li>
 <li><p>We may <em>rewind</em> a pipelined loop to effect continuous execution of
 successive calls to the loop by using the option <code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">pipeline</span> <span class="pre">rewind</span></code>.  Rewinding can only apply if there is one single
