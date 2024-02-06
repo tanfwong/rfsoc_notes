@@ -379,6 +379,8 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loop-pipelining">4.2.1. Loop Pipelining</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loop-unrolling">4.2.2. Loop Unrolling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loop-merging">4.2.3. Loop Merging</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nested-loops">4.2.4. Nested Loops</a></li>
 </ul>
             </nav>
         </div>
@@ -541,6 +543,36 @@ about this in <a class="reference internal" href="arrays.html#sec-arrays"><span 
 </li>
 </ul>
 </section>
+<section id="loop-merging">
+<h2><span class="section-number">4.2.3. </span>Loop Merging<a class="headerlink" href="#loop-merging" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Each loop creates at least 1 state in the FSM of a DSP kernel. If
+there are a sequence of loops in a function of the C++ specification
+of the kernel, it takes at least one clock cycle to enter a loop,
+another clock cycle to exit the loop and enter the next loop in the
+sequence, and so on. <em>Loop merging</em> is the optimization that
+merges consecutive loops into a single loop to reduce overall
+latency, and to allow potential control logic sharing logic as well
+as parallelization if possible.</p></li>
+<li><p>Using <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-loop_merge"><code class="docutils literal notranslate"><span class="pre">pragma</span> <span class="pre">HLS</span> <span class="pre">loop_merge</span></code></a>
+tells Vitis HLS to merge all loops within the scope the pragma is
+placed, conforming to the following set of rules:</p>
+<ul>
+<li><p>If the loop bounds are variables, they must have the same value,
+i.e., the number of iterations of the loops mus be the same.</p></li>
+<li><p>If the loop bounds are constants, the maximum is used as the bound of the merged loop.</p></li>
+<li><p>Loops with both variable bounds and constant bounds cannot be merged.</p></li>
+<li><p>The code between loops to be merged cannot have side effects,
+i.e., multiple execution of this code should generate the same results.</p></li>
+<li><p>Loops cannot be merged when they contain FIFO reads because
+merging may change the order of the reads.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="nested-loops">
+<h2><span class="section-number">4.2.4. </span>Nested Loops<a class="headerlink" href="#nested-loops" title="Permalink to this headline">#</a></h2>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -612,6 +644,8 @@ about this in <a class="reference internal" href="arrays.html#sec-arrays"><span 
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loop-pipelining">4.2.1. Loop Pipelining</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loop-unrolling">4.2.2. Loop Unrolling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loop-merging">4.2.3. Loop Merging</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nested-loops">4.2.4. Nested Loops</a></li>
 </ul>
   </nav></div>
 

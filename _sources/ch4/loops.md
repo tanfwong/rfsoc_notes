@@ -144,3 +144,29 @@ task-level pipelining and parallelization discussed in
   in the latency of `Loop` because of limitations in accessing the
   elements of array `x` which is stored in RAM. See more discussions
   about this in {numref}`sec:arrays` and Lab 3. 
+
+## Loop Merging
+* Each loop creates at least 1 state in the FSM of a DSP kernel. If
+  there are a sequence of loops in a function of the C++ specification
+  of the kernel, it takes at least one clock cycle to enter a loop,
+  another clock cycle to exit the loop and enter the next loop in the
+  sequence, and so on. *Loop merging* is the optimization that
+  merges consecutive loops into a single loop to reduce overall
+  latency, and to allow potential control logic sharing logic as well
+  as parallelization if possible.
+
+* Using [`pragma HLS
+  loop_merge`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-loop_merge)
+  tells Vitis HLS to merge all loops within the scope the pragma is
+  placed, conforming to the following set of rules:
+  - If the loop bounds are variables, they must have the same value,
+    i.e., the number of iterations of the loops mus be the same.
+  - If the loop bounds are constants, the maximum is used as the bound of the merged loop.
+  - Loops with both variable bounds and constant bounds cannot be merged.
+  - The code between loops to be merged cannot have side effects,
+    i.e., multiple execution of this code should generate the same results.
+  - Loops cannot be merged when they contain FIFO reads because
+    merging may change the order of the reads.
+
+
+## Nested Loops
