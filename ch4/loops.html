@@ -377,6 +377,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loop-pipelining">4.2.1. Loop Pipelining</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loop-unrolling">4.2.2. Loop Unrolling</a></li>
 </ul>
             </nav>
         </div>
@@ -490,7 +491,18 @@ example.</p>
 successive calls to the loop by using the option <code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">pipeline</span> <span class="pre">rewind</span></code>.  Rewinding can only apply if there is one single
 loop inside the top-level function and the code segment before the
 loop is executed only once in the pipeline without any conditionals.</p></li>
+<li><p>We may also specify the type of pipeline to be used using the
+<code class="docutils literal notranslate"><span class="pre">style=</span></code> option. The three possible choices are <code class="docutils literal notranslate"><span class="pre">stp</span></code> standing for a
+stall pipeline, <code class="docutils literal notranslate"><span class="pre">flp</span></code> standing for a flushable pipeline, and <code class="docutils literal notranslate"><span class="pre">frp</span></code>
+standing for a free-running pipeline. The stall pipeline is the
+default choice. See <span id="id2">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span> for the details about these three
+different pipeline types.</p></li>
+<li><p>We may also pipeline the body of a function in the same way that we
+pipeline a loop.</p></li>
 </ul>
+</section>
+<section id="loop-unrolling">
+<h2><span class="section-number">4.2.2. </span>Loop Unrolling<a class="headerlink" href="#loop-unrolling" title="Permalink to this headline">#</a></h2>
 </section>
 </section>
 
@@ -562,6 +574,7 @@ loop is executed only once in the pipeline without any conditionals.</p></li>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loop-pipelining">4.2.1. Loop Pipelining</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loop-unrolling">4.2.2. Loop Unrolling</a></li>
 </ul>
   </nav></div>
 

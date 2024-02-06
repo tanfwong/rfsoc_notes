@@ -97,3 +97,15 @@ task-level pipelining and parallelization discussed in
   pipeline rewind`.  Rewinding can only apply if there is one single
   loop inside the top-level function and the code segment before the
   loop is executed only once in the pipeline without any conditionals.
+
+* We may also specify the type of pipeline to be used using the
+  `style=` option. The three possible choices are `stp` standing for a
+  stall pipeline, `flp` standing for a flushable pipeline, and `frp`
+  standing for a free-running pipeline. The stall pipeline is the
+  default choice. See {cite}`ug1399` for the details about these three
+  different pipeline types.
+
+* We may also pipeline the body of a function in the same way that we
+  pipeline a loop.
+
+## Loop Unrolling
