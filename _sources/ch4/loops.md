@@ -8,12 +8,8 @@ task-level pipelining and parallelization discussed in
 {numref}`sec:pro-con`.
 
 ## Loop Pipelining
-* By default, Vitis HLS automatically pipelines a loop whose 
-  *iteration/trip count* is larger than $64$. This trip count
-  threshold for automatic pipelining can be set as a configuration
-  parameter in Vitis HLS. 
-
-* We may also invoke loop pipelining by using [`#pragma HLS
+* By default, Vitis HLS automatically pipelines a loop. We may also
+  invoke loop pipelining by using [`#pragma HLS
   pipeline`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-pipeline)
   as shown in the following C++ code snippet from {cite}`ug1399`:
   ```c++
@@ -91,7 +87,10 @@ task-level pipelining and parallelization discussed in
   perform the re-factoring for `iir1` automatically during
   synthesis. See Lab 3 for a more in-depth treatment of the above
   example.
-  
+
+* We may explicitly turn off loop pipelining by putting `#pragma HLS
+  pipiline off` in the loop body.
+
 * We may *rewind* a pipelined loop to effect continuous execution of
   successive calls to the loop by using the option `#pragma HLS
   pipeline rewind`.  Rewinding can only apply if there is one single
@@ -102,10 +101,46 @@ task-level pipelining and parallelization discussed in
   `style=` option. The three possible choices are `stp` standing for a
   stall pipeline, `flp` standing for a flushable pipeline, and `frp`
   standing for a free-running pipeline. The stall pipeline is the
-  default choice. See {cite}`ug1399` for the details about these three
+  default choice. See {cite}`ug1399` for details about these three
   different pipeline types.
 
 * We may also pipeline the body of a function in the same way that we
   pipeline a loop.
 
 ## Loop Unrolling
+* Unrolling a loop creates multiple copies of the loop body for
+  parallelization. Clearly, loop unrolling can reduce the iterative
+  latency of the loop at the expense of increasing PL resource
+  utilization. 
+
+* We may use [`#pragma HLS
+  unroll`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-unroll)
+  in a loop body to tell Vitis HLS to unroll the loop. 
+  - By default, Vitis HLS keeps all loops rolled unless the unroll
+    pragma is specified.
+  - Specifying the pragma with no option will fully unroll the loop
+    and remove the loop hierarchy. In order the fully unroll a loop,
+    the loop bound must be known (and fixed) at the build time.
+  - We may also partially unroll a loop by specifying the `factor`
+    option in the unroll pragma. For example, `#pragma HLS unroll
+    factor=2` creates 2 copies of the loop body and reduces the trip
+    count of the loop to a half of the original value. The loop bound
+    can be variable for a loop to be partially unrolled. In such case
+    and whenever necessary,
+    Vitis HLS will add control logic to perform the necessary loop
+    exit check. We can turn off adding the exit check logic by using
+    the `skip_exit_check` option.
+
+* For example, by fully unrolling the following loop: 
+  ```c++ 
+  int acc = 0; 
+  Loop: for (int n=0; n<10; n++) { 
+  #pragma HLS unroll 
+    acc += x[n];
+  } 
+  ``` 
+  Vitis HLS generates a tree of binary adders with a depth of
+  $\lceil \log_2 10 \rceil = 5$. However, we may not see much reduction
+  in the latency of `Loop` because of limitations in accessing the
+  elements of array `x` which is stored in RAM. See more discussions
+  about this in {numref}`sec:arrays` and Lab 3. 
