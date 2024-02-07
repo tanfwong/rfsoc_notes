@@ -172,7 +172,7 @@ task-level pipelining and parallelization discussed in
 
 
 ## Nested Loops
-* Consider pipelining the following nested loops as shown below:
+* Consider pipelining the following pair of nested loops as shown below:
   ```c++
   int acc = 0;
   loop_i: for (int i=0; i<10; i++) {
@@ -183,11 +183,82 @@ task-level pipelining and parallelization discussed in
   }
   ```
   - Vitis HLS first unrolls the inner loop (`loop_j`) and then
-    pipeline `loop_i`. Other optimizations may also be applied. For
+    pipelines `loop_i`. Other optimizations may also be applied. For
     example, Vitis HLS recognizes that only a single multiplication is
     needed per iteration of `loop_i` after unrolling `loop_j`, and
     thus it simplifies the RTL design to reduce the amount of PL
     resources required to unroll `loop_j`.
+  - Because the inner loop is unrolled, pipelining the nested loops
+    this way may significantly increase the amount of PL resources
+    needed to implement the nested loops.
   - Since Vitis HLS automatically pipeline loops, we will obtain the
     same synthesized RTL design even if the pipeline pragma in the
     code above is absent.
+
+* Another approach to pipeline the nested loops is to *flatten* them
+  first and then pipeline the flattened loop. *Loop flattening* is the
+  HLS optimization that removes the hierarchy of nested loops to
+  convert them into a single loop. For example, the nested loops above
+  can be flattened using [`#pragma HLS
+  loop_flatten`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-loop_flatten)
+  as shown below:
+  ```c++
+  int acc = 0;
+  loop_i: for (int i=0; i<10; i++) {
+    loop_j: for (int j=0; j<10; j++) {
+  #pragma HLS loop_flatten
+      acc += x[i]*y[j]; 
+    }
+  }
+  ```
+  - In this case, Vitis HLS will convert the nested loops, `loop_i` and
+    `loop_j`, into a single loop `loop_i_loop_j` running through 100
+    terations. 
+  - Vitis HLS will then automatically pipeline the flattened loop
+    `loop_i_loop_j`. This approach of "first flatterning and then
+    pipelining" the nested loops uses significantly less PL resources
+    because the inner loop is not unrolled. However, it may also
+    significantly increase the latency since the trip count of the
+    flatten loop is now the product of those of the nested loops.
+  
+  ```{tip}
+  The "first flatterning and then pipelining" in the example 
+  above may also be invoked by replacing the loop-flatten 
+  pragma with a pipeline pragma in the inner loop `loop_j`.
+  Putting the pipeline pragma in `loop_j` tells Vitis HLS to pipeline
+  the innner loop. But that can not be done because there is an outer
+  loop and thus Vitis HLS must flattern the nested loops first before
+  it can pipeline `loop_j`.
+  ```
+  ```{caution}
+  Loop flattening may not be applied to some nested loops. More
+  specifically, we can classify nested loops into the following 3 categories:
+  ~~~{glossary}
+  Perfect loop nests
+    - Only the innermost loop has loop body content.
+    - There is no logic specified between the loop statements.
+    - All loop bounds are constants.
+  
+  Semi-perfect loop nests
+    - Only the innermost loop has loop body content.
+    - There is no logic specified between the loop statements.
+    - The outermost loop bound is a variable.
+  
+  Imperfect loop nests
+    - Any nested loops that are not perfect or semi-perfect.
+  ~~~
+  **Only perfect and semi-perfect nested loops may be flattened.** 
+  ```
+
+* Both unrolling the inner loop and flattening the nested loops before
+  pipelining in the examples above have the added advantage reducing
+  the number of clock cycles going running through the loop
+  hierarchy. Recall that a clock cycle is needed for each entering and
+  each exiting the inner loop `loop_j`. Thus, a total of 20 additional
+  clock cycles are expensed in the outer loop `loop_i` just for
+  entering and exiting `loop_j` as `loop_i` goes through its 10
+  iterations. Either unrolling `loop_j` or flattening the nested loops
+  removes the inner loop from the loop hierarchy and hence save these
+  extra 20 clock cycles.
+    
+

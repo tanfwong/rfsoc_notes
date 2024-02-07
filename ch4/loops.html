@@ -575,7 +575,7 @@ merging may change the order of the reads.</p></li>
 <section id="nested-loops">
 <h2><span class="section-number">4.2.4. </span>Nested Loops<a class="headerlink" href="#nested-loops" title="Permalink to this headline">#</a></h2>
 <ul>
-<li><p>Consider pipelining the following nested loops as shown below:</p>
+<li><p>Consider pipelining the following pair of nested loops as shown below:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">acc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="nl">loop_i</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="cp">#pragma HLS pipeline II=1</span>
@@ -587,16 +587,90 @@ merging may change the order of the reads.</p></li>
 </div>
 <ul class="simple">
 <li><p>Vitis HLS first unrolls the inner loop (<code class="docutils literal notranslate"><span class="pre">loop_j</span></code>) and then
-pipeline <code class="docutils literal notranslate"><span class="pre">loop_i</span></code>. Other optimizations may also be applied. For
+pipelines <code class="docutils literal notranslate"><span class="pre">loop_i</span></code>. Other optimizations may also be applied. For
 example, Vitis HLS recognizes that only a single multiplication is
 needed per iteration of <code class="docutils literal notranslate"><span class="pre">loop_i</span></code> after unrolling <code class="docutils literal notranslate"><span class="pre">loop_j</span></code>, and
 thus it simplifies the RTL design to reduce the amount of PL
 resources required to unroll <code class="docutils literal notranslate"><span class="pre">loop_j</span></code>.</p></li>
+<li><p>Because the inner loop is unrolled, pipelining the nested loops
+this way may significantly increase the amount of PL resources
+needed to implement the nested loops.</p></li>
 <li><p>Since Vitis HLS automatically pipeline loops, we will obtain the
 same synthesized RTL design even if the pipeline pragma in the
 code above is absent.</p></li>
 </ul>
 </li>
+<li><p>Another approach to pipeline the nested loops is to <em>flatten</em> them
+first and then pipeline the flattened loop. <em>Loop flattening</em> is the
+HLS optimization that removes the hierarchy of nested loops to
+convert them into a single loop. For example, the nested loops above
+can be flattened using <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-loop_flatten"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">loop_flatten</span></code></a>
+as shown below:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">acc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="nl">loop_i</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nl">loop_j</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS loop_flatten</span>
+<span class="w">    </span><span class="n">acc</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">y</span><span class="p">[</span><span class="n">j</span><span class="p">];</span><span class="w"> </span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>In this case, Vitis HLS will convert the nested loops, <code class="docutils literal notranslate"><span class="pre">loop_i</span></code> and
+<code class="docutils literal notranslate"><span class="pre">loop_j</span></code>, into a single loop <code class="docutils literal notranslate"><span class="pre">loop_i_loop_j</span></code> running through 100
+terations.</p></li>
+<li><p>Vitis HLS will then automatically pipeline the flattened loop
+<code class="docutils literal notranslate"><span class="pre">loop_i_loop_j</span></code>. This approach of “first flatterning and then
+pipelining” the nested loops uses significantly less PL resources
+because the inner loop is not unrolled. However, it may also
+significantly increase the latency since the trip count of the
+flatten loop is now the product of those of the nested loops.</p></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The “first flatterning and then pipelining” in the example
+above may also be invoked by replacing the loop-flatten
+pragma with a pipeline pragma in the inner loop <code class="docutils literal notranslate"><span class="pre">loop_j</span></code>.
+Putting the pipeline pragma in <code class="docutils literal notranslate"><span class="pre">loop_j</span></code> tells Vitis HLS to pipeline
+the innner loop. But that can not be done because there is an outer
+loop and thus Vitis HLS must flattern the nested loops first before
+it can pipeline <code class="docutils literal notranslate"><span class="pre">loop_j</span></code>.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Loop flattening may not be applied to some nested loops. More
+specifically, we can classify nested loops into the following 3 categories:</p>
+<dl class="glossary simple">
+<dt id="term-Perfect-loop-nests">Perfect loop nests<a class="headerlink" href="#term-Perfect-loop-nests" title="Permalink to this term">#</a></dt><dd><ul class="simple">
+<li><p>Only the innermost loop has loop body content.</p></li>
+<li><p>There is no logic specified between the loop statements.</p></li>
+<li><p>All loop bounds are constants.</p></li>
+</ul>
+</dd>
+<dt id="term-Semi-perfect-loop-nests">Semi-perfect loop nests<a class="headerlink" href="#term-Semi-perfect-loop-nests" title="Permalink to this term">#</a></dt><dd><ul class="simple">
+<li><p>Only the innermost loop has loop body content.</p></li>
+<li><p>There is no logic specified between the loop statements.</p></li>
+<li><p>The outermost loop bound is a variable.</p></li>
+</ul>
+</dd>
+<dt id="term-Imperfect-loop-nests">Imperfect loop nests<a class="headerlink" href="#term-Imperfect-loop-nests" title="Permalink to this term">#</a></dt><dd><ul class="simple">
+<li><p>Any nested loops that are not perfect or semi-perfect.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Only perfect and semi-perfect nested loops may be flattened.</strong></p>
+</div>
+</li>
+<li><p>Both unrolling the inner loop and flattening the nested loops before
+pipelining in the examples above have the added advantage reducing
+the number of clock cycles going running through the loop
+hierarchy. Recall that a clock cycle is needed for each entering and
+each exiting the inner loop <code class="docutils literal notranslate"><span class="pre">loop_j</span></code>. Thus, a total of 20 additional
+clock cycles are expensed in the outer loop <code class="docutils literal notranslate"><span class="pre">loop_i</span></code> just for
+entering and exiting <code class="docutils literal notranslate"><span class="pre">loop_j</span></code> as <code class="docutils literal notranslate"><span class="pre">loop_i</span></code> goes through its 10
+iterations. Either unrolling <code class="docutils literal notranslate"><span class="pre">loop_j</span></code> or flattening the nested loops
+removes the inner loop from the loop hierarchy and hence save these
+extra 20 clock cycles.</p></li>
 </ul>
 </section>
 </section>
