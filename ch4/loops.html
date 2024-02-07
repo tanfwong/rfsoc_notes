@@ -437,8 +437,10 @@ value for a loop.</p>
 <p class="admonition-title">Tip</p>
 <ul class="simple">
 <li><p>If the target II value specified in the pipeline pragma can not be
-achieved, Vitis HLS will produce a design with the specified II
-value and issue a timing vilation warning message during synthesis.</p></li>
+achieved, Vitis HLS may still produce a design with the specified II
+value and issue a timing vilation warning message during
+synthesis. In some cases, it may generate a design that achieves the
+lowest possible II and issue an II violation message instead.</p></li>
 <li><p>Not specifying the <code class="docutils literal notranslate"><span class="pre">II=1</span></code> option in the pipeline pragma also sets
 the target II to 1; however by not specifying the target II,
 Vitis HLS will generate a design that achieves the lowest possible
@@ -538,7 +540,7 @@ the <code class="docutils literal notranslate"><span class="pre">skip_exit_check
 <p>Vitis HLS generates a tree of binary adders with a depth of
 <span class="math notranslate nohighlight">\(\lceil \log_2 10 \rceil = 5\)</span>. However, we may not see much reduction
 in the latency of <code class="docutils literal notranslate"><span class="pre">Loop</span></code> because of limitations in accessing the
-elements of array <code class="docutils literal notranslate"><span class="pre">x</span></code> which is stored in RAM. See more discussions
+elements of array <code class="docutils literal notranslate"><span class="pre">x</span></code> which are stored in RAM. See more discussions
 about this in <a class="reference internal" href="arrays.html#sec-arrays"><span class="std std-numref">Section 4.3</span></a> and Lab 3.</p>
 </li>
 </ul>
@@ -572,6 +574,30 @@ merging may change the order of the reads.</p></li>
 </section>
 <section id="nested-loops">
 <h2><span class="section-number">4.2.4. </span>Nested Loops<a class="headerlink" href="#nested-loops" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>Consider pipelining the following nested loops as shown below:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">acc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="nl">loop_i</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS pipeline II=1</span>
+<span class="w">  </span><span class="nl">loop_j</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">acc</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">y</span><span class="p">[</span><span class="n">j</span><span class="p">];</span><span class="w"> </span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Vitis HLS first unrolls the inner loop (<code class="docutils literal notranslate"><span class="pre">loop_j</span></code>) and then
+pipeline <code class="docutils literal notranslate"><span class="pre">loop_i</span></code>. Other optimizations may also be applied. For
+example, Vitis HLS recognizes that only a single multiplication is
+needed per iteration of <code class="docutils literal notranslate"><span class="pre">loop_i</span></code> after unrolling <code class="docutils literal notranslate"><span class="pre">loop_j</span></code>, and
+thus it simplifies the RTL design to reduce the amount of PL
+resources required to unroll <code class="docutils literal notranslate"><span class="pre">loop_j</span></code>.</p></li>
+<li><p>Since Vitis HLS automatically pipeline loops, we will obtain the
+same synthesized RTL design even if the pipeline pragma in the
+code above is absent.</p></li>
+</ul>
+</li>
+</ul>
 </section>
 </section>
 

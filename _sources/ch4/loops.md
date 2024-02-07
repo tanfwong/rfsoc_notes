@@ -41,12 +41,14 @@ task-level pipelining and parallelization discussed in
   value for a loop.
   ```{tip}
   * If the target II value specified in the pipeline pragma can not be
-  achieved, Vitis HLS will produce a design with the specified II
-  value and issue a timing vilation warning message during synthesis. 
+    achieved, Vitis HLS may still produce a design with the specified II
+    value and issue a timing vilation warning message during
+    synthesis. In some cases, it may generate a design that achieves the
+    lowest possible II and issue an II violation message instead.
   * Not specifying the `II=1` option in the pipeline pragma also sets
-  the target II to 1; however by not specifying the target II, 
-  Vitis HLS will generate a design that achieves the lowest possible
-  II and issue an II violation message instead.
+    the target II to 1; however by not specifying the target II, 
+    Vitis HLS will generate a design that achieves the lowest possible
+    II and issue an II violation message instead.
   ```
 * In some cases, we may be able to re-factor the C++ code forming the
    loop to achieve a lower II. For example, consider the loop `iir1`
@@ -142,7 +144,7 @@ task-level pipelining and parallelization discussed in
   Vitis HLS generates a tree of binary adders with a depth of
   $\lceil \log_2 10 \rceil = 5$. However, we may not see much reduction
   in the latency of `Loop` because of limitations in accessing the
-  elements of array `x` which is stored in RAM. See more discussions
+  elements of array `x` which are stored in RAM. See more discussions
   about this in {numref}`sec:arrays` and Lab 3. 
 
 ## Loop Merging
@@ -170,3 +172,22 @@ task-level pipelining and parallelization discussed in
 
 
 ## Nested Loops
+* Consider pipelining the following nested loops as shown below:
+  ```c++
+  int acc = 0;
+  loop_i: for (int i=0; i<10; i++) {
+  #pragma HLS pipeline II=1
+    loop_j: for (int j=0; j<10; j++) {
+      acc += x[i]*y[j]; 
+    }
+  }
+  ```
+  - Vitis HLS first unrolls the inner loop (`loop_j`) and then
+    pipeline `loop_i`. Other optimizations may also be applied. For
+    example, Vitis HLS recognizes that only a single multiplication is
+    needed per iteration of `loop_i` after unrolling `loop_j`, and
+    thus it simplifies the RTL design to reduce the amount of PL
+    resources required to unroll `loop_j`.
+  - Since Vitis HLS automatically pipeline loops, we will obtain the
+    same synthesized RTL design even if the pipeline pragma in the
+    code above is absent.
