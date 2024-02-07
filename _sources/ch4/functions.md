@@ -117,7 +117,7 @@ below).
 * Function instantiation locally optimizes the RTL implementation for
   each instance of a function by exploiting the situation in which
   some inputs to the function are constant values when the
-  function. This optimization may simplify the surrounding control
+  function is called. This optimization may simplify the surrounding control
   structures and produce smaller more optimized function blocks.
 
 * Function instantiation is involved by using [`#pragma HLS

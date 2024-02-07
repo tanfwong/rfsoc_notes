@@ -543,6 +543,27 @@ in the latency of <code class="docutils literal notranslate"><span class="pre">L
 elements of array <code class="docutils literal notranslate"><span class="pre">x</span></code> which are stored in RAM. See more discussions
 about this in <a class="reference internal" href="arrays.html#sec-arrays"><span class="std std-numref">Section 4.3</span></a> and Lab 3.</p>
 </li>
+<li><p>We may fully unroll a loop with a variable loop bound by refactoring
+the loop to have a constant loop bound. For example, consider the
+following loop whose bound <code class="docutils literal notranslate"><span class="pre">N</span></code> is a variable:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">acc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span>
+<span class="nl">Loop_var</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="w">  </span><span class="n">acc</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This loop can not be fully unrolled. However, if we refactor the
+loop as below</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">acc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span>
+<span class="nl">Loop_var_fixed</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="cp">#pragma HLS unroll </span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="n">acc</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+<span class="p">}</span><span class="w"> </span>
+</pre></div>
+</div>
+<p>then we may fully unroll the loop because its bound is a constant
+now.</p>
+</li>
 </ul>
 </section>
 <section id="loop-merging">

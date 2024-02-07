@@ -519,7 +519,7 @@ resource utilization and iteration latency of the kernel.</p></li>
 <li><p>Function instantiation locally optimizes the RTL implementation for
 each instance of a function by exploiting the situation in which
 some inputs to the function are constant values when the
-function. This optimization may simplify the surrounding control
+function is called. This optimization may simplify the surrounding control
 structures and produce smaller more optimized function blocks.</p></li>
 <li><p>Function instantiation is involved by using <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-function_instantiate"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">function_instantiate</span></code></a>
 as shown in the following <a class="reference external" href="https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/2023.2/Pipelining/Functions/function_instantiate/example.cpp">example</a>:</p>

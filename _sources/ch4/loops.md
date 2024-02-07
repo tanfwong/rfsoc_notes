@@ -147,6 +147,27 @@ task-level pipelining and parallelization discussed in
   elements of array `x` which are stored in RAM. See more discussions
   about this in {numref}`sec:arrays` and Lab 3. 
 
+* We may fully unroll a loop with a variable loop bound by refactoring
+  the loop to have a constant loop bound. For example, consider the
+  following loop whose bound `N` is a variable:
+  ```c++ 
+  int acc = 0; 
+  Loop_var: for (int n=0; n<N; n++) { 
+    acc += x[n];
+  }
+  ```
+  This loop can not be fully unrolled. However, if we refactor the
+  loop as below
+  ```c++ 
+  int acc = 0; 
+  Loop_var_fixed: for (int n=0; n<10; n++) { 
+  #pragma HLS unroll 
+    if (n<N) acc += x[n];
+  } 
+  ```
+  then we may fully unroll the loop because its bound is a constant
+  now.
+
 ## Loop Merging
 * Each loop creates at least 1 state in the FSM of a DSP kernel. If
   there are a sequence of loops in a function of the C++ specification
