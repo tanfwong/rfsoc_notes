@@ -142,7 +142,7 @@ task-level pipelining and parallelization discussed in
   } 
   ``` 
   Vitis HLS generates a tree of binary adders with a depth of
-  $\lceil \log_2 10 \rceil = 5$. However, we may not see much reduction
+  $\lceil \log_2 10 \rceil = 4$. However, we may not see much reduction
   in the latency of `Loop` because of limitations in accessing the
   elements of array `x` which are stored in RAM. See more discussions
   about this in {numref}`sec:arrays` and Lab 3. 
