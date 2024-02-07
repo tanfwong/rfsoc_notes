@@ -261,4 +261,65 @@ task-level pipelining and parallelization discussed in
   removes the inner loop from the loop hierarchy and hence save these
   extra 20 clock cycles.
     
+* For the nested loops with more than 2 levels in the hierarchy, the
+  same set of procedures described about applies.
+  - **Example 1:**
+    ```c++
+    int acc = 0;
+    loop_i: for (int i=0; i<10; i++) {
+    #pragma HLS pipeline II=1
+      loop_j: for (int j=0; j<10; j++) {
+        loop_k: for (int k=0; k<10; k++) {
+          acc += x[i]*y[j]*z[k];
+        }
+      }
+    }
+    ```
+    tells Vitis HLS to unroll the inner loops `loop_j` and `loop_i`
+    and then pipeline `loop_i`. 
+  - **Example 2:**
+    ```c++
+    int acc = 0;
+    loop_i: for (int i=0; i<10; i++) {
+      loop_j: for (int j=0; j<10; j++) {
+        loop_k: for (int k=0; k<10; k++) {
+    #pragma HLS loop_flatten
+          acc += x[i]*y[j]*z[k];
+        }
+      }
+    }
+    ```
+    tells Vitis HLS to flatten all loops into a single loop
+    `loop_i_loop_j_loop_k` and then pipeline the flattened loop.
+  - **Example 3:**
+    ```c++
+    int acc = 0;
+    loop_i: for (int i=0; i<10; i++) {
+      loop_j: for (int j=0; j<10; j++) {
+    #pragma HLS loop_flatten
+        loop_k: for (int k=0; k<10; k++) {
+          acc += x[i]*y[j]*z[k];
+        }
+      }
+    }
+    ```
+    tells Vitis to first unroll `loop_k`, then flatten `loop_i` and
+    `loop_j`, and finally pipeline the flattened loop `loop_i_loop_j`.
 
+  - **Example 4:** By not issuing any pragma,
+    ```c++
+    int acc = 0;
+    loop_i: for (int i=0; i<10; i++) {
+      loop_j: for (int j=0; j<10; j++) {
+        loop_k: for (int k=0; k<10; k++) {
+          acc += x[i]*y[j]*z[k];
+        }
+      }
+    }
+    ```
+      Vitis HLS optimizes by performing exactly the same steps in
+      Example 3, trying to tradeoff between reducing latency and
+      increasing PL resource utilization. 
+    
+  
+  
