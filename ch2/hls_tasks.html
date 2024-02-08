@@ -540,12 +540,12 @@ schedule that is different than the one for the function <code class="docutils l
 efficient for the for-loop in <code class="docutils literal notranslate"><span class="pre">ex2</span></code> (no need to recalculate <code class="docutils literal notranslate"><span class="pre">b+c</span></code>
 in each iteration).</p></li>
 <li><p>In the binding task, the input and output arrays <code class="docutils literal notranslate"><span class="pre">in</span></code> and
-<code class="docutils literal notranslate"><span class="pre">out</span></code> are bound to block RAM resources external to the kernel and
+<code class="docutils literal notranslate"><span class="pre">out</span></code> are bound to RAM resource external to the kernel and
 the other variables are bound to registers. Each of the parameter
 input variables <code class="docutils literal notranslate"><span class="pre">a</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span></code>, and <code class="docutils literal notranslate"><span class="pre">c</span></code> is mapped to an input 8-bit data
 port.</p></li>
 <li><p>In the control logic extraction task, control logics for accessing
-the block RAM and the input data ports for the parameters, such as
+the RAM and the input data ports for the parameters, such as
 data ports, address ports, chip-enable (ce) and write-enable (we)
 signals are created. The HLS tool also construct the FSM as shown in
 <a class="reference internal" href="#hls-task-4"><span class="std std-numref">Fig. 2.2</span></a> to sequence the operation schedule stepping
@@ -560,7 +560,7 @@ cycle to the next:</p>
   \end{equation*}\]</div>
 <p>to implement the for-loop in the function <code class="docutils literal notranslate"><span class="pre">ex2</span></code>. The FSM controls
 the timing of RAM address and control signal generation to read
-from and write to the block RAM as well as the timing of reading
+from and write to the RAM as well as the timing of reading
 from the input ports and internal registers and writing to the
 internal registers. For example, the address to <code class="docutils literal notranslate"><span class="pre">in[0]</span></code> is generated
 in the clock cycle when the FSM first enters the state <span class="math notranslate nohighlight">\(C_1\)</span> so that

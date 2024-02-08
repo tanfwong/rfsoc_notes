@@ -147,13 +147,13 @@
   in each iteration).
 
 * In the binding task, the input and output arrays `in` and
-  `out` are bound to block RAM resources external to the kernel and
+  `out` are bound to RAM resource external to the kernel and
   the other variables are bound to registers. Each of the parameter
   input variables `a`, `b`, and `c` is mapped to an input 8-bit data
   port.
 
 * In the control logic extraction task, control logics for accessing
-  the block RAM and the input data ports for the parameters, such as
+  the RAM and the input data ports for the parameters, such as
   data ports, address ports, chip-enable (ce) and write-enable (we)
   signals are created. The HLS tool also construct the FSM as shown in
   {numref}`HLS_task_4` to sequence the operation schedule stepping
@@ -167,7 +167,7 @@
   \end{equation*}
   to implement the for-loop in the function `ex2`. The FSM controls
   the timing of RAM address and control signal generation to read
-  from and write to the block RAM as well as the timing of reading
+  from and write to the RAM as well as the timing of reading
   from the input ports and internal registers and writing to the
   internal registers. For example, the address to `in[0]` is generated
   in the clock cycle when the FSM first enters the state $C_1$ so that
