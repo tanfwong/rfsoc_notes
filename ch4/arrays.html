@@ -431,6 +431,42 @@ a later section.</p></li>
 <span class="p">}</span>
 </pre></div>
 </div>
+<p>Vitis HLS synthesizes the array <code class="docutils literal notranslate"><span class="pre">x</span></code> into a two-port RAM. Since only two
+reads from the RAM can be made in each clock cycle, it takes 5 clock
+cycles to read the 10 elements in <code class="docutils literal notranslate"><span class="pre">x</span></code> even though <code class="docutils literal notranslate"><span class="pre">Loop</span></code> is unrolled
+into a binary adder tree that can perform the accumulation of the
+10 elements in just a single clock cycle. Indeed, reading from the
+array <code class="docutils literal notranslate"><span class="pre">x</span></code> is in fact the bottleneck of performance in this case.</p>
+</li>
+<li><p>Vitis HLS provides two optimizations to solve array access
+bottleneck problems similar to the one in the example above:</p>
+<dl class="glossary simple">
+<dt id="term-Array-Partitioning">Array Partitioning<a class="headerlink" href="#term-Array-Partitioning" title="Permalink to this term">#</a></dt><dd><p>An array is partitioned into smaller arrays or individual
+elements, effectively increasing the number of read and write ports
+to the original array.</p>
+</dd>
+<dt id="term-Array-Reshaping">Array Reshaping<a class="headerlink" href="#term-Array-Reshaping" title="Permalink to this term">#</a></dt><dd><p>Multiple elements in an array are concatenated to a single element
+with an increased bit-width, allowing more elements in the
+original array to be accessed in a single clock cycle.</p>
+</dd>
+</dl>
+</li>
+<li><p>An array can be partition by using <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-array_partition"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">array_parition</span></code></a>.</p>
+<ul>
+<li><p>There are three types of ways to partition an array that can be
+specified by the <code class="docutils literal notranslate"><span class="pre">type=</span></code> option in the array-partition pragma:</p>
+<dl class="glossary simple">
+<dt id="term-cyclic"><code class="docutils literal notranslate"><span class="pre">cyclic</span></code><a class="headerlink" href="#term-cyclic" title="Permalink to this term">#</a></dt><dd><p>One element is put into each new smaller array before coming back to the
+first array to repeat the cycle until the array is fully partitioned.</p>
+</dd>
+<dt id="term-block"><code class="docutils literal notranslate"><span class="pre">block</span></code><a class="headerlink" href="#term-block" title="Permalink to this term">#</a></dt><dd><p>Smaller arrays are formed from consecutive blocks of the original array.</p>
+</dd>
+<dt id="term-complete"><code class="docutils literal notranslate"><span class="pre">complete</span></code><a class="headerlink" href="#term-complete" title="Permalink to this term">#</a></dt><dd><p>The original array is decomposed into individual elements, each of
+which is synthesized into a register.</p>
+</dd>
+</dl>
+</li>
+</ul>
 </li>
 </ul>
 </section>

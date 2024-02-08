@@ -41,3 +41,41 @@
     acc += x[n];
   }
   ```
+  Vitis HLS synthesizes the array `x` into a two-port RAM. Since only two
+  reads from the RAM can be made in each clock cycle, it takes 5 clock
+  cycles to read the 10 elements in `x` even though `Loop` is unrolled
+  into a binary adder tree that can perform the accumulation of the
+  10 elements in just a single clock cycle. Indeed, reading from the
+  array `x` is in fact the bottleneck of performance in this case.
+
+* Vitis HLS provides two optimizations to solve array access
+  bottleneck problems similar to the one in the example above:
+  ```{glossary}
+  Array Partitioning
+    An array is partitioned into smaller arrays or individual
+    elements, effectively increasing the number of read and write ports
+    to the original array.
+
+  Array Reshaping
+    Multiple elements in an array are concatenated to a single element
+    with an increased bit-width, allowing more elements in the
+    original array to be accessed in a single clock cycle. 
+  ```
+
+* An array can be partition by using [`#pragma HLS
+  array_parition`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-array_partition). 
+  - There are three types of ways to partition an array that can be
+    specified by the `type=` option in the array-partition pragma:
+    ```{glossary}
+    `cyclic`
+      One element is put into each new smaller array before coming back to the
+      first array to repeat the cycle until the array is fully partitioned.
+
+    `block`
+      Smaller arrays are formed from consecutive blocks of the original array.
+
+    `complete`
+      The original array is decomposed into individual elements, each of
+      which is synthesized into a register. 
+    ```
+  
