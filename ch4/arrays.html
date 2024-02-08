@@ -352,7 +352,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -368,6 +370,14 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#array-access-performance">4.3.1. Array Access Performance</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -379,7 +389,7 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="arrays">
 <span id="sec-arrays"></span><h1><span class="section-number">4.3. </span>Arrays<a class="headerlink" href="#arrays" title="Permalink to this headline">#</a></h1>
-<ul class="simple">
+<ul>
 <li><p>Vitis HLS implements arrays (except for array arguments of the
 top-level function) as some type of memory during synthesis. The
 types of memory supported include, RAM (<code class="docutils literal notranslate"><span class="pre">RAM_1P</span></code>, <code class="docutils literal notranslate"><span class="pre">RAM_1WNR</span></code>,
@@ -388,7 +398,14 @@ types of memory supported include, RAM (<code class="docutils literal notranslat
 descriptions about these different types of memory can be found
 from the manual of <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-bind_storage"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span>&#160; <span class="pre">bind_storage</span></code></a>. Each
 of these types of memory can be implemented using different PL
-resources, such as block RAM, URAM, and CLBs.</p></li>
+resources, such as block RAM, URAM, and CLBs.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Since arrays are synthesized as memory, they can only be
+instantiated in the C/C++ code with sizes known during
+synthesis.</p>
+</div>
+</li>
 <li><p>By default, Vitis HLS automatically decides the type of memory to
 synthesize an array into as well as the suitable PL resource to
 implement the selected type of memory. For example, if the Vitis HLS
@@ -402,6 +419,21 @@ pragma.</p></li>
 according to <a class="reference internal" href="functions.html#top-func-args"><span class="std std-numref">Table 4.1</span></a> and will be discussed in
 a later section.</p></li>
 </ul>
+<section id="array-access-performance">
+<h2><span class="section-number">4.3.1. </span>Array Access Performance<a class="headerlink" href="#array-access-performance" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>Let us recall the simple  loop-unrolling example in <a class="reference internal" href="loops.html#sec-loop-unroll"><span class="std std-numref">Section 4.2.2</span></a>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">acc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+<span class="nl">Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="cp">#pragma HLS unroll </span>
+<span class="w">  </span><span class="n">acc</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -462,6 +494,20 @@ a later section.</p></li>
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#array-access-performance">4.3.1. Array Access Performance</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

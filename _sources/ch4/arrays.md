@@ -11,6 +11,11 @@
    bind_storage`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-bind_storage). Each
    of these types of memory can be implemented using different PL
    resources, such as block RAM, URAM, and CLBs.
+   ```{tip}
+   Since arrays are synthesized as memory, they can only be
+   instantiated in the C/C++ code with sizes known during
+   synthesis.
+   ```
 
 * By default, Vitis HLS automatically decides the type of memory to
   synthesize an array into as well as the suitable PL resource to
@@ -25,3 +30,14 @@
 * Array arguments of the top-level function in a DSP kernel are mapped
   according to {numref}`top_func_args` and will be discussed in
   a later section.
+
+## Array Access Performance
+* Let us recall the simple  loop-unrolling example in {numref}`sec:loop_unroll`:
+  ```c++ 
+  int acc = 0;
+  int x[10];
+  Loop: for (int n=0; n<10; n++) { 
+  #pragma HLS unroll 
+    acc += x[n];
+  }
+  ```

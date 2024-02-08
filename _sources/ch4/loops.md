@@ -109,6 +109,7 @@ task-level pipelining and parallelization discussed in
 * We may also pipeline the body of a function in the same way that we
   pipeline a loop.
 
+(sec:loop_unroll)=
 ## Loop Unrolling
 * Unrolling a loop creates multiple copies of the loop body for
   parallelization. Clearly, loop unrolling can reduce the iterative
