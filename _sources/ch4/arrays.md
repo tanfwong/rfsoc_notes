@@ -78,4 +78,32 @@
       The original array is decomposed into individual elements, each of
       which is synthesized into a register. 
     ```
+  - The number of smaller arrays into which the original array is
+    partitioned can be specified by the option `factor=` for the cases
+    of `type=cyclic` and `type=block`.
+  - For a multi-dimensional array, the `dim=` option can be used to
+    specify the dimension for which the array should be
+    partitioned. Setting `dim=0` partitions all dimensions.
+
+* Array partitioning clearly improves array access (and hence latency
+  and throughput) in the expense of using more PL resources. For
+  example, consider completely partitoning the array `x` in the
+  previous example:
+  ```c++ 
+  int acc = 0;
+  int x[10];
+  #pragma HLS ARRAY_PARTITION variable=x type=complete
+  
+  Loop: for (int n=0; n<10; n++) { 
+  #pragma HLS unroll 
+    acc += x[n];
+  }
+  ```
+  Ten registers are synthesized for the 10 elements of `x`. Reading
+  from the 10 registers and accumulating through the adder tree
+  generated form unrolling `Loop` can all be done in parallel with a
+  single clock cycle! The 10 registers with array partitioning and
+  two-port RAM without are both implemented using CLB
+  resource. Implementation of the former requires more resource.
+
   
