@@ -380,13 +380,13 @@ document.write(`
   <section class="tex2jax_ignore mathjax_ignore" id="arrays">
 <span id="sec-arrays"></span><h1><span class="section-number">4.3. </span>Arrays<a class="headerlink" href="#arrays" title="Permalink to this headline">#</a></h1>
 <ul class="simple">
-<li><p>Vitis HLS implements arrays, both as variables in and arguments of
-non-top-level functions, as some type of memory during
-synthesis. The types of memory supported include, RAM (<code class="docutils literal notranslate"><span class="pre">RAM_1P</span></code>,
-<code class="docutils literal notranslate"><span class="pre">RAM_1WNR</span></code>, <code class="docutils literal notranslate"><span class="pre">RAM_2P</span></code>, <code class="docutils literal notranslate"><span class="pre">RAM_S2P</span></code>, <code class="docutils literal notranslate"><span class="pre">RAM_T2P</span></code>), ROM (<code class="docutils literal notranslate"><span class="pre">ROM_1P</span></code>,
-<code class="docutils literal notranslate"><span class="pre">ROM_2P</span></code>, <code class="docutils literal notranslate"><span class="pre">ROM_NP</span></code>), and shift registers (<code class="docutils literal notranslate"><span class="pre">FIFO</span></code>).  More detailed
-descriptions about these different types of memory can be found from
-the manual of <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-bind_storage"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">bind_storage</span></code></a>. Each
+<li><p>Vitis HLS implements arrays (except for array arguments of the
+top-level function) as some type of memory during synthesis. The
+types of memory supported include, RAM (<code class="docutils literal notranslate"><span class="pre">RAM_1P</span></code>, <code class="docutils literal notranslate"><span class="pre">RAM_1WNR</span></code>,
+<code class="docutils literal notranslate"><span class="pre">RAM_2P</span></code>, <code class="docutils literal notranslate"><span class="pre">RAM_S2P</span></code>, <code class="docutils literal notranslate"><span class="pre">RAM_T2P</span></code>), ROM (<code class="docutils literal notranslate"><span class="pre">ROM_1P</span></code>, <code class="docutils literal notranslate"><span class="pre">ROM_2P</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ROM_NP</span></code>), and shift registers (<code class="docutils literal notranslate"><span class="pre">FIFO</span></code>).  More detailed
+descriptions about these different types of memory can be found
+from the manual of <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-bind_storage"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span>&#160; <span class="pre">bind_storage</span></code></a>. Each
 of these types of memory can be implemented using different PL
 resources, such as block RAM, URAM, and CLBs.</p></li>
 <li><p>By default, Vitis HLS automatically decides the type of memory to
