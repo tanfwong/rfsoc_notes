@@ -517,6 +517,47 @@ resource. Implementation of the former requires more resource.</p>
 </section>
 <section id="array-reshaping">
 <h3><span class="section-number">4.3.1.2. </span>Array Reshaping<a class="headerlink" href="#array-reshaping" title="Permalink to this headline">#</a></h3>
+<ul>
+<li><p>An array can be reshaped by using <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-array_reshape"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">array_reshape</span></code></a>.</p>
+<ul>
+<li><p>The same three types of array partitioning are also available for
+array reshaping with the elements of the original array placed in
+different sections of bits in an element of the reshaped array as
+illustrated by the examples shown in the following figure:</p>
+<figure class="align-center" id="array-reshape">
+<a class="reference internal image-reference" href="../_images/array_reshape.png"><img alt="Examples of array reshaping" src="../_images/array_reshape.png" style="width: 800px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 4.2 </span><span class="caption-text">Examples of the three different types of array reshaping where
+the option <code class="docutils literal notranslate"><span class="pre">factor=2</span></code> is set for the cases of <code class="docutils literal notranslate"><span class="pre">type=block</span></code> and
+<code class="docutils literal notranslate"><span class="pre">type=cyclic</span></code> (image taken from <span id="id2">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>)</span><a class="headerlink" href="#array-reshape" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+</li>
+<li><p>For a multi-dimensional array, the <code class="docutils literal notranslate"><span class="pre">dim=</span></code> option can be used to
+specify the dimension for which the array should be
+reshaped. Setting <code class="docutils literal notranslate"><span class="pre">dim=0</span></code> reshapes all dimensions.</p></li>
+</ul>
+</li>
+<li><p>If block RAM is chosen to be the PL resource to implement an array,
+array reshaping can reduce the number of block RAM consumed compared
+to array partitioning. However, array reshaping may not be as
+beneficial when <code class="docutils literal notranslate"><span class="pre">type=complete</span></code> because the whole original array is read/or
+write as a single element and extra logic and registers are needed to access the
+individual sections of the element. For example, doing</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">acc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+<span class="cp">#pragma HLS array_reshape variable=x type=complete</span>
+
+<span class="nl">Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="cp">#pragma HLS unroll </span>
+<span class="n">acc</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>gives the same latency for the unrolled loop <code class="docutils literal notranslate"><span class="pre">Loop</span></code> as array
+partitioning but requires more CBN resource to implement the reshaping.</p>
+</li>
+</ul>
 </section>
 </section>
 </section>

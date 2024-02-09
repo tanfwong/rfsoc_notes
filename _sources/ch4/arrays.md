@@ -119,5 +119,44 @@
   resource. Implementation of the former requires more resource.
 
 ### Array Reshaping
+* An array can be reshaped by using [`#pragma HLS
+  array_reshape`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-array_reshape). 
+  - The same three types of array partitioning are also available for
+    array reshaping with the elements of the original array placed in
+    different sections of bits in an element of the reshaped array as
+    illustrated by the examples shown in the following figure:
+    ```{figure} ../figs/array_reshape.png
+    ---
+    name: array_reshape
+    alt: Examples of array reshaping
+    width: 800px
+    align: center
+    ---
+    Examples of the three different types of array reshaping where
+    the option `factor=2` is set for the cases of `type=block` and 
+    `type=cyclic` (image taken from {cite}`ug1399`)
+    ```
+   - For a multi-dimensional array, the `dim=` option can be used to
+    specify the dimension for which the array should be
+    reshaped. Setting `dim=0` reshapes all dimensions.
+
+* If block RAM is chosen to be the PL resource to implement an array,
+  array reshaping can reduce the number of block RAM consumed compared
+  to array partitioning. However, array reshaping may not be as
+  beneficial when `type=complete` because the whole original array is read/or
+  write as a single element and extra logic and registers are needed to access the
+  individual sections of the element. For example, doing
+    ```c++ 
+  int acc = 0;
+  int x[10];
+  #pragma HLS array_reshape variable=x type=complete
+  
+  Loop: for (int n=0; n<10; n++) { 
+  #pragma HLS unroll 
+    acc += x[n];
+  }
+  ```
+  gives the same latency for the unrolled loop `Loop` as array
+  partitioning but requires more CBN resource to implement the reshaping.
 
   
