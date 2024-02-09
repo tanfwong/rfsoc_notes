@@ -597,6 +597,12 @@ design so that no extra write clock cycles are needed.</p></li>
 </ul>
 </div>
 </li>
+<li><p>By default, Vitis HLS does not reset static arrays when a hardware
+reset signal is asserted during execution (it does so for a power-on
+reset though). This is done to avoid adding extra reset logic for
+the implementation of the static arrays and the extra
+initialization clock cycles needed. We can overide this default
+configuration on a per array basis by using <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-reset"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">reset</span></code></a>.</p></li>
 </ul>
 </section>
 </section>
