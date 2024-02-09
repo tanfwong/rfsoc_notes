@@ -375,7 +375,11 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#array-access-performance">4.3.1. Array Access Performance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#array-access-performance">4.3.1. Array Access Performance</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#array-partitioning">4.3.1.1. Array Partitioning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#array-reshaping">4.3.1.2. Array Reshaping</a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -451,6 +455,10 @@ original array to be accessed in a single clock cycle.</p>
 </dd>
 </dl>
 </li>
+</ul>
+<section id="array-partitioning">
+<h3><span class="section-number">4.3.1.1. </span>Array Partitioning<a class="headerlink" href="#array-partitioning" title="Permalink to this headline">#</a></h3>
+<ul>
 <li><p>An array can be partitioned by using <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-array_partition"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">array_parition</span></code></a>.</p>
 <ul>
 <li><p>There are three types of ways to partition an array that can be
@@ -468,7 +476,17 @@ which is synthesized into a register.</p>
 </li>
 <li><p>The number of smaller arrays into which the original array is
 partitioned can be specified by the option <code class="docutils literal notranslate"><span class="pre">factor=</span></code> for the cases
-of <code class="docutils literal notranslate"><span class="pre">type=cyclic</span></code> and <code class="docutils literal notranslate"><span class="pre">type=block</span></code>.</p></li>
+of <code class="docutils literal notranslate"><span class="pre">type=cyclic</span></code> and <code class="docutils literal notranslate"><span class="pre">type=block</span></code>. See the figure below for
+illustrative examples of the three types of array partitioning:</p>
+<figure class="align-center" id="array-partition">
+<a class="reference internal image-reference" href="../_images/array_partition.png"><img alt="Examples of array partitioning" src="../_images/array_partition.png" style="width: 800px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 4.1 </span><span class="caption-text">Examples of the three different types of array partitioning where
+the option <code class="docutils literal notranslate"><span class="pre">factor=2</span></code> is set for the cases of <code class="docutils literal notranslate"><span class="pre">type=block</span></code> and
+<code class="docutils literal notranslate"><span class="pre">type=cyclic</span></code> (image taken from <span id="id1">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>)</span><a class="headerlink" href="#array-partition" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+</li>
 <li><p>For a multi-dimensional array, the <code class="docutils literal notranslate"><span class="pre">dim=</span></code> option can be used to
 specify the dimension for which the array should be
 partitioned. Setting <code class="docutils literal notranslate"><span class="pre">dim=0</span></code> partitions all dimensions.</p></li>
@@ -480,7 +498,7 @@ example, consider completely partitoning the array <code class="docutils literal
 previous example:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">acc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
-<span class="cp">#pragma HLS ARRAY_PARTITION variable=x type=complete</span>
+<span class="cp">#pragma HLS array_partition variable=x type=complete</span>
 
 <span class="nl">Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
 <span class="cp">#pragma HLS unroll </span>
@@ -496,6 +514,10 @@ two-port RAM without are both implemented using CLB
 resource. Implementation of the former requires more resource.</p>
 </li>
 </ul>
+</section>
+<section id="array-reshaping">
+<h3><span class="section-number">4.3.1.2. </span>Array Reshaping<a class="headerlink" href="#array-reshaping" title="Permalink to this headline">#</a></h3>
+</section>
 </section>
 </section>
 
@@ -566,7 +588,11 @@ resource. Implementation of the former requires more resource.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#array-access-performance">4.3.1. Array Access Performance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#array-access-performance">4.3.1. Array Access Performance</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#array-partitioning">4.3.1.1. Array Partitioning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#array-reshaping">4.3.1.2. Array Reshaping</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

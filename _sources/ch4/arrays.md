@@ -61,7 +61,7 @@
     with an increased bit-width, allowing more elements in the
     original array to be accessed in a single clock cycle. 
   ```
-
+### Array Partitioning
 * An array can be partitioned by using [`#pragma HLS
   array_parition`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-array_partition). 
   - There are three types of ways to partition an array that can be
@@ -80,7 +80,19 @@
     ```
   - The number of smaller arrays into which the original array is
     partitioned can be specified by the option `factor=` for the cases
-    of `type=cyclic` and `type=block`.
+    of `type=cyclic` and `type=block`. See the figure below for
+    illustrative examples of the three types of array partitioning:
+    ```{figure} ../figs/array_partition.png
+    ---
+    name: array_partition
+    alt: Examples of array partitioning
+    width: 800px
+    align: center
+    ---
+    Examples of the three different types of array partitioning where
+    the option `factor=2` is set for the cases of `type=block` and 
+    `type=cyclic` (image taken from {cite}`ug1399`)
+    ```
   - For a multi-dimensional array, the `dim=` option can be used to
     specify the dimension for which the array should be
     partitioned. Setting `dim=0` partitions all dimensions.
@@ -92,7 +104,7 @@
   ```c++ 
   int acc = 0;
   int x[10];
-  #pragma HLS ARRAY_PARTITION variable=x type=complete
+  #pragma HLS array_partition variable=x type=complete
   
   Loop: for (int n=0; n<10; n++) { 
   #pragma HLS unroll 
@@ -105,5 +117,7 @@
   single clock cycle! The 10 registers with array partitioning and
   two-port RAM without are both implemented using CLB
   resource. Implementation of the former requires more resource.
+
+### Array Reshaping
 
   
