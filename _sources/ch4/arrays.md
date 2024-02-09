@@ -159,4 +159,33 @@
   gives the same latency for the unrolled loop `Loop` as array
   partitioning but requires more CBN resource to implement the reshaping.
 
-  
+## Array Initialization and Reset
+* The standard C++ convention dictates that the elements of an array
+  declared within a local scope (e.g., within a function) are not
+  initialized. This convention carries over to Vitis HLS.
+
+* If we want to initialize an array, we may use the standard C++ array
+  initialization syntax to do so, e.g.,
+  ```c++
+  int x[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+  ```
+  ```{tip}
+  - Initializing an array as in the example above requires clock cycles
+    to write to the array elements to memory. If the array `x` is
+    declared (and initialized) with a function and the function is
+    called multiple times, then the extra clock cycles consumed on
+    initializing `x` are needed for each call to the function.
+  - We may save those extra array initialization clock cycles by using
+    the qualifier `static` to declare the array, e.g.,
+    ~~~c++
+    static int x[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    ~~~
+    Vitis HLS interprets a `static` array in the same way as in
+    standard C++ that the values of the array elements are preserved
+    across function calls. In this way, declaring a static array helps
+    to better match the behavior of the C++ code with that of hardware 
+    memory that implements the array.
+  - An additional advantage of declaring a static array is that Vitis
+    HLS can hard-code the initialization of its elements into the RTL 
+    design so that no extra write clock cycles are needed. 
+  ```

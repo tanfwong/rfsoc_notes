@@ -380,6 +380,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#array-reshaping">4.3.1.2. Array Reshaping</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#array-initialization-and-reset">4.3.2. Array Initialization and Reset</a></li>
 </ul>
             </nav>
         </div>
@@ -560,6 +561,44 @@ partitioning but requires more CBN resource to implement the reshaping.</p>
 </ul>
 </section>
 </section>
+<section id="array-initialization-and-reset">
+<h2><span class="section-number">4.3.2. </span>Array Initialization and Reset<a class="headerlink" href="#array-initialization-and-reset" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>The standard C++ convention dictates that the elements of an array
+declared within a local scope (e.g., within a function) are not
+initialized. This convention carries over to Vitis HLS.</p></li>
+<li><p>If we want to initialize an array, we may use the standard C++ array
+initialization syntax to do so, e.g.,</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">};</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<ul>
+<li><p>Initializing an array as in the example above requires clock cycles
+to write to the array elements to memory. If the array <code class="docutils literal notranslate"><span class="pre">x</span></code> is
+declared (and initialized) with a function and the function is
+called multiple times, then the extra clock cycles consumed on
+initializing <code class="docutils literal notranslate"><span class="pre">x</span></code> are needed for each call to the function.</p></li>
+<li><p>We may save those extra array initialization clock cycles by using
+the qualifier <code class="docutils literal notranslate"><span class="pre">static</span></code> to declare the array, e.g.,</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">};</span>
+</pre></div>
+</div>
+<p>Vitis HLS interprets a <code class="docutils literal notranslate"><span class="pre">static</span></code> array in the same way as in
+standard C++ that the values of the array elements are preserved
+across function calls. In this way, declaring a static array helps
+to better match the behavior of the C++ code with that of hardware
+memory that implements the array.</p>
+</li>
+<li><p>An additional advantage of declaring a static array is that Vitis
+HLS can hard-code the initialization of its elements into the RTL
+design so that no extra write clock cycles are needed.</p></li>
+</ul>
+</div>
+</li>
+</ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -634,6 +673,7 @@ partitioning but requires more CBN resource to implement the reshaping.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#array-reshaping">4.3.1.2. Array Reshaping</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#array-initialization-and-reset">4.3.2. Array Initialization and Reset</a></li>
 </ul>
   </nav></div>
 
