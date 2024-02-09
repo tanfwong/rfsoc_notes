@@ -62,7 +62,7 @@
     original array to be accessed in a single clock cycle. 
   ```
 
-* An array can be partition by using [`#pragma HLS
+* An array can be partitioned by using [`#pragma HLS
   array_parition`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-array_partition). 
   - There are three types of ways to partition an array that can be
     specified by the `type=` option in the array-partition pragma:
