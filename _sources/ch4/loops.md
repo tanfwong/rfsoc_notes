@@ -283,7 +283,7 @@ task-level pipelining and parallelization discussed in
   loop from the loop hierarchy and hence save these extra 20 clock
   cycles.
     
-* For the nested loops with more than 2 levels in the hierarchy, the
+* For nested loops with more than 2 levels in the hierarchy, the
   same set of procedures described about applies.
   - **Example 1:**
     ```c++
