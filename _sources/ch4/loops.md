@@ -297,7 +297,7 @@ task-level pipelining and parallelization discussed in
       }
     }
     ```
-    tells Vitis HLS to unroll the inner loops `loop_j` and `loop_i`
+    tells Vitis HLS to unroll the inner loops `loop_j` and `loop_k`
     and then pipeline `loop_i`. 
   - **Example 2:**
     ```c++
