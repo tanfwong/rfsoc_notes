@@ -248,7 +248,7 @@ task-level pipelining and parallelization discussed in
   above may also be invoked by replacing the loop-flatten 
   pragma with a pipeline pragma in the inner loop `loop_j`.
   Putting the pipeline pragma in `loop_j` tells Vitis HLS to pipeline
-  the innner loop. But that can not be done because there is an outer
+  the inner loop. But that can not be done because there is an outer
   loop and thus Vitis HLS must flattern the nested loops first before
   it can pipeline `loop_j`.
   ```
