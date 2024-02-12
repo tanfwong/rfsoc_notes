@@ -274,14 +274,14 @@ task-level pipelining and parallelization discussed in
 
 * Both unrolling the inner loop and flattening the nested loops before
   pipelining in the examples above have the added advantage reducing
-  the number of clock cycles going running through the loop
-  hierarchy. Recall that a clock cycle is needed for each entering and
-  each exiting the inner loop `loop_j`. Thus, a total of 20 additional
-  clock cycles are expensed in the outer loop `loop_i` just for
-  entering and exiting `loop_j` as `loop_i` goes through its 10
-  iterations. Either unrolling `loop_j` or flattening the nested loops
-  removes the inner loop from the loop hierarchy and hence save these
-  extra 20 clock cycles.
+  the number of clock cycles going through the loop hierarchy. Recall
+  that a clock cycle is needed for each entering and each exiting the
+  inner loop `loop_j`. Thus, a total of 20 additional clock cycles are
+  expensed in the outer loop `loop_i` just for entering and exiting
+  `loop_j` as `loop_i` goes through its 10 iterations. Either
+  unrolling `loop_j` or flattening the nested loops removes the inner
+  loop from the loop hierarchy and hence save these extra 20 clock
+  cycles.
     
 * For the nested loops with more than 2 levels in the hierarchy, the
   same set of procedures described about applies.

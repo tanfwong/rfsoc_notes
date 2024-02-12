@@ -684,14 +684,14 @@ specifically, we can classify nested loops into the following 3 categories:</p>
 </li>
 <li><p>Both unrolling the inner loop and flattening the nested loops before
 pipelining in the examples above have the added advantage reducing
-the number of clock cycles going running through the loop
-hierarchy. Recall that a clock cycle is needed for each entering and
-each exiting the inner loop <code class="docutils literal notranslate"><span class="pre">loop_j</span></code>. Thus, a total of 20 additional
-clock cycles are expensed in the outer loop <code class="docutils literal notranslate"><span class="pre">loop_i</span></code> just for
-entering and exiting <code class="docutils literal notranslate"><span class="pre">loop_j</span></code> as <code class="docutils literal notranslate"><span class="pre">loop_i</span></code> goes through its 10
-iterations. Either unrolling <code class="docutils literal notranslate"><span class="pre">loop_j</span></code> or flattening the nested loops
-removes the inner loop from the loop hierarchy and hence save these
-extra 20 clock cycles.</p></li>
+the number of clock cycles going through the loop hierarchy. Recall
+that a clock cycle is needed for each entering and each exiting the
+inner loop <code class="docutils literal notranslate"><span class="pre">loop_j</span></code>. Thus, a total of 20 additional clock cycles are
+expensed in the outer loop <code class="docutils literal notranslate"><span class="pre">loop_i</span></code> just for entering and exiting
+<code class="docutils literal notranslate"><span class="pre">loop_j</span></code> as <code class="docutils literal notranslate"><span class="pre">loop_i</span></code> goes through its 10 iterations. Either
+unrolling <code class="docutils literal notranslate"><span class="pre">loop_j</span></code> or flattening the nested loops removes the inner
+loop from the loop hierarchy and hence save these extra 20 clock
+cycles.</p></li>
 <li><p>For the nested loops with more than 2 levels in the hierarchy, the
 same set of procedures described about applies.</p>
 <ul>
