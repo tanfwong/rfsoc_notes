@@ -284,7 +284,7 @@ task-level pipelining and parallelization discussed in
   cycles.
     
 * For nested loops with more than 2 levels in the hierarchy, the
-  same set of procedures described about applies.
+  same set of rules described above applies.
   - **Example 1:**
     ```c++
     int acc = 0;
