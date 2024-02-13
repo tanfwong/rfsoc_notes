@@ -462,6 +462,10 @@ to perform the addition.</p>
 </li>
 </ul>
 </li>
+<li><p>As shown in the examples above, Vitis HLS automatically selects the
+operators as well as the PL resources to implement the selected
+operators. However, the implementation choice made by Vitis HLS may
+be overridden using <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-bind_op"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">bind_op</span></code></a>.</p></li>
 <li><p>Vitis HLS also supports arbitrary precision (AP) signed and unsigned integer types
 <code class="docutils literal notranslate"><span class="pre">ap_int&lt;W&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">ap_uint&lt;W&gt;</span></code> in C++, where <code class="docutils literal notranslate"><span class="pre">W</span></code> is the bit-width that can
 range from 1 to 1024. To use the AP integer types, the header file
@@ -590,6 +594,15 @@ may be employed to access mantissa and exponent components of
 </pre></div>
 </div>
 </li>
+<li><p>Vitis HLS also supports complex-valued extension types of the three floating-point types:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">std::complex&lt;half&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">std::complex&lt;float&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">std::complex&lt;double&gt;</span></code></p></li>
+</ul>
+<p>The header file <code class="docutils literal notranslate"><span class="pre">&lt;complex.h&gt;</span></code> should be included to use these
+complex-valued type.</p>
+</li>
 <li><p>Arithmetic operations with floating-point variables are
 synthesized using floating-point IP cores <span id="id4">[<a class="reference internal" href="../refs.html#id13" title="Floating-Point Operator: LogiCORE IP Product Guide. AMD-Xilinx, Dec. 2020. PG060 (v7.1). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx20</a>]</span>. Typically,
 floating-point operations require significantly more PL resources
@@ -601,6 +614,39 @@ integer types.</p>
 the <code class="docutils literal notranslate"><span class="pre">half</span></code> type. It needs to be switched off during the C simulation
 step.</p>
 </div>
+</li>
+<li><p>As in the case of integer types, Vitis HLS automatically selects the
+operators and the PL resources to implement the selected
+operators. However, the implementation choice of some floating-point
+operators made by Vitis HLS may be overridden using <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-bind_op"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">bind_op</span></code></a>. One
+may also use the <code class="docutils literal notranslate"><span class="pre">latency=</span></code> option to override the default latency
+Vitis HLS assumes for an operator. This may come handy to tell Vitis
+HLS to use a longer latency for the operator when the default RTL
+design provided by Vitis HLS produces negative slacks.</p></li>
+<li><p>The Vitis HLS Math Library <code class="docutils literal notranslate"><span class="pre">hls_math</span></code> implements synthesizable
+bit-approximate versions of most math functions in the standard C++
+<code class="docutils literal notranslate"><span class="pre">cmath</span></code> library. The list of functions supported can be found
+<a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/HLS-Math-Library?tocId=aGjzRF~6yPWN6CZDOEpeow">here</a>.</p>
+<ul class="simple">
+<li><p>Three versions of each function, one each for <code class="docutils literal notranslate"><span class="pre">half</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">double</span></code>, are provided in the library. All these versions can be
+used in synthesis as well as simulation. To use them, the header
+file <code class="docutils literal notranslate"><span class="pre">&lt;hls_math.h&gt;</span></code> should be included and the namespace <code class="docutils literal notranslate"><span class="pre">hls</span></code>
+should be used. For example, the <code class="docutils literal notranslate"><span class="pre">half</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>, and <code class="docutils literal notranslate"><span class="pre">double</span></code>
+versions of the standard cosine function are <code class="docutils literal notranslate"><span class="pre">hls::half_cos</span></code>,
+<code class="docutils literal notranslate"><span class="pre">hls::cosf</span></code>, and <code class="docutils literal notranslate"><span class="pre">hls::cos</span></code>, respectively.</p></li>
+<li><p>Using the version of a function corresponding to the argument type
+typically saves PL resources and reduces latency since not type
+conversion is needed and the implementation is usually faster and
+smaller for the lower precision versions.</p></li>
+<li><p>Since the bit-approximate implementation of a function in the
+Vitis HLS Math Library may use a different underlying algorithm,
+it may not provide the same accuracy of the standard C++ math
+library counterpart. In order to match the RTL simulation and
+bench golden results in the co-simulation step, we should always
+use functions in the Vitis HLS Math Library in both the DSP kernel
+code and the test bench code.</p></li>
+</ul>
 </li>
 </ul>
 </section>

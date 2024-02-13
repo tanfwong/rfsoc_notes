@@ -57,7 +57,13 @@ functions that operate on them.
     Vitis HLS first truncates the 32-bit `a` and 64-bit `b` to
     corresponding 16-bit `short` versions, and then uses a 16-bit adder
     to perform the addition.
-  
+
+* As shown in the examples above, Vitis HLS automatically selects the
+  operators as well as the PL resources to implement the selected
+  operators. However, the implementation choice made by Vitis HLS may
+  be overridden using [`#pragma HLS
+  bind_op`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-bind_op).
+
 * Vitis HLS also supports arbitrary precision (AP) signed and unsigned integer types
   `ap_int<W>` and `ap_uint<W>` in C++, where `W` is the bit-width that can
   range from 1 to 1024. To use the AP integer types, the header file
@@ -169,6 +175,15 @@ functions that operate on them.
     };
   } double_num_t;
   ```
+
+* Vitis HLS also supports complex-valued extension types of the three floating-point types:
+  - `std::complex<half>`
+  - `std::complex<float>`
+  - `std::complex<double>`
+  
+  The header file `<complex.h>` should be included to use these
+  complex-valued type.
+
 * Arithmetic operations with floating-point variables are
   synthesized using floating-point IP cores {cite}`pg060`. Typically,
   floating-point operations require significantly more PL resources
@@ -179,7 +194,38 @@ functions that operate on them.
   the `half` type. It needs to be switched off during the C simulation
   step.
   ```
-  
 
+* As in the case of integer types, Vitis HLS automatically selects the
+  operators and the PL resources to implement the selected
+  operators. However, the implementation choice of some floating-point
+  operators made by Vitis HLS may be overridden using [`#pragma HLS
+  bind_op`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-bind_op). One
+  may also use the `latency=` option to override the default latency
+  Vitis HLS assumes for an operator. This may come handy to tell Vitis
+  HLS to use a longer latency for the operator when the default RTL
+  design provided by Vitis HLS produces negative slacks.
+
+* The Vitis HLS Math Library `hls_math` implements synthesizable
+  bit-approximate versions of most math functions in the standard C++
+  `cmath` library. The list of functions supported can be found
+  [here](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/HLS-Math-Library?tocId=aGjzRF~6yPWN6CZDOEpeow).
+  - Three versions of each function, one each for `half`, `float`, and
+    `double`, are provided in the library. All these versions can be
+    used in synthesis as well as simulation. To use them, the header
+    file `<hls_math.h>` should be included and the namespace `hls`
+    should be used. For example, the `half`, `float`, and `double`
+    versions of the standard cosine function are `hls::half_cos`,
+    `hls::cosf`, and `hls::cos`, respectively.
+  - Using the version of a function corresponding to the argument type
+    typically saves PL resources and reduces latency since not type
+    conversion is needed and the implementation is usually faster and
+    smaller for the lower precision versions. 
+  - Since the bit-approximate implementation of a function in the
+    Vitis HLS Math Library may use a different underlying algorithm,
+    it may not provide the same accuracy of the standard C++ math
+    library counterpart. In order to match the RTL simulation and
+    bench golden results in the co-simulation step, we should always
+    use functions in the Vitis HLS Math Library in both the DSP kernel
+    code and the test bench code.
 
 
