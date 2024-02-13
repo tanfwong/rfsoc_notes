@@ -99,3 +99,87 @@ functions that operate on them.
   methods for printing and conversion to standard C++ types. The
   details of all these can be found in {cite}`ug1399` or from
   [here](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/C-Arbitrary-Precision-Integer-Types).
+
+## Floating Point Types
+* Vitis HLS supports the standard C/C++ `float` and `double` types as
+  well as the half-precision type `half` for synthesis with [IEEE-754
+  standard](https://en.wikipedia.org/wiki/IEEE_754#CITEREFIEEE_7542008)
+  partial compliance {cite}`pg060`:
+  
+  ```{list-table} Vitis HLS-supported floating-point types
+  :name: float_types
+  :header-rows: 1
+
+  * - Floating-point type
+    - bit-width
+    - mantissa bit-width
+    - exponent bit-width
+    - sign bit
+
+  * - `half`
+    - 16
+    - 10
+    - 5
+    - 1
+
+  * - `float`
+    - 32
+    - 23
+    - 8
+    - 1
+
+  * - `double`
+    - 64
+    - 52
+    - 11
+    - 1
+  ```
+  The following unions defined in [this
+  example](https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/2023.2/Modeling/using_float_and_double/fp_mul_pow2.h)
+  may be employed to access mantissa and exponent components of
+  `half`, `float`, and `double` variables:
+  ```c++
+  typedef union {
+    half fp_num;
+    uint16_t raw_bits;
+    struct {
+        uint16_t mant : 10;
+        uint16_t bexp : 5;
+        uint16_t sign : 1;
+    };
+  } half_num_t;
+  
+  typedef union {
+    float fp_num;
+    uint32_t raw_bits;
+    struct {
+        uint32_t mant : 23;
+        uint32_t bexp : 8;
+        uint32_t sign : 1;
+    };
+  } float_num_t;
+
+  typedef union {
+    double fp_num;
+    uint64_t raw_bits;
+    struct {
+        uint64_t mant : 52;
+        uint64_t bexp : 11;
+        uint64_t sign : 1;
+    };
+  } double_num_t;
+  ```
+* Arithmetic operations with floating-point variables are
+  synthesized using floating-point IP cores {cite}`pg060`. Typically,
+  floating-point operations require significantly more PL resources
+  and endure longer latencies that their counterparts for standard
+  integer types. 
+  ```{caution}
+  The Vitis code analyzer does not support anaylsis of code that uses
+  the `half` type. It needs to be switched off during the C simulation
+  step.
+  ```
+  
+
+
+
