@@ -35,6 +35,29 @@ functions that operate on them.
   The header file `<stdint.h>` must be included in order to use the
   exact bit-width integer types `(unsigned) int*_t`.
   ```
+
+* Arithmetic operations with the standard C/C++ integer types follow
+  standard C/C++ conventions. Vitis HLS automatically select the
+  smallest bit-width operator needed for synthesis. 
+  - **Example 1**:
+    ```c++
+    short a;
+    char b;
+    int c = a*b;
+    ```
+    Vitis HLS will select to synthesize a 24-bit multiplier to perform
+    the multiplication operation and then convert the 24-bit
+    product to 32-bit `int` type result.
+  - **Example 2**: 
+    ```c++ 
+    int a; 
+    long b; 
+    short c = a+b; 
+    ``` 
+    Vitis HLS will first truncate the 32-bit `a` and 64-bit `b` to
+    corresponding 16-bit `short` versions, and then use a 16-bit adder
+    to the addition.
+  
 * Vitis HLS also supports arbitrary precision (AP) signed and unsigned integer types
   `ap_int<W>` and `ap_uint<W>` in C++, where `W` is the bit-width that can
   range from 1 to 1024. To use the AP integer types, the header file

@@ -435,6 +435,32 @@ types. The bit-widths of these types are listed in the table below:</p>
 exact bit-width integer types <code class="docutils literal notranslate"><span class="pre">(unsigned)</span> <span class="pre">int*_t</span></code>.</p>
 </div>
 </li>
+<li><p>Arithmetic operations with the standard C/C++ integer types follow
+standard C/C++ conventions. Vitis HLS automatically select the
+smallest bit-width operator needed for synthesis.</p>
+<ul>
+<li><p><strong>Example 1</strong>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">short</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
+<span class="kt">char</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="o">*</span><span class="n">b</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Vitis HLS will select to synthesize a 24-bit multiplier to perform
+the multiplication operation and then convert the 24-bit
+product to 32-bit <code class="docutils literal notranslate"><span class="pre">int</span></code> type result.</p>
+</li>
+<li><p><strong>Example 2</strong>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">;</span><span class="w"> </span>
+<span class="kt">long</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"> </span>
+<span class="kt">short</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span><span class="w"> </span>
+</pre></div>
+</div>
+<p>Vitis HLS will first truncate the 32-bit <code class="docutils literal notranslate"><span class="pre">a</span></code> and 64-bit <code class="docutils literal notranslate"><span class="pre">b</span></code> to
+corresponding 16-bit <code class="docutils literal notranslate"><span class="pre">short</span></code> versions, and then use a 16-bit adder
+to the addition.</p>
+</li>
+</ul>
+</li>
 <li><p>Vitis HLS also supports arbitrary precision (AP) signed and unsigned integer types
 <code class="docutils literal notranslate"><span class="pre">ap_int&lt;W&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">ap_uint&lt;W&gt;</span></code> in C++, where <code class="docutils literal notranslate"><span class="pre">W</span></code> is the bit-width that can
 range from 1 to 1024. To use the AP integer types, the header file
