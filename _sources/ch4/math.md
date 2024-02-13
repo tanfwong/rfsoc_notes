@@ -37,7 +37,7 @@ functions that operate on them.
   ```
 
 * Arithmetic operations with the standard C/C++ integer types follow
-  standard C/C++ conventions. Vitis HLS automatically select the
+  standard C/C++ conventions. Vitis HLS automatically selects the
   smallest bit-width operator needed for synthesis. 
   - **Example 1**:
     ```c++
@@ -45,8 +45,8 @@ functions that operate on them.
     char b;
     int c = a*b;
     ```
-    Vitis HLS will select to synthesize a 24-bit multiplier to perform
-    the multiplication operation and then convert the 24-bit
+    Vitis HLS selects to synthesize a 24-bit multiplier to perform
+    the multiplication operation and then converts the 24-bit
     product to 32-bit `int` type result.
   - **Example 2**: 
     ```c++ 
@@ -54,9 +54,9 @@ functions that operate on them.
     long b; 
     short c = a+b; 
     ``` 
-    Vitis HLS will first truncate the 32-bit `a` and 64-bit `b` to
-    corresponding 16-bit `short` versions, and then use a 16-bit adder
-    to the addition.
+    Vitis HLS first truncates the 32-bit `a` and 64-bit `b` to
+    corresponding 16-bit `short` versions, and then uses a 16-bit adder
+    to perform the addition.
   
 * Vitis HLS also supports arbitrary precision (AP) signed and unsigned integer types
   `ap_int<W>` and `ap_uint<W>` in C++, where `W` is the bit-width that can
@@ -68,3 +68,35 @@ functions that operate on them.
   #define AP_INT_MAX_W 4096
   #include <ap_int.h>
   ```
+
+* Again, Vitis HLS automatically synthesizes the smallest bit-width
+  operator needed to implement a specific arithmetic
+  operation. However, the operator does not need to conform to a
+  bit-width that is an integer multiple of a byte (8 bits) for AP
+  integers.
+ - **Example 3**:
+    ```c++
+    ap_int<100> a;
+    ap_int<33> b;
+    ap_int<200> c = a-b;
+    ```
+    Vitis HLS first extends `a` and `b` to
+    corresponding 101-bit AP integers, then uses a 101-bit subtractor
+    to perform the subtraction, and finally extends the difference to
+    a 200-bit AP integer.
+  - **Example 4**: 
+    ```c++ 
+    ap_int<100> a; 
+    long b; 
+    ap_int<100> = a/b; 
+    ``` 
+    Vitis HLS selects to synthesize a 100-bit divider to perform
+    the division operation. The `long` type variable `b` is first
+    extended to a 100-bit AP integer and then the division is performed.
+  
+  * The `ap_int<>` and `ap_uint<>` classes support many standard
+    binary, unary, logic, and bitwise operations. They also provide
+    many helper methods for printing and conversion to standard C++
+    types. The details of all these can be found in {cite}`ug1399` or
+    from [this
+    link](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/C-Arbitrary-Precision-Integer-Types).

@@ -436,7 +436,7 @@ exact bit-width integer types <code class="docutils literal notranslate"><span c
 </div>
 </li>
 <li><p>Arithmetic operations with the standard C/C++ integer types follow
-standard C/C++ conventions. Vitis HLS automatically select the
+standard C/C++ conventions. Vitis HLS automatically selects the
 smallest bit-width operator needed for synthesis.</p>
 <ul>
 <li><p><strong>Example 1</strong>:</p>
@@ -445,8 +445,8 @@ smallest bit-width operator needed for synthesis.</p>
 <span class="kt">int</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="o">*</span><span class="n">b</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>Vitis HLS will select to synthesize a 24-bit multiplier to perform
-the multiplication operation and then convert the 24-bit
+<p>Vitis HLS selects to synthesize a 24-bit multiplier to perform
+the multiplication operation and then converts the 24-bit
 product to 32-bit <code class="docutils literal notranslate"><span class="pre">int</span></code> type result.</p>
 </li>
 <li><p><strong>Example 2</strong>:</p>
@@ -455,9 +455,9 @@ product to 32-bit <code class="docutils literal notranslate"><span class="pre">i
 <span class="kt">short</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">;</span><span class="w"> </span>
 </pre></div>
 </div>
-<p>Vitis HLS will first truncate the 32-bit <code class="docutils literal notranslate"><span class="pre">a</span></code> and 64-bit <code class="docutils literal notranslate"><span class="pre">b</span></code> to
-corresponding 16-bit <code class="docutils literal notranslate"><span class="pre">short</span></code> versions, and then use a 16-bit adder
-to the addition.</p>
+<p>Vitis HLS first truncates the 32-bit <code class="docutils literal notranslate"><span class="pre">a</span></code> and 64-bit <code class="docutils literal notranslate"><span class="pre">b</span></code> to
+corresponding 16-bit <code class="docutils literal notranslate"><span class="pre">short</span></code> versions, and then uses a 16-bit adder
+to perform the addition.</p>
 </li>
 </ul>
 </li>
@@ -472,6 +472,42 @@ before including the header file as below:</p>
 </pre></div>
 </div>
 </li>
+<li><p>Again, Vitis HLS automatically synthesizes the smallest bit-width
+operator needed to implement a specific arithmetic
+operation. However, the operator does not need to conform to a
+bit-width that is an integer multiple of a byte (8 bits) for AP
+integers.</p></li>
+</ul>
+<ul>
+<li><p><strong>Example 3</strong>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">ap_int</span><span class="o">&lt;</span><span class="mi">100</span><span class="o">&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
+<span class="n">ap_int</span><span class="o">&lt;</span><span class="mi">33</span><span class="o">&gt;</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="n">ap_int</span><span class="o">&lt;</span><span class="mi">200</span><span class="o">&gt;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="o">-</span><span class="n">b</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Vitis HLS first extends <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> to
+corresponding 101-bit AP integers, then uses a 101-bit subtractor
+to perform the subtraction, and finally extends the difference to
+a 200-bit AP integer.</p>
+</li>
+<li><p><strong>Example 4</strong>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">ap_int</span><span class="o">&lt;</span><span class="mi">100</span><span class="o">&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">;</span><span class="w"> </span>
+<span class="kt">long</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"> </span>
+<span class="n">ap_int</span><span class="o">&lt;</span><span class="mi">100</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="o">/</span><span class="n">b</span><span class="p">;</span><span class="w"> </span>
+</pre></div>
+</div>
+<p>Vitis HLS selects to synthesize a 100-bit divider to perform
+the division operation. The <code class="docutils literal notranslate"><span class="pre">long</span></code> type variable <code class="docutils literal notranslate"><span class="pre">b</span></code> is first
+extended to a 100-bit AP integer and then the division is performed.</p>
+</li>
+</ul>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">ap_int&lt;&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">ap_uint&lt;&gt;</span></code> classes support many standard
+binary, unary, logic, and bitwise operations. They also provide
+many helper methods for printing and conversion to standard C++
+types. The details of all these can be found in <span id="id2">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span> or
+from <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/C-Arbitrary-Precision-Integer-Types">this
+link</a>.</p></li>
 </ul>
 </section>
 </section>
