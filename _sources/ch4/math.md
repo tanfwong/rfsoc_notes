@@ -74,7 +74,7 @@ functions that operate on them.
   operation. However, the operator does not need to conform to a
   bit-width that is an integer multiple of a byte (8 bits) for AP
   integers.
- - **Example 3**:
+  - **Example 3**:
     ```c++
     ap_int<100> a;
     ap_int<33> b;
@@ -88,15 +88,14 @@ functions that operate on them.
     ```c++ 
     ap_int<100> a; 
     long b; 
-    ap_int<100> = a/b; 
+    ap_int<100> c = a/b; 
     ``` 
     Vitis HLS selects to synthesize a 100-bit divider to perform
     the division operation. The `long` type variable `b` is first
     extended to a 100-bit AP integer and then the division is performed.
   
-  * The `ap_int<>` and `ap_uint<>` classes support many standard
-    binary, unary, logic, and bitwise operations. They also provide
-    many helper methods for printing and conversion to standard C++
-    types. The details of all these can be found in {cite}`ug1399` or
-    from [this
-    link](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/C-Arbitrary-Precision-Integer-Types).
+* The `ap_int<>` and `ap_uint<>` classes support many standard binary,
+  unary, logic, and bitwise operations. They also provide many helper
+  methods for printing and conversion to standard C++ types. The
+  details of all these can be found in {cite}`ug1399` or from
+  [here](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/C-Arbitrary-Precision-Integer-Types).

@@ -476,8 +476,7 @@ before including the header file as below:</p>
 operator needed to implement a specific arithmetic
 operation. However, the operator does not need to conform to a
 bit-width that is an integer multiple of a byte (8 bits) for AP
-integers.</p></li>
-</ul>
+integers.</p>
 <ul>
 <li><p><strong>Example 3</strong>:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">ap_int</span><span class="o">&lt;</span><span class="mi">100</span><span class="o">&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
@@ -493,7 +492,7 @@ a 200-bit AP integer.</p>
 <li><p><strong>Example 4</strong>:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">ap_int</span><span class="o">&lt;</span><span class="mi">100</span><span class="o">&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">;</span><span class="w"> </span>
 <span class="kt">long</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"> </span>
-<span class="n">ap_int</span><span class="o">&lt;</span><span class="mi">100</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="o">/</span><span class="n">b</span><span class="p">;</span><span class="w"> </span>
+<span class="n">ap_int</span><span class="o">&lt;</span><span class="mi">100</span><span class="o">&gt;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="o">/</span><span class="n">b</span><span class="p">;</span><span class="w"> </span>
 </pre></div>
 </div>
 <p>Vitis HLS selects to synthesize a 100-bit divider to perform
@@ -501,13 +500,12 @@ the division operation. The <code class="docutils literal notranslate"><span cla
 extended to a 100-bit AP integer and then the division is performed.</p>
 </li>
 </ul>
-<ul class="simple">
-<li><p>The <code class="docutils literal notranslate"><span class="pre">ap_int&lt;&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">ap_uint&lt;&gt;</span></code> classes support many standard
-binary, unary, logic, and bitwise operations. They also provide
-many helper methods for printing and conversion to standard C++
-types. The details of all these can be found in <span id="id2">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span> or
-from <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/C-Arbitrary-Precision-Integer-Types">this
-link</a>.</p></li>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">ap_int&lt;&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">ap_uint&lt;&gt;</span></code> classes support many standard binary,
+unary, logic, and bitwise operations. They also provide many helper
+methods for printing and conversion to standard C++ types. The
+details of all these can be found in <span id="id2">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span> or from
+<a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/C-Arbitrary-Precision-Integer-Types">here</a>.</p></li>
 </ul>
 </section>
 </section>
