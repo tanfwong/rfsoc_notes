@@ -35,3 +35,13 @@ functions that operate on them.
   The header file `<stdint.h>` must be included in order to use the
   exact bit-width integer types `(unsigned) int*_t`.
   ```
+* Vitis HLS also supports arbitrary precision (AP) signed and unsigned integer types
+  `ap_int<W>` and `ap_uint<W>` in C++, where `W` is the bit-width that can
+  range from 1 to 1024. To use the AP integer types, the header file
+  `<ap_int.h>` must be included. In addition, the maximum bit-width
+  can also be extended to 4096 by defining the macro `AP_INT_MAX_W`
+  before including the header file as below:
+  ```c++
+  #define AP_INT_MAX_W 4096
+  #include <ap_int.h>
+  ```

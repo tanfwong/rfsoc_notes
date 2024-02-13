@@ -435,6 +435,17 @@ types. The bit-widths of these types are listed in the table below:</p>
 exact bit-width integer types <code class="docutils literal notranslate"><span class="pre">(unsigned)</span> <span class="pre">int*_t</span></code>.</p>
 </div>
 </li>
+<li><p>Vitis HLS also supports arbitrary precision (AP) signed and unsigned integer types
+<code class="docutils literal notranslate"><span class="pre">ap_int&lt;W&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">ap_uint&lt;W&gt;</span></code> in C++, where <code class="docutils literal notranslate"><span class="pre">W</span></code> is the bit-width that can
+range from 1 to 1024. To use the AP integer types, the header file
+<code class="docutils literal notranslate"><span class="pre">&lt;ap_int.h&gt;</span></code> must be included. In addition, the maximum bit-width
+can also be extended to 4096 by defining the macro <code class="docutils literal notranslate"><span class="pre">AP_INT_MAX_W</span></code>
+before including the header file as below:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define AP_INT_MAX_W 4096</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;ap_int.h&gt;</span>
+</pre></div>
+</div>
+</li>
 </ul>
 </section>
 </section>
