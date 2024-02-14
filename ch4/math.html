@@ -60,6 +60,8 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'ch4/math';</script>
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -378,6 +380,7 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integer-types">4.4.1. Integer Types</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floating-point-types">4.4.2. Floating Point Types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#arbitrary-precision-fixed-point-types">4.4.3. Arbitrary Precision Fixed Point Types</a></li>
 </ul>
             </nav>
         </div>
@@ -394,7 +397,7 @@ document.write(`
 <p>Vitis HLS supports most of the simple as well as composite C/C++ data
 types. Details of how different data types are synthesized are
 available in <span id="id1">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>. For DSP applications, we are most
-interested in data types for arithmetics, such as the standard C/C++
+interested in arithmetic data types, such as the standard C/C++
 integer and floating point data types as well as fixed-point data
 types supported by Vitis HLS. In this section, we focus our
 discussions on these math data types as well as the math operators and
@@ -650,6 +653,57 @@ code and the test bench code.</p></li>
 </li>
 </ul>
 </section>
+<section id="arbitrary-precision-fixed-point-types">
+<h2><span class="section-number">4.4.3. </span>Arbitrary Precision Fixed Point Types<a class="headerlink" href="#arbitrary-precision-fixed-point-types" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>Vitis HLS supports AP fixed-point types that are declared using the
+C++ class templates <code class="docutils literal notranslate"><span class="pre">ap_fixed&lt;W,I,[Q,O,N]&gt;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ap_ufixed&lt;W,I,[Q,O,N]&gt;</span></code>, where the arguments are specified in the
+table shown in the figure below:</p>
+<figure class="align-center" id="ap-fixed">
+<a class="reference internal image-reference" href="figs/ap_fixed.jpg"><img alt="Arbitary precision fixed-point type identifiers" src="figs/ap_fixed.jpg" style="width: 800px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 4.3 </span><span class="caption-text">Arbitary precision fixed-point type identifiers (table taken from <span id="id5">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>)</span><a class="headerlink" href="#ap-fixed" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+</li>
+<li><p>To use the AP fixed-point types, the header file <code class="docutils literal notranslate"><span class="pre">&lt;ap_fixed.h&gt;</span></code>
+should be included. Exactly the same as the AP integer types, the
+default maximum bit-width is 1024 and can be extended to 4096 by
+defining the macro <code class="docutils literal notranslate"><span class="pre">AP_INT_MAX_W</span></code> to that maximum value.</p></li>
+<li><p>Again the same as for the AP integer types, Vitis HLS automatically
+synthesizes the smallest bit-width operator needed to implement a
+specific arithmetic operation involving the AP fixed-point
+types. Compared with the floating-point operation, significantly
+less PL resource is required for implementing an AP fixed-point
+operation and the latency achieved is also smaller.</p></li>
+<li><p>Same as the AP integer classes, the <code class="docutils literal notranslate"><span class="pre">ap_fixed&lt;&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">ap_ufixed&lt;&gt;</span></code>
+classes support many standard binary, unary, logic, and bitwise
+operations. They also provide many helper methods for printing and
+conversion to standard C++ types. The details of all these can be
+found in <span id="id6">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span> or from
+<a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/C-Arbitrary-Precision-Fixed-Point-Types">here</a>.</p></li>
+<li><p>The Vitis HLS Math Library also implements a subset of math
+functions with AP fixed-point and AP integer inputs with the
+following restrictions:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ap_fixed&lt;W,I&gt;</span></code> where <code class="docutils literal notranslate"><span class="pre">I</span></code> <span class="math notranslate nohighlight">\(\leq 33\)</span> and <code class="docutils literal notranslate"><span class="pre">W-I</span></code> <span class="math notranslate nohighlight">\(\leq 32\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ap_ufixed&lt;W,I&gt;</span></code> where <code class="docutils literal notranslate"><span class="pre">I</span></code> <span class="math notranslate nohighlight">\(\leq 32\)</span> and <code class="docutils literal notranslate"><span class="pre">W-I</span></code> <span class="math notranslate nohighlight">\(\leq 32\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ap_int&lt;I&gt;</span></code> where <code class="docutils literal notranslate"><span class="pre">I</span></code> <span class="math notranslate nohighlight">\(\leq 33\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ap_uint&lt;I&gt;</span></code> where <code class="docutils literal notranslate"><span class="pre">I</span></code> <span class="math notranslate nohighlight">\(\leq 32\)</span></p></li>
+<li><p>Template parameters <code class="docutils literal notranslate"><span class="pre">Q</span></code>, <code class="docutils literal notranslate"><span class="pre">O</span></code>, and <code class="docutils literal notranslate"><span class="pre">N</span></code> for <code class="docutils literal notranslate"><span class="pre">ap_fixed</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ap_ufixed</span></code> types are not supported.</p></li>
+</ul>
+<p>For example, the AP fixed-point cosine function is simply the
+overloaded version of <code class="docutils literal notranslate"><span class="pre">hls::cos</span></code>.  The list of math functions
+implemented can be found
+<a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/Fixed-Point-Math-Functions">here</a>. Compared
+with their floating-point counterparts, RTL implementations of these
+fixed-point functions are smaller and faster, but may be slightly
+less accurate.</p>
+</li>
+</ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -721,6 +775,7 @@ code and the test bench code.</p></li>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integer-types">4.4.1. Integer Types</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floating-point-types">4.4.2. Floating Point Types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#arbitrary-precision-fixed-point-types">4.4.3. Arbitrary Precision Fixed Point Types</a></li>
 </ul>
   </nav></div>
 

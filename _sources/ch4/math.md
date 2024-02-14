@@ -3,7 +3,7 @@
 Vitis HLS supports most of the simple as well as composite C/C++ data
 types. Details of how different data types are synthesized are
 available in {cite}`ug1399`. For DSP applications, we are most
-interested in data types for arithmetics, such as the standard C/C++
+interested in arithmetic data types, such as the standard C/C++
 integer and floating point data types as well as fixed-point data
 types supported by Vitis HLS. In this section, we focus our
 discussions on these math data types as well as the math operators and
@@ -228,4 +228,54 @@ functions that operate on them.
     use functions in the Vitis HLS Math Library in both the DSP kernel
     code and the test bench code.
 
+## Arbitrary Precision Fixed Point Types
 
+* Vitis HLS supports AP fixed-point types that are declared using the
+  C++ class templates `ap_fixed<W,I,[Q,O,N]>` and
+  `ap_ufixed<W,I,[Q,O,N]>`, where the arguments are specified in the
+  table shown in the figure below:
+  ```{figure} ../figs/ap_fixed.jpg
+  ---
+  name: ap_fixed
+  alt: Arbitary precision fixed-point type identifiers
+  width: 800px
+  align: center
+  ---
+  Arbitary precision fixed-point type identifiers (table taken from {cite}`ug1399`)
+  ```
+* To use the AP fixed-point types, the header file `<ap_fixed.h>`
+  should be included. Exactly the same as the AP integer types, the
+  default maximum bit-width is 1024 and can be extended to 4096 by
+  defining the macro `AP_INT_MAX_W` to that maximum value.
+
+* Again the same as for the AP integer types, Vitis HLS automatically
+  synthesizes the smallest bit-width operator needed to implement a
+  specific arithmetic operation involving the AP fixed-point
+  types. Compared with the floating-point operation, significantly
+  less PL resource is required for implementing an AP fixed-point
+  operation and the latency achieved is also smaller.
+
+* Same as the AP integer classes, the `ap_fixed<>` and `ap_ufixed<>`
+  classes support many standard binary, unary, logic, and bitwise
+  operations. They also provide many helper methods for printing and
+  conversion to standard C++ types. The details of all these can be
+  found in {cite}`ug1399` or from
+  [here](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/C-Arbitrary-Precision-Fixed-Point-Types).
+
+* The Vitis HLS Math Library also implements a subset of math
+  functions with AP fixed-point and AP integer inputs with the
+  following restrictions:
+  - `ap_fixed<W,I>` where `I` $\leq 33$ and `W-I` $\leq 32$
+  - `ap_ufixed<W,I>` where `I` $\leq 32$ and `W-I` $\leq 32$
+  - `ap_int<I>` where `I` $\leq 33$
+  - `ap_uint<I>` where `I` $\leq 32$
+  - Template parameters `Q`, `O`, and `N` for `ap_fixed` and
+    `ap_ufixed` types are not supported.
+
+  For example, the AP fixed-point cosine function is simply the
+  overloaded version of `hls::cos`.  The list of math functions
+  implemented can be found
+  [here](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/Fixed-Point-Math-Functions). Compared
+  with their floating-point counterparts, RTL implementations of these
+  fixed-point functions are smaller and faster, but may be slightly
+  less accurate.
