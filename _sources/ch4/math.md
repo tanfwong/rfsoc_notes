@@ -1,4 +1,4 @@
-# Math Data Types & Library
+# Math Data Types 
 
 Vitis HLS supports most of the simple as well as composite C/C++ data
 types. Details of how different data types are synthesized are
