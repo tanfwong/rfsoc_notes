@@ -381,6 +381,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integer-types">4.4.1. Integer Types</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floating-point-types">4.4.2. Floating Point Types</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#arbitrary-precision-fixed-point-types">4.4.3. Arbitrary Precision Fixed Point Types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vector-types">4.4.4. Vector Types</a></li>
 </ul>
             </nav>
         </div>
@@ -522,7 +523,7 @@ details of all these can be found in <span id="id2">[<a class="reference interna
 <li><p>Vitis HLS supports the standard C/C++ <code class="docutils literal notranslate"><span class="pre">float</span></code> and <code class="docutils literal notranslate"><span class="pre">double</span></code> types as
 well as the half-precision type <code class="docutils literal notranslate"><span class="pre">half</span></code> for synthesis with <a class="reference external" href="https://en.wikipedia.org/wiki/IEEE_754#CITEREFIEEE_7542008">IEEE-754
 standard</a>
-partial compliance <span id="id3">[<a class="reference internal" href="../refs.html#id13" title="Floating-Point Operator: LogiCORE IP Product Guide. AMD-Xilinx, Dec. 2020. PG060 (v7.1). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx20</a>]</span>:</p>
+partial compliance <span id="id3">[<a class="reference internal" href="../refs.html#id13" title="Floating-Point Operator: LogiCORE IP Product Guide. AMD-Xilinx, Dec. 2020. PG060 (v7.1). URL: https://docs.xilinx.com/v/u/en-US/pg060-floating-point.">AMD-Xilinx20</a>]</span>:</p>
 <table class="table" id="float-types">
 <caption><span class="caption-number">Table 4.3 </span><span class="caption-text">Vitis HLS-supported floating-point types</span><a class="headerlink" href="#float-types" title="Permalink to this table">#</a></caption>
 <colgroup>
@@ -607,7 +608,7 @@ may be employed to access mantissa and exponent components of
 complex-valued types.</p>
 </li>
 <li><p>Arithmetic operations with floating-point variables are
-synthesized using floating-point IP cores <span id="id4">[<a class="reference internal" href="../refs.html#id13" title="Floating-Point Operator: LogiCORE IP Product Guide. AMD-Xilinx, Dec. 2020. PG060 (v7.1). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx20</a>]</span>. Typically,
+synthesized using floating-point IP cores <span id="id4">[<a class="reference internal" href="../refs.html#id13" title="Floating-Point Operator: LogiCORE IP Product Guide. AMD-Xilinx, Dec. 2020. PG060 (v7.1). URL: https://docs.xilinx.com/v/u/en-US/pg060-floating-point.">AMD-Xilinx20</a>]</span>. Typically,
 floating-point operations require significantly more PL resources
 and endure longer latencies that their counterparts for standard
 integer types.</p>
@@ -704,6 +705,17 @@ less accurate.</p>
 </li>
 </ul>
 </section>
+<section id="vector-types">
+<h2><span class="section-number">4.4.4. </span>Vector Types<a class="headerlink" href="#vector-types" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>The Vitis HLS Vector Library provides a C++ class template
+<code class="docutils literal notranslate"><span class="pre">hls::vector&lt;T,</span> <span class="pre">N&gt;</span></code> to vectorize the math data types mentioned above
+in order to synthesize SIMD-type operations. The template parameters
+<code class="docutils literal notranslate"><span class="pre">T</span></code> and <code class="docutils literal notranslate"><span class="pre">N</span></code> specify the primitive data type and the length of the
+vector. The header file <code class="docutils literal notranslate"><span class="pre">&lt;hls_vector.h&gt;</span></code> should be included to use
+the vector template.</p></li>
+</ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -776,6 +788,7 @@ less accurate.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integer-types">4.4.1. Integer Types</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#floating-point-types">4.4.2. Floating Point Types</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#arbitrary-precision-fixed-point-types">4.4.3. Arbitrary Precision Fixed Point Types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vector-types">4.4.4. Vector Types</a></li>
 </ul>
   </nav></div>
 

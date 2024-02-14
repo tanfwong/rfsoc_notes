@@ -279,3 +279,11 @@ functions that operate on them.
   with their floating-point counterparts, RTL implementations of these
   fixed-point functions are smaller and faster, but may be slightly
   less accurate.
+
+## Vector Types
+* The Vitis HLS Vector Library provides a C++ class template
+  `hls::vector<T, N>` to vectorize the math data types mentioned above
+  in order to synthesize SIMD-type operations. The template parameters
+  `T` and `N` specify the primitive data type and the length of the
+  vector. The header file `<hls_vector.h>` should be included to use
+  the vector template.
