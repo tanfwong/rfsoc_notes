@@ -182,7 +182,7 @@ functions that operate on them.
   - `std::complex<double>`
   
   The header file `<complex.h>` should be included to use these
-  complex-valued type.
+  complex-valued types.
 
 * Arithmetic operations with floating-point variables are
   synthesized using floating-point IP cores {cite}`pg060`. Typically,
