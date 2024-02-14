@@ -234,7 +234,7 @@ functions that operate on them.
   C++ class templates `ap_fixed<W,I,[Q,O,N]>` and
   `ap_ufixed<W,I,[Q,O,N]>`, where the arguments are specified in the
   table shown in the figure below:
-  ```{figure} ../figs/ap_fixed.jpg
+  ```{figure} ../figs/ap_fixed.png
   ---
   name: ap_fixed
   alt: Arbitary precision fixed-point type identifiers
