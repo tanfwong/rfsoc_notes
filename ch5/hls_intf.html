@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>1.2. Software Development Tools &#8212; Real-time DSP Notes</title>
+    <title>5. HLS Kernel Interface &#8212; Real-time DSP Notes</title>
   
   
   
@@ -60,14 +60,12 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'ch1/vitis';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ch5/hls_intf';</script>
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="1.3. Vitis Application Acceleration Development" href="workflow.html" />
-    <link rel="prev" title="1.1. Hardware Platform" href="rfsoc4x2.html" />
+    <link rel="next" title="6. References" href="../refs.html" />
+    <link rel="prev" title="4.4. Math Data Types" href="../ch4/math.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
   </head>
@@ -159,10 +157,10 @@ const thebe_selector_output = ".output, .cell_output"
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="overview.html">1. Overview</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="rfsoc4x2.html">1.1. Hardware Platform</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">1.2. Software Development Tools</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workflow.html">1.3. Vitis Application Acceleration Development</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../ch1/overview.html">1. Overview</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ch1/rfsoc4x2.html">1.1. Hardware Platform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ch1/vitis.html">1.2. Software Development Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ch1/workflow.html">1.3. Vitis Application Acceleration Development</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../ch2/hls.html">2. Introduction to HLS</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -184,7 +182,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="../ch4/math.html">4.4. Math Data Types</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../ch5/hls_intf.html">5. HLS Kernel Interface</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">5. HLS Kernel Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">6. References</a></li>
 </ul>
 
@@ -257,7 +255,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Fch1/vitis.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Fch5/hls_intf.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -287,7 +285,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../_sources/ch1/vitis.md" target="_blank"
+      <li><a href="../_sources/ch5/hls_intf.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -356,9 +354,7 @@ document.write(`
   </button>
 `);
 </script>
-<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</label>
+
 </div></div>
       
     </div>
@@ -369,20 +365,11 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Software Development Tools</h1>
+    <h1>HLS Kernel Interface</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
-            <div>
-                <h2> Contents </h2>
-            </div>
-            <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dsp-implementation-configuration">1.2.1. DSP Implementation Configuration</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vitis-vivado-toolchain">1.2.2. Vitis-Vivado Toolchain</a></li>
-</ul>
-            </nav>
         </div>
     </div>
 </div>
@@ -392,97 +379,25 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="software-development-tools">
-<h1><span class="section-number">1.2. </span>Software Development Tools<a class="headerlink" href="#software-development-tools" title="Permalink to this headline">#</a></h1>
-<section id="dsp-implementation-configuration">
-<h2><span class="section-number">1.2.1. </span>DSP Implementation Configuration<a class="headerlink" href="#dsp-implementation-configuration" title="Permalink to this headline">#</a></h2>
-<p>There are many possible configurations of utilizing the various
-compute resources in the three subsystems in the XCZU48DR RFSoC
-device to support DSP implementation. Since our main goal is to
-learn how to develop real-time, high-speed DSP implementation, we
-will employ the heterogeneous compute resources in the XCZU48DR
-RFSoC device in the configuration below:</p>
-<ol class="arabic simple">
-<li><p>One ADC, the corresponding PLL, and data converter in the RF
-system will be configured to supply a continuous stream of
-(real-valued) signal samples at the sampling rate of <span class="math notranslate nohighlight">\(307.2\)</span> Msps.</p></li>
-<li><p>DSP kernels will be implemented using the various resources in
-the PL.  The results will be stored in the global memory (DDR4)
-connected to the PL.</p></li>
-<li><p>The ARM Cortex-A53 APU in the PS will serve as a <em>host</em> for
-control of the DSP kernels in the PL, interfacing with the global
-memory, and simple post processing of the DSP results. An
-embedded Linux OS will run on the APU.</p></li>
-<li><p>Control and data signals will be transfered between all these PS,
-PL, and RF components via AXI4 protocols.</p></li>
-</ol>
-</section>
-<section id="vitis-vivado-toolchain">
-<span id="sec-vitis"></span><h2><span class="section-number">1.2.2. </span>Vitis-Vivado Toolchain<a class="headerlink" href="#vitis-vivado-toolchain" title="Permalink to this headline">#</a></h2>
-<ul>
-<li><p>DSP implementation in the configuration above follows a typical
-embedded/SoC system development workflow by programming the
-heterogeneous compute components:</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="hls-kernel-interface">
+<h1><span class="section-number">5. </span>HLS Kernel Interface<a class="headerlink" href="#hls-kernel-interface" title="Permalink to this headline">#</a></h1>
 <ul class="simple">
-<li><p><strong>PL</strong>:</p>
-<ol class="arabic simple">
-<li><p>Configure the ADC, PLL, and data converter to provide a stream
-of input signal samples at the desired sampling rate and
-interface the ADC sample stream to the DSP kernels in the PL.
-This step is usually developed at the <em>register-transfer level
-(RTL)</em> using hardware description languages (HDLs), such as
-Verilog and VHDL.</p></li>
-<li><p>Implement DSP kernels, each with interfaces to the ADC, to other DSP
-kernels, and/or to local and global memory. This step may be developed at
-the RTL level as in the previous step, or with <em>high-level
-synthesis (HLS)</em> using  high-level programming languages, such
-as C or C++.</p></li>
-</ol>
-</li>
-<li><p><strong>PS</strong>:</p>
-<ol class="arabic simple">
-<li><p>Develop drivers and APIs to control the DSP kernels and ADC
-hardware blocks in the PL as well as to transfer data between
-the host (the ARM Cortex-A53 APU) and the DSP kernels.</p></li>
-<li><p>Develop an application program on the host to control and
-communicate with the DSP kernels and to present the processed
-results from the DSP kernels.</p></li>
-</ol>
-</li>
+<li><p>Under the VAAD flow, Vitis HLS automatically defines the interface
+of a DSP kernel so that the PS host can pass control commands to the
+kernel, and data can be exchanged between the kernel and the PS
+host, as well as with other kernels and externel hardware
+components.</p></li>
+<li><p>The interface contains the following 3 elements:</p>
+<ul>
+<li><p>a set of <em>data channels</em> for exchange of data between the kernel and
+external components,</p></li>
+<li><p>a port protocol for each data channel to control the flow of data
+through that channel, and</p></li>
+<li><p>an execution control scheme (protocol) by which the PS host
+controls the execution of the kernel.</p></li>
 </ul>
 </li>
-<li><p>The AMD-Xilinx tools that support the embedded system
-development workflow is <a class="reference external" href="https://www.xilinx.com/products/design-tools/vitis.html">Vitis</a>, <a class="reference external" href="https://www.xilinx.com/products/design-tools/vivado.html">Vivado</a>, and <a class="reference external" href="https://www.xilinx.com/products/design-tools/vitis/vitis-hls.html">Vitis HLS</a>:</p>
-<dl class="glossary simple">
-<dt id="term-Vivado">Vivado<a class="headerlink" href="#term-Vivado" title="Permalink to this term">#</a></dt><dd><ul class="simple">
-<li><p>Supports RTL design of DSP kernels, hardware blocks, and
-interfaces in the PL</p></li>
-<li><p>Performs FPGA implementation steps, including elaboration,
-verification and simulation, synthesis, place and route,
-static timing analysis, and bit-stream generation</p></li>
 </ul>
-</dd>
-<dt id="term-Vitis-HLS">Vitis HLS<a class="headerlink" href="#term-Vitis-HLS" title="Permalink to this term">#</a></dt><dd><ul class="simple">
-<li><p>Supports HLS design of DSP kernels and interfaces in the PL</p></li>
-<li><p>Performs HLS design steps, including RTL synthesis, C simulation
-and C/RTL co-simulation</p></li>
-<li><p>RTL design sythesized can be used in Vivado for FPGA implementation</p></li>
-</ul>
-</dd>
-<dt id="term-Vitis">Vitis<a class="headerlink" href="#term-Vitis" title="Permalink to this term">#</a></dt><dd><ul class="simple">
-<li><p>Supports host application/driver development and build</p></li>
-<li><p>Invokes Vitis HLS and Vivado to perform PL design and implementation</p></li>
-<li><p>Packages the host OS, host application executable, and FPGA bit-stream
-for running the embedded DSP application on the RFSoC 4x2
-board</p></li>
-<li><p>Provids a unified IDE for the embedded system development steps
-above</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
-</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -498,7 +413,7 @@ above</p></li>
         },
         kernelOptions: {
             name: "python3",
-            path: "./ch1"
+            path: "./ch5"
         },
         predefinedOutput: true
     }
@@ -517,20 +432,20 @@ above</p></li>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="rfsoc4x2.html"
+       href="../ch4/math.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title"><span class="section-number">1.1. </span>Hardware Platform</p>
+        <p class="prev-next-title"><span class="section-number">4.4. </span>Math Data Types</p>
       </div>
     </a>
     <a class="right-next"
-       href="workflow.html"
+       href="../refs.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">1.3. </span>Vitis Application Acceleration Development</p>
+        <p class="prev-next-title"><span class="section-number">6. </span>References</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -543,21 +458,6 @@ above</p></li>
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dsp-implementation-configuration">1.2.1. DSP Implementation Configuration</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vitis-vivado-toolchain">1.2.2. Vitis-Vivado Toolchain</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>
