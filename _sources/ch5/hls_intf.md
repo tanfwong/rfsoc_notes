@@ -27,8 +27,8 @@
     mapped interfaces, and register-based data access,
   - AXI4 memory mapped (`m_axi`) interfaces for memory-based data
     access if needed, and
-  - AXI4 stream (`axis`) interfaces for stream-based data access if
-    needed. 
+  - AXI4 stream (`axis`) interfaces for stream-based (sequential) data
+    access if needed.
  
 * Vitis HLS will always generate the clock, reset, interrupt ports and
    the `s_axi_control` interface. No other `s_axilite` interface is
@@ -68,4 +68,12 @@
   more than one `m_axi` (`axis`) interface and assign memory-based
       (stream-based) channels to different `m_axi` (`axis`) interfaces
   by using the `bundle=` option of the interface pragma. 
-  
+
+* As Vitis HLS abstracts away the detailed hardware implementation of
+  the kernel interface, we will skip over the details of the AXI4
+  protocols `s_axilite`, `m_axi`, and `axis` here. Detailed
+  specification of the AXI4 protocols can be found in {cite}`axi4`,
+  and details about the adapter design for these protocols can be
+  found in {cite}`ug1037`. Instead, we will focus on HLS programming
+  techniques to allow efficient data access between a DSP kernel and
+  external hardware components, in particular, the global memory. 

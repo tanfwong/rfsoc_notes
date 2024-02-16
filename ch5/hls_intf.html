@@ -411,8 +411,8 @@ management of address offset information for AXI4 memory
 mapped interfaces, and register-based data access,</p></li>
 <li><p>AXI4 memory mapped (<code class="docutils literal notranslate"><span class="pre">m_axi</span></code>) interfaces for memory-based data
 access if needed, and</p></li>
-<li><p>AXI4 stream (<code class="docutils literal notranslate"><span class="pre">axis</span></code>) interfaces for stream-based data access if
-needed.</p></li>
+<li><p>AXI4 stream (<code class="docutils literal notranslate"><span class="pre">axis</span></code>) interfaces for stream-based (sequential) data
+access if needed.</p></li>
 </ul>
 </li>
 <li><p>Vitis HLS will always generate the clock, reset, interrupt ports and
@@ -450,6 +450,14 @@ interface by default. However, we may instruct Vitis HLS to generate
 more than one <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> (<code class="docutils literal notranslate"><span class="pre">axis</span></code>) interface and assign memory-based
 (stream-based) channels to different <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> (<code class="docutils literal notranslate"><span class="pre">axis</span></code>) interfaces
 by using the <code class="docutils literal notranslate"><span class="pre">bundle=</span></code> option of the interface pragma.</p></li>
+<li><p>As Vitis HLS abstracts away the detailed hardware implementation of
+the kernel interface, we will skip over the details of the AXI4
+protocols <code class="docutils literal notranslate"><span class="pre">s_axilite</span></code>, <code class="docutils literal notranslate"><span class="pre">m_axi</span></code>, and <code class="docutils literal notranslate"><span class="pre">axis</span></code> here. Detailed
+specification of the AXI4 protocols can be found in <span id="id1">[<a class="reference internal" href="../refs.html#id10" title="Introduction to AMBA AXI4. ARM, Aug. 2020. URL: https://developer.arm.com/-/media/Arm%20Developer%20Community/PDF/Learn%20the%20Architecture/102202_0100_01_Introduction_to_AMBA_AXI.pdf?revision=369ad681-f926-47b0-81be-42813d39e132.">ARM20</a>]</span>,
+and details about the adapter design for these protocols can be
+found in <span id="id2">[<a class="reference internal" href="../refs.html#id14" title="Vivado Design Suite: AXI Reference Guide. AMD-Xilinx, July 2017. UG1037 (v4.0). URL: https://docs.xilinx.com/v/u/en-US/ug1037-vivado-axi-reference-guide.">AMD-Xilinx17</a>]</span>. Instead, we will focus on HLS programming
+techniques to allow efficient data access between a DSP kernel and
+external hardware components, in particular, the global memory.</p></li>
 </ul>
 </section>
 

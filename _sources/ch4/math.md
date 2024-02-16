@@ -140,6 +140,11 @@ functions that operate on them.
     - 11
     - 1
   ```
+  ```{tip}
+  The standard C++ type `long double` is also supported, but Vitis HLS
+  gives the xeact same implementation as `double`. Hence, there is no
+  point to use `long double`.
+  ```
   The following unions defined in [this
   example](https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/2023.2/Modeling/using_float_and_double/fp_mul_pow2.h)
   may be employed to access mantissa and exponent components of
@@ -199,11 +204,24 @@ functions that operate on them.
   operators and the PL resources to implement the selected
   operators. However, the implementation choice of some floating-point
   operators made by Vitis HLS may be overridden using [`#pragma HLS
-  bind_op`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-bind_op). One
-  may also use the `latency=` option to override the default latency
-  Vitis HLS assumes for an operator. This may come handy to tell Vitis
-  HLS to use a longer latency for the operator when the default RTL
-  design provided by Vitis HLS produces negative slacks.
+  bind_op`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-bind_op). 
+  For example, the bind-op pragma in the following C++ function
+  ```c++
+  void top(double x1, double x2, double &y) {
+  #pragma HLS bind_op variable=y op=dmul impl=fabric
+    y = x1 * x2;
+  }
+  ```
+  
+  changes the default implementation of the `double` multiplier from
+  `maxdsp` to `fabric`, i.e., to implement the multiplier without
+  using any DSP resource in the PL. In this case, a lower latency can be
+  achieved.
+
+* One may also use the `latency=` option to override the default
+  latency Vitis HLS assumes for an operator. This may come handy to
+  tell Vitis HLS to use a longer latency for the operator when the
+  default RTL design provided by Vitis HLS produces negative slacks.
 
 * The Vitis HLS Math Library `hls_math` implements synthesizable
   bit-approximate versions of most math functions in the standard C++
