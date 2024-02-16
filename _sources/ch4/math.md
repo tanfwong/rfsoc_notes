@@ -142,7 +142,7 @@ functions that operate on them.
   ```
   ```{tip}
   The standard C++ type `long double` is also supported, but Vitis HLS
-  gives the xeact same implementation as `double`. Hence, there is no
+  gives the exact same implementation as `double`. Hence, there is no
   point to use `long double`.
   ```
   The following unions defined in [this
