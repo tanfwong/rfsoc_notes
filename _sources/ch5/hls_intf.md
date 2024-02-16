@@ -4,20 +4,21 @@
   of a DSP kernel so that the PS host can pass control commands to the
   kernel, and data can be exchanged between the kernel and the PS
   host, as well as with other kernels and externel hardware
-  components. The discussions about the kernel interface in this
-  section primarily pertains to VADD kernels.
+  components. All discussions about the kernel interface in this
+  section primarily pertain to VADD kernels.
 
 * The interface contains the following 2 elements:
   - a set of *data channels* for exchange of data between the kernel
     and external components, and a port protocol for each data channel
     to control the flow of data through that channel,
-  - a *control channel* and the accompanying b control lock protocol
+  - a *control channel* and the accompanying block control protocol
     `ap_ctrl_chain` by which the PS host controls the execution of the
     kernel.
 
 * Vitis HLS automatically generates the following default hardware
-  interface ports in the kernel to handle the flow of data and control
-  information through the data and control channels:
+  interface ports (and the corresponding adapters) in the kernel to
+  handle the flow of data and control information through the data and
+  control channels:
   - a clock port `ap_clk`, a reset port `ap_rst_n`, and an interrupt
      port `interrupt`for kernel control,
   - an AXI4 Lite (`s_axilite`) interface, called `s_axi_control`, for
@@ -29,7 +30,7 @@
   - AXI4 stream (`axis`) interfaces for stream-based data access if
     needed. 
  
-* Vitis HLS will always generate the clock, reset, and interrupt and
+* Vitis HLS will always generate the clock, reset, interrupt ports and
    the `s_axi_control` interface. No other `s_axilite` interface is
    allowed under the VAAD kernel design.
  
@@ -42,7 +43,7 @@
   The default data access paradigm and interface protocol for some of
   these basic types may be overridden by using [`#pragma HLS
   interface`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-interface).
-  For example, the following example
+  For example, the following C++ code snippet
   ```c++
   void top(int in[N], int out[N]) {
   #pragma HLS interface axis port=in
@@ -50,9 +51,9 @@
     ...
   }
   ```
-  specifies the arrays `in[N]` and `out[N]` to use the `axis` protocol
-  for stream-based access instead of the default `m_axi` protocol for
-  memory-based access.
+  specifies access to the arrays `in[N]` and `out[N]` be implemented
+  using the `axis` protocol for stream-based access instead of the
+  default `m_axi` protocol for memory-based access.
 
 * Vitis HLS however does not automatically determine default interface
   protocols for the member elements of composite arguments of the top-level

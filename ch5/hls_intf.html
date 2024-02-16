@@ -386,21 +386,22 @@ document.write(`
 of a DSP kernel so that the PS host can pass control commands to the
 kernel, and data can be exchanged between the kernel and the PS
 host, as well as with other kernels and externel hardware
-components. The discussions about the kernel interface in this
-section primarily pertains to VADD kernels.</p></li>
+components. All discussions about the kernel interface in this
+section primarily pertain to VADD kernels.</p></li>
 <li><p>The interface contains the following 2 elements:</p>
 <ul class="simple">
 <li><p>a set of <em>data channels</em> for exchange of data between the kernel
 and external components, and a port protocol for each data channel
 to control the flow of data through that channel,</p></li>
-<li><p>a <em>control channel</em> and the accompanying b control lock protocol
+<li><p>a <em>control channel</em> and the accompanying block control protocol
 <code class="docutils literal notranslate"><span class="pre">ap_ctrl_chain</span></code> by which the PS host controls the execution of the
 kernel.</p></li>
 </ul>
 </li>
 <li><p>Vitis HLS automatically generates the following default hardware
-interface ports in the kernel to handle the flow of data and control
-information through the data and control channels:</p>
+interface ports (and the corresponding adapters) in the kernel to
+handle the flow of data and control information through the data and
+control channels:</p>
 <ul class="simple">
 <li><p>a clock port <code class="docutils literal notranslate"><span class="pre">ap_clk</span></code>, a reset port <code class="docutils literal notranslate"><span class="pre">ap_rst_n</span></code>, and an interrupt
 port <code class="docutils literal notranslate"><span class="pre">interrupt</span></code>for kernel control,</p></li>
@@ -414,7 +415,7 @@ access if needed, and</p></li>
 needed.</p></li>
 </ul>
 </li>
-<li><p>Vitis HLS will always generate the clock, reset, and interrupt and
+<li><p>Vitis HLS will always generate the clock, reset, interrupt ports and
 the <code class="docutils literal notranslate"><span class="pre">s_axi_control</span></code> interface. No other <code class="docutils literal notranslate"><span class="pre">s_axilite</span></code> interface is
 allowed under the VAAD kernel design.</p></li>
 <li><p>The data channels are constructed based on the arguments of the
@@ -425,7 +426,7 @@ arguments. The default data access paradigm and interface protocol
 for basic argument types are specified in <a class="reference internal" href="../ch4/functions.html#top-func-args"><span class="std std-numref">Table 4.1</span></a>.
 The default data access paradigm and interface protocol for some of
 these basic types may be overridden by using <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-interface"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">interface</span></code></a>.
-For example, the following example</p>
+For example, the following C++ code snippet</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">top</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">N</span><span class="p">],</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">out</span><span class="p">[</span><span class="n">N</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
 <span class="cp">#pragma HLS interface axis port=in</span>
 <span class="cp">#pragma HLS interface axis port=out</span>
@@ -433,9 +434,9 @@ For example, the following example</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>specifies the arrays <code class="docutils literal notranslate"><span class="pre">in[N]</span></code> and <code class="docutils literal notranslate"><span class="pre">out[N]</span></code> to use the <code class="docutils literal notranslate"><span class="pre">axis</span></code> protocol
-for stream-based access instead of the default <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> protocol for
-memory-based access.</p>
+<p>specifies access to the arrays <code class="docutils literal notranslate"><span class="pre">in[N]</span></code> and <code class="docutils literal notranslate"><span class="pre">out[N]</span></code> be implemented
+using the <code class="docutils literal notranslate"><span class="pre">axis</span></code> protocol for stream-based access instead of the
+default <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> protocol for memory-based access.</p>
 </li>
 <li><p>Vitis HLS however does not automatically determine default interface
 protocols for the member elements of composite arguments of the top-level
