@@ -3,7 +3,8 @@
 All functions and sub-functions are synthesized into separate modules
 in the RTL specification of a DSP kernel, unless they are inlined (see
 below).
-  
+
+(sec:top-level-function)=
 ## Top-level Function
 * Each DSP kernel must have a top-level function, which is identified
   by a configuration parameter in Vitis HLS (see the instructions of
