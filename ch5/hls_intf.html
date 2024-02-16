@@ -393,8 +393,9 @@ section primarily pertains to VADD kernels.</p></li>
 <li><p>a set of <em>data channels</em> for exchange of data between the kernel
 and external components, and a port protocol for each data channel
 to control the flow of data through that channel,</p></li>
-<li><p>a control channel and the accompanying b control lock protocol by
-which the PS host controls the execution of the kernel.</p></li>
+<li><p>a <em>control channel</em> and the accompanying b control lock protocol
+<code class="docutils literal notranslate"><span class="pre">ap_ctrl_chain</span></code> by which the PS host controls the execution of the
+kernel.</p></li>
 </ul>
 </li>
 <li><p>Vitis HLS automatically generates the following default hardware

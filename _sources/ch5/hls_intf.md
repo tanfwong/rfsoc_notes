@@ -11,8 +11,9 @@
   - a set of *data channels* for exchange of data between the kernel
     and external components, and a port protocol for each data channel
     to control the flow of data through that channel,
-  - a control channel and the accompanying b control lock protocol by
-    which the PS host controls the execution of the kernel.
+  - a *control channel* and the accompanying b control lock protocol
+    `ap_ctrl_chain` by which the PS host controls the execution of the
+    kernel.
 
 * Vitis HLS automatically generates the following default hardware
   interface ports in the kernel to handle the flow of data and control
