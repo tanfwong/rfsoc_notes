@@ -1,3 +1,4 @@
+(sec:math_types)=
 # Math Data Types 
 
 Vitis HLS supports most of the simple as well as composite C/C++ data

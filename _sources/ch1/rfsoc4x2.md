@@ -1,3 +1,4 @@
+(sec:hardware)=
 # Hardware Platform
 
 We use the [RealDigital RFSoC 4x2

@@ -1,0 +1,84 @@
+# Global Memory Access
+
+* A DSP kernel implemented in the PL exchanges data with the PS host
+  via global memory (DDR4 on the RFSoC 4x2 board, see
+  {numref}`sec:hardware`) that is outside of the RFSoC device.  For
+  Vitis HLS as discussed before, access to the global memory is
+  through array (and/or pointer-to-array) arguments of the top-level
+  function of the DSP kernel. By default, Vitis HLS creates a single
+  AXI4 memory mapped (`m_axi`) interface, `m_axi_gmem`, through which
+  access to all the array arguments of the top-level function is
+  bundled.
+
+* Under the `m_axi` protocol: 
+  - Reading from the global memory must be preceded by a *read
+    request*.
+  - Writing to the global memory must be preceded by a *write request*
+    and followed by a *write acknowledgement (response)*.
+
+* The *read latency* of the global memory is defined as the time taken
+    from when the kernel sends out a read request to when the data
+    requested is received by the kernel. Similarly, the *write
+    latency* is defined as the time taken from when the data is
+    written by the kernel to when the write acknowledgement is
+    received by the kernel. 
+
+* As the global memory is not on-chip, accessing it incurs much more
+  significant time overheads than accessing local memory on-chip. Both
+  the read latency and write latency of the global memory are
+  typically in excess of tens of clock cycles. Thus, if global memory
+  access is not carefully optimized in the design of a DSP kernel, it
+  can easily become the performance bottleneck.
+
+* There are three main optimizations that can be performed to increase
+  the global memory access throughput under the `m_axi` protocol:
+  - **port widening**
+  - **burst access**
+  - **caching**
+
+  Vitis HLS automatically performs the optimization of burst transfer
+  and port widening based on its inferencing of the kernel code. If
+  Vitis HLS fails to infer the possibility of burst access, we may
+  re-factor the kernel code to perform manual burst access. If manual
+  burst access does not improve the global memory access throughput,
+  we may then try caching.
+
+## Port Widening
+* The maximum bit-width of an AXI4 port is 512. Thus, setting the
+  `m_axi` interface of the kernel to 512 allows us to read/write 64
+  bytes per access to the global memory. For example, consider the
+  following simple top-level function:
+  ```c++
+  #define N 8000
+  
+  void top(int in[N], int out[N], int incr) {
+
+    RW_Loop: for (int n=0; n<N; n++) {
+      out[n] = in[n] + incr;
+    }
+  }
+  ```
+  The arrays `in[N]` and `out[N]` are both mapped to global memory via
+  the default `m_axi_gmem` port. If the bit-width of `m_axi_gmem` is
+  set to that of `int` (32), we may only read (write) a single element
+  of `in` (`out`) per access. However, if the bit-width of
+  `m_axi_gmem` is widen to 512, we can read (write) 16 elements of
+  `in` (`out`) per access.
+
+* Vitis HLS automatically infers the opportunity to widen the
+  bit-width of the `m_axi` port. In the example above, Vitis HLS will
+  widen the bit-width of the `m_axi` port to the maximum value of 512
+  and hence only 500 accesses to the global memory are needed to read
+  (write) the entire array `in` (`out`).
+
+* If Vitis HLS fails to automatically widen the bit-width of the
+  `m_axi` port, we may manually do so by using arrays of the AP
+  integer, AP fixed point, or `hls::vector` type discussed in
+  {numref}`sec:math_types` as arguments of the top-level function of
+  the kernel.
+
+## Burst Access
+  
+
+
+  

@@ -5,7 +5,7 @@
   kernel, and data can be exchanged between the kernel and the PS
   host, as well as with other kernels and externel hardware
   components. All discussions about the kernel interface in this
-  section primarily pertain to VADD kernels.
+  section primarily pertain to VAAD kernels.
 
 * The interface contains the following 2 elements:
   - a set of *data channels* for exchange of data between the kernel
@@ -53,7 +53,7 @@
   ```
   specifies access to the arrays `in[N]` and `out[N]` be implemented
   using the `axis` protocol for stream-based access instead of the
-  default `m_axi` protocol for memory-based access.
+  default `m_axi` protocol for memory-based access. 
 
 * Vitis HLS however does not automatically determine default interface
   protocols for the member elements of composite arguments of the top-level
