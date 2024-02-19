@@ -381,7 +381,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#port-widening">5.1.1. Port Widening</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#burst-access">5.1.2. Burst Access</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#manual-burst-access">5.1.2. Manual Burst Access</a></li>
 </ul>
             </nav>
         </div>
@@ -476,8 +476,20 @@ integer, AP fixed point, or <code class="docutils literal notranslate"><span cla
 the kernel.</p></li>
 </ul>
 </section>
-<section id="burst-access">
-<h2><span class="section-number">5.1.2. </span>Burst Access<a class="headerlink" href="#burst-access" title="Permalink to this headline">#</a></h2>
+<section id="manual-burst-access">
+<h2><span class="section-number">5.1.2. </span>Manual Burst Access<a class="headerlink" href="#manual-burst-access" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Another way to improve global memory access efficiency is to
+aggregate multiple accesses to the global memory into a single burst
+access in such a way that a single request (response) is needed for
+a sequence of reads (writes) to the global memory.</p></li>
+<li><p>In the case of burst access, the <em>read latency</em> is re-defined as the
+time taken from when the kernel sends out the read request to when
+the first piece of data requested is received by the kernel. The
+<em>write latency</em> is defined as the time taken from when the last
+piece of data is written by the kernel to when the write
+acknowledgement is received by the kernel.</p></li>
+</ul>
 </section>
 </section>
 
@@ -549,7 +561,7 @@ the kernel.</p></li>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#port-widening">5.1.1. Port Widening</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#burst-access">5.1.2. Burst Access</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#manual-burst-access">5.1.2. Manual Burst Access</a></li>
 </ul>
   </nav></div>
 

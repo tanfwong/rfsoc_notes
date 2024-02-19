@@ -77,7 +77,19 @@
   {numref}`sec:math_types` as arguments of the top-level function of
   the kernel.
 
-## Burst Access
+## Manual Burst Access
+* Another way to improve global memory access efficiency is to
+  aggregate multiple accesses to the global memory into a single burst
+  access in such a way that a single request (response) is needed for
+  a sequence of reads (writes) to the global memory.
+
+* In the case of burst access, the *read latency* is re-defined as the
+    time taken from when the kernel sends out the read request to when
+    the first piece of data requested is received by the kernel. The
+    *write latency* is defined as the time taken from when the last
+    piece of data is written by the kernel to when the write
+    acknowledgement is received by the kernel.
+ 
   
 
 
