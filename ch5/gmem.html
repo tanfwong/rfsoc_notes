@@ -468,7 +468,10 @@ of <code class="docutils literal notranslate"><span class="pre">in</span></code>
 bit-width of the <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> port. In the example above, Vitis HLS will
 widen the bit-width of the <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> port to the maximum value of 512
 and hence only 500 accesses to the global memory are needed to read
-(write) the entire array <code class="docutils literal notranslate"><span class="pre">in</span></code> (<code class="docutils literal notranslate"><span class="pre">out</span></code>).</p></li>
+(write) the entire array <code class="docutils literal notranslate"><span class="pre">in</span></code> (<code class="docutils literal notranslate"><span class="pre">out</span></code>). We may use the
+<code class="docutils literal notranslate"><span class="pre">max_widen_bitwidth=</span></code> option of the interface pragma to set the
+maximum bit-width to which Vitis HLS may automatically widen the
+<code class="docutils literal notranslate"><span class="pre">m_axi</span></code> port.</p></li>
 <li><p>If Vitis HLS fails to automatically widen the bit-width of the
 <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> port, we may manually do so by using arrays of the AP
 integer, AP fixed point, or <code class="docutils literal notranslate"><span class="pre">hls::vector</span></code> type discussed in
@@ -524,6 +527,45 @@ memory access throughput since multiple pieces of data can be
 contiguously read (written), needing to suffer the latency of a
 single read request (write response).</p></li>
 </ul>
+</li>
+<li><p>The <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-interface">interface
+pragma</a>
+provides a number of options for us to fine tune the buffering and
+fragmentation operations for bust access in the <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> interface
+adapter to obtain a higher global memory access throughput:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">latency=&lt;value&gt;</span></code> specifies the expected read (write) latency of
+the <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> interface, allowing Vitis HLS to initiate a read
+(write) request <code class="docutils literal notranslate"><span class="pre">value</span></code> clock cycles before the read (write) is
+expected.  The default setting is <code class="docutils literal notranslate"><span class="pre">value=64</span></code>. If the expected
+latency is set too low, the read (write) will be ready too soon
+and might stall waiting for the global memory. If this figure is
+set too high, memory access might be idle waiting on the kernel to
+start the read (write).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_read_burst_length=&lt;value&gt;</span></code> specifies the maximum number of
+data values read during a burst access. The <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> adapter will
+fragment a longer burst to short burst of this length. The default
+setting is <code class="docutils literal notranslate"><span class="pre">value=16</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_write_burst_length=&lt;value&gt;</span></code> specifies the maximum number of
+data values written during a burst access. The <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> adapter will
+fragment a longer burst to short burst of this length. The default
+setting is <code class="docutils literal notranslate"><span class="pre">value=16</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_read_outstanding=&lt;value&gt;</span></code> specifies how many read requests
+can be made without a response before the AXI4 adapter stalls. This
+requires the adapter to have an internal read FIFO buffer of size
+<code class="docutils literal notranslate"><span class="pre">num_read_outstanding*max_read_burst_length*data_word_size</span></code>. The
+default setting is <code class="docutils literal notranslate"><span class="pre">value=16</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_write_outstanding=&lt;value&gt;</span></code> specifies how many write requests
+can be made without a response before the AXI4 adapter stalls. This
+requires the adapter to have an internal write FIFO buffer of size
+<code class="docutils literal notranslate"><span class="pre">num_write_outstanding*max_write_burst_length*data_word_size</span></code>. The
+default setting is <code class="docutils literal notranslate"><span class="pre">value=16</span></code>.</p></li>
+</ul>
+<p>Unfortunately, the reports generated in the synthesis and
+co-simulation steps of the Vitis HLS workflow do not seem to capture
+the effects of setting these parameters when the <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> adapter
+interacts with the global memory. Hence, it may need to test these
+settings directly using the hardware on the RFSoC 4x2 board.</p>
 </li>
 </ul>
 </section>

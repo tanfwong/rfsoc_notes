@@ -69,7 +69,10 @@
   bit-width of the `m_axi` port. In the example above, Vitis HLS will
   widen the bit-width of the `m_axi` port to the maximum value of 512
   and hence only 500 accesses to the global memory are needed to read
-  (write) the entire array `in` (`out`).
+  (write) the entire array `in` (`out`). We may use the
+  `max_widen_bitwidth=` option of the interface pragma to set the
+  maximum bit-width to which Vitis HLS may automatically widen the
+  `m_axi` port. 
 
 * If Vitis HLS fails to automatically widen the bit-width of the
   `m_axi` port, we may manually do so by using arrays of the AP
@@ -126,7 +129,48 @@
     memory access throughput since multiple pieces of data can be
     contiguously read (written), needing to suffer the latency of a
     single read request (write response).
- 
+
+* The [interface
+  pragma](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-interface)
+  provides a number of options for us to fine tune the buffering and
+  fragmentation operations for bust access in the `m_axi` interface
+  adapter to obtain a higher global memory access throughput:
+  - `latency=<value>` specifies the expected read (write) latency of
+    the `m_axi` interface, allowing Vitis HLS to initiate a read
+    (write) request `value` clock cycles before the read (write) is
+    expected.  The default setting is `value=64`. If the expected
+    latency is set too low, the read (write) will be ready too soon
+    and might stall waiting for the global memory. If this figure is
+    set too high, memory access might be idle waiting on the kernel to
+    start the read (write).
+  - `max_read_burst_length=<value>` specifies the maximum number of
+    data values read during a burst access. The `m_axi` adapter will
+    fragment a longer burst to short burst of this length. The default
+    setting is `value=16`.
+  - `max_write_burst_length=<value>` specifies the maximum number of
+    data values written during a burst access. The `m_axi` adapter will
+    fragment a longer burst to short burst of this length. The default
+    setting is `value=16`.
+  - `num_read_outstanding=<value>` specifies how many read requests
+  can be made without a response before the AXI4 adapter stalls. This
+  requires the adapter to have an internal read FIFO buffer of size
+  `num_read_outstanding*max_read_burst_length*data_word_size`. The
+  default setting is `value=16`.
+  - `num_write_outstanding=<value>` specifies how many write requests
+  can be made without a response before the AXI4 adapter stalls. This
+  requires the adapter to have an internal write FIFO buffer of size
+  `num_write_outstanding*max_write_burst_length*data_word_size`. The
+  default setting is `value=16`.
+
+  Unfortunately, the reports generated in the synthesis and
+  co-simulation steps of the Vitis HLS workflow do not seem to capture
+  the effects of setting these parameters when the `m_axi` adapter
+  interacts with the global memory. Hence, it may need to test these
+  settings directly using the hardware on the RFSoC 4x2 board.
+
+
+
+
   
  
   
