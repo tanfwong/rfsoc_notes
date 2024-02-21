@@ -36,7 +36,7 @@
   - **burst access**
   - **caching**
 
-  Vitis HLS automatically performs the optimization of burst transfer
+  Vitis HLS automatically performs the optimization of burst access
   and port widening based on its inferencing of the kernel code. If
   Vitis HLS fails to infer the possibility of burst access, we may
   re-factor the kernel code to perform manual burst access. If manual
