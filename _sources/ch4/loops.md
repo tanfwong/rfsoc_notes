@@ -343,5 +343,33 @@ task-level pipelining and parallelization discussed in
       Example 3, trying to tradeoff between reducing latency and
       increasing PL resource utilization. 
     
-  
+## Loop Tripcount
+* For a loop with variable bound, Vitis HLS is not able to report the
+  *tripcount*, i.e., the number of iterations and the latency of the
+  loop in the synthesis step because the tripcount is unknown during
+  synthesis.
+
+* We may use [`#pragma HLS
+  loop_tripcount`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-loop_tripcount)
+  to help Vitis HLS to calculate the tripcount and latency of the
+  loop. There are three options, `max=`, `min=`, and `avg=`, for us to
+  specify the maximum, minimum, and average tripcount of the
+  loop. Note that the loop-tripcount pragma does not affect the
+  synthesis of the kernel code. It solely helps Vitis HLS in reporting its
+  estimates of the synthesis design's performance. 
+
+*  For example, consider the
+  following loop whose bound `N` is a variable:
+  ```c++ 
+  int acc = 0; 
+  Loop_var: for (int n=0; n<N; n++) { 
+  #pragma HLS loop_tripcount max=100 min=1 avg=50
+    acc += x[n];
+  }
+  ```
+  allows Vitis HLS to calculate the maximum, minimum, and average values
+  for the latency of the loop based on the specified tripcount
+  values. 
+ 
+
   

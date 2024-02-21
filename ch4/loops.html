@@ -386,6 +386,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loop-unrolling">4.2.2. Loop Unrolling</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loop-merging">4.2.3. Loop Merging</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nested-loops">4.2.4. Nested Loops</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loop-tripcount">4.2.5. Loop Tripcount</a></li>
 </ul>
             </nav>
         </div>
@@ -764,6 +765,34 @@ increasing PL resource utilization.</p>
 </li>
 </ul>
 </section>
+<section id="loop-tripcount">
+<h2><span class="section-number">4.2.5. </span>Loop Tripcount<a class="headerlink" href="#loop-tripcount" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>For a loop with variable bound, Vitis HLS is not able to report the
+<em>tripcount</em>, i.e., the number of iterations and the latency of the
+loop in the synthesis step because the tripcount is unknown during
+synthesis.</p></li>
+<li><p>We may use <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-loop_tripcount"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">loop_tripcount</span></code></a>
+to help Vitis HLS to calculate the tripcount and latency of the
+loop. There are three options, <code class="docutils literal notranslate"><span class="pre">max=</span></code>, <code class="docutils literal notranslate"><span class="pre">min=</span></code>, and <code class="docutils literal notranslate"><span class="pre">avg=</span></code>, for us to
+specify the maximum, minimum, and average tripcount of the
+loop. Note that the loop-tripcount pragma does not affect the
+synthesis of the kernel code. It solely helps Vitis HLS in reporting its
+estimates of the synthesis design’s performance.</p></li>
+<li><p>For example, consider the
+following loop whose bound <code class="docutils literal notranslate"><span class="pre">N</span></code> is a variable:</p></li>
+</ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">acc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span>
+<span class="nl">Loop_var</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="cp">#pragma HLS loop_tripcount max=100 min=1 avg=50</span>
+<span class="w">  </span><span class="n">acc</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>allows Vitis HLS to calculate the maximum, minimum, and average values
+for the latency of the loop based on the specified tripcount
+values.</p>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -837,6 +866,7 @@ increasing PL resource utilization.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loop-unrolling">4.2.2. Loop Unrolling</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loop-merging">4.2.3. Loop Merging</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nested-loops">4.2.4. Nested Loops</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loop-tripcount">4.2.5. Loop Tripcount</a></li>
 </ul>
   </nav></div>
 

@@ -381,7 +381,10 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#port-widening">5.1.1. Port Widening</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#burst-access">5.1.2. Burst Access</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#burst-access">5.1.2. Burst Access</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#manual-burst-access">5.1.2.1. Manual Burst Access</a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -530,8 +533,8 @@ single read request (write response).</p></li>
 </li>
 <li><p>The <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-interface">interface
 pragma</a>
-provides a number of options for us to fine tune the buffering and
-fragmentation operations for bust access in the <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> interface
+provides a number of options for us to control and fine tune the buffering and
+fragmentation operations for burst access in the <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> interface
 adapter to obtain a higher global memory access throughput:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">latency=&lt;value&gt;</span></code> specifies the expected read (write) latency of
@@ -560,14 +563,105 @@ can be made without a response before the AXI4 adapter stalls. This
 requires the adapter to have an internal write FIFO buffer of size
 <code class="docutils literal notranslate"><span class="pre">num_write_outstanding*max_write_burst_length*data_word_size</span></code>. The
 default setting is <code class="docutils literal notranslate"><span class="pre">value=16</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">channel=&lt;value&gt;</span></code> specifies the channel, identified by the channel
+number <code class="docutils literal notranslate"><span class="pre">value</span></code>, in the <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> adapter that an array argument of
+the top-level function uses.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">depth=&lt;value&gt;</span></code> specifies the maximum number of data values for
+the simulated <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> adapter in the test bench to process during
+C/RTL co-simulation.</p></li>
 </ul>
 <p>Unfortunately, the reports generated in the synthesis and
 co-simulation steps of the Vitis HLS workflow do not seem to capture
-the effects of setting these parameters when the <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> adapter
-interacts with the global memory. Hence, it may need to test these
-settings directly using the hardware on the RFSoC 4x2 board.</p>
+the effects of setting some of these parameters when the <code class="docutils literal notranslate"><span class="pre">m_axi</span></code>
+adapter interacts with the global memory. Hence, it may need to test
+these settings directly using the hardware on the RFSoC 4x2 board.</p>
 </li>
 </ul>
+<section id="manual-burst-access">
+<h3><span class="section-number">5.1.2.1. </span>Manual Burst Access<a class="headerlink" href="#manual-burst-access" title="Permalink to this headline">#</a></h3>
+<ul>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">hls::burst_maxi</span></code> class provides the support for us to implement
+burst access to the global memory by manually controlling the burst
+access behavior of the kernel. There are two types of burst access,
+namely <em>pipeline bursting</em> and <em>sequential bursting</em>, that we may
+use the <code class="docutils literal notranslate"><span class="pre">hls::burst_maxi</span></code> class object to implement.</p></li>
+<li><p>A <em><strong>pipeline burst</strong></em> is one that the maximum number of pieces of
+data are accessed with a single read request (pair of write request
+and write response). The “maximum number” here often refers to the
+tripcount of a loop. The best way to explain pipeline bursting is to
+consider the following example kernel code:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;hls_burst_maxi.h&gt;</span>
+<span class="cp">#define MAX_N 8000</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">read_task</span><span class="p">(</span><span class="n">hls</span><span class="o">::</span><span class="n">burst_maxi</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">in</span><span class="p">.</span><span class="n">read_request</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
+<span class="w">  </span><span class="nl">Read_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS loop_tripcount max=MAX_N</span>
+<span class="w">    </span><span class="n">buf</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">write_task</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">burst_maxi</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">out</span><span class="p">.</span><span class="n">write_request</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
+<span class="w">  </span><span class="nl">Write_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS loop_tripcount max=MAX_N</span>
+<span class="w">    </span><span class="n">out</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">buf</span><span class="p">[</span><span class="n">n</span><span class="p">]);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">out</span><span class="p">.</span><span class="n">write_response</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">top</span><span class="p">(</span><span class="n">hls</span><span class="o">::</span><span class="n">burst_maxi</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">burst_maxi</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS interface mode=m_axi port=in depth=MAX_N channel=0</span>
+<span class="cp">#pragma HLS interface mode=m_axi port=out depth=MAX_N channel=1</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">buffer</span><span class="p">[</span><span class="n">MAX_N</span><span class="p">];</span>
+
+<span class="cp">#pragma HLS DATAFLOW</span>
+<span class="w">  </span><span class="n">read_task</span><span class="p">(</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
+<span class="w">  </span><span class="n">write_task</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>First, we need to include the header file <code class="docutils literal notranslate"><span class="pre">&lt;hls_burst_maxi.h&gt;</span></code> to
+use the <code class="docutils literal notranslate"><span class="pre">hls::burst_maxi&lt;&gt;</span></code> class template.</p></li>
+<li><p>In the top-level function <code class="docutils literal notranslate"><span class="pre">top()</span></code>, we employ the
+<code class="docutils literal notranslate"><span class="pre">hls::burst_maxi&lt;int&gt;</span></code>-type arguments <code class="docutils literal notranslate"><span class="pre">in</span></code> and <code class="docutils literal notranslate"><span class="pre">out</span></code> instead of
+array arguments to let Vitis HLS know that we intend to implement
+manual burst access.</p></li>
+<li><p>Two interface pragmas are used to set the arguments <code class="docutils literal notranslate"><span class="pre">in</span></code> and <code class="docutils literal notranslate"><span class="pre">out</span></code>
+to use channels <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">1</span></code> of the default <code class="docutils literal notranslate"><span class="pre">m_axi_gmem</span></code> adapter,
+respectively. This is a requirement by VItis HLS that different
+<code class="docutils literal notranslate"><span class="pre">hls::burst_maxi&lt;int&gt;</span></code>-type arguments must be on different <code class="docutils literal notranslate"><span class="pre">m_axi</span></code>
+adapters or different channels if they are bundled to the same
+<code class="docutils literal notranslate"><span class="pre">m_axi</span></code> adapter. The <code class="docutils literal notranslate"><span class="pre">depth=MAX_N</span></code> options in the pragmas tell
+Vitis HLS the maximum number of pieces of data so that it can
+reserves enough buffering in the simulated <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> adapter during
+the C/RTL co-simulation step.</p></li>
+<li><p>In the <code class="docutils literal notranslate"><span class="pre">read_task()</span></code> function, a single read request is sent to
+the <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> adapter to request for a burst read of all pieces of
+data in the <code class="docutils literal notranslate"><span class="pre">Read_Loop</span></code>.</p></li>
+<li><p>In the <code class="docutils literal notranslate"><span class="pre">write_task()</span></code> function similarly, a single write request
+is sent to the <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> adapter to request for a burst write of all
+pieces of data in the <code class="docutils literal notranslate"><span class="pre">Write_Loop</span></code>. After that, the
+<code class="docutils literal notranslate"><span class="pre">write_response()</span></code> method is employed to wait for a single write
+response returning from the global memory via the <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> adapter.</p></li>
+<li><p>Vitis HLS will not change the bit-width of a port synthesized from
+an <code class="docutils literal notranslate"><span class="pre">hls::burst_maxi&lt;int&gt;</span></code>-type argument. Thus, automatic port
+widening will not be applied in this case.</p></li>
+</ul>
+<p>The testbench code can simply input arrays for the
+<code class="docutils literal notranslate"><span class="pre">hls::burst_maxi&lt;int&gt;</span></code>-type arguments when calling the top-level
+function, for example as shown in the C++ code snippet below:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">Max_N</span><span class="p">],</span><span class="w"> </span><span class="n">y</span><span class="p">[</span><span class="n">Max_N</span><span class="p">];</span>
+
+<span class="p">...</span>
+
+<span class="n">top</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="mi">4000</span><span class="p">);</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
 </section>
 </section>
 
@@ -639,7 +733,10 @@ settings directly using the hardware on the RFSoC 4x2 board.</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#port-widening">5.1.1. Port Widening</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#burst-access">5.1.2. Burst Access</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#burst-access">5.1.2. Burst Access</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#manual-burst-access">5.1.2.1. Manual Burst Access</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

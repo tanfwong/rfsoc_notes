@@ -132,8 +132,8 @@
 
 * The [interface
   pragma](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-interface)
-  provides a number of options for us to fine tune the buffering and
-  fragmentation operations for bust access in the `m_axi` interface
+  provides a number of options for us to control and fine tune the buffering and
+  fragmentation operations for burst access in the `m_axi` interface
   adapter to obtain a higher global memory access throughput:
   - `latency=<value>` specifies the expected read (write) latency of
     the `m_axi` interface, allowing Vitis HLS to initiate a read
@@ -161,17 +161,101 @@
   requires the adapter to have an internal write FIFO buffer of size
   `num_write_outstanding*max_write_burst_length*data_word_size`. The
   default setting is `value=16`.
+  - `channel=<value>` specifies the channel, identified by the channel
+    number `value`, in the `m_axi` adapter that an array argument of
+    the top-level function uses. 
+  - `depth=<value>` specifies the maximum number of data values for
+    the simulated `m_axi` adapter in the test bench to process during
+    C/RTL co-simulation.
 
   Unfortunately, the reports generated in the synthesis and
   co-simulation steps of the Vitis HLS workflow do not seem to capture
-  the effects of setting these parameters when the `m_axi` adapter
-  interacts with the global memory. Hence, it may need to test these
-  settings directly using the hardware on the RFSoC 4x2 board.
+  the effects of setting some of these parameters when the `m_axi`
+  adapter interacts with the global memory. Hence, it may need to test
+  these settings directly using the hardware on the RFSoC 4x2 board.
 
+### Manual Burst Access
+* The `hls::burst_maxi` class provides the support for us to implement
+  burst access to the global memory by manually controlling the burst
+  access behavior of the kernel. There are two types of burst access,
+  namely *pipeline bursting* and *sequential bursting*, that we may
+  use the `hls::burst_maxi` class object to implement.
 
-
-
+* A ***pipeline burst*** is one that the maximum number of pieces of
+  data are accessed with a single read request (pair of write request
+  and write response). The "maximum number" here often refers to the
+  tripcount of a loop. The best way to explain pipeline bursting is to
+  consider the following example kernel code:
+  ```c++
+  #include <hls_burst_maxi.h>
+  #define MAX_N 8000
   
+  void read_task(hls::burst_maxi<int> in, int *buf, int N) {
+    in.read_request(0, N);
+    Read_Loop: for (int n=0; n<N; n++) {
+  #pragma HLS loop_tripcount max=MAX_N
+      buf[n] = in.read();
+    }
+  }
+
+  void write_task(int *buf, hls::burst_maxi<int> out, int N) {
+    out.write_request(0, N);
+    Write_Loop: for (int n=0; n<N; n++) {
+  #pragma HLS loop_tripcount max=MAX_N
+      out.write(buf[n]);
+    }
+    out.write_response();
+  }
+
+  void top(hls::burst_maxi<int> in, hls::burst_maxi<int> out, int N) {
+  #pragma HLS interface mode=m_axi port=in depth=MAX_N channel=0
+  #pragma HLS interface mode=m_axi port=out depth=MAX_N channel=1
+    int buffer[MAX_N];
+  
+  #pragma HLS DATAFLOW
+    read_task(in, buffer, N);
+    write_task(buffer, out, N);
+  }
+  ```
+  - First, we need to include the header file `<hls_burst_maxi.h>` to
+    use the `hls::burst_maxi<>` class template.
+  - In the top-level function `top()`, we employ the
+    `hls::burst_maxi<int>`-type arguments `in` and `out` instead of
+    array arguments to let Vitis HLS know that we intend to implement
+    manual burst access.
+  - Two interface pragmas are used to set the arguments `in` and `out`
+    to use channels `0` and `1` of the default `m_axi_gmem` adapter,
+    respectively. This is a requirement by VItis HLS that different
+    `hls::burst_maxi<int>`-type arguments must be on different `m_axi`
+    adapters or different channels if they are bundled to the same
+    `m_axi` adapter. The `depth=MAX_N` options in the pragmas tell
+    Vitis HLS the maximum number of pieces of data so that it can
+    reserves enough buffering in the simulated `m_axi` adapter during
+    the C/RTL co-simulation step.
+  - In the `read_task()` function, a single read request is sent to
+    the `m_axi` adapter to request for a burst read of all pieces of
+    data in the `Read_Loop`.
+  - In the `write_task()` function similarly, a single write request
+    is sent to the `m_axi` adapter to request for a burst write of all
+    pieces of data in the `Write_Loop`. After that, the
+    `write_response()` method is employed to wait for a single write
+    response returning from the global memory via the `m_axi` adapter.
+  - Vitis HLS will not change the bit-width of a port synthesized from
+    an `hls::burst_maxi<int>`-type argument. Thus, automatic port
+    widening will not be applied in this case.
+
+  The testbench code can simply input arrays for the
+  `hls::burst_maxi<int>`-type arguments when calling the top-level
+  function, for example as shown in the C++ code snippet below:
+  ```c++
+  int x[Max_N], y[Max_N];
+  
+  ...
+
+  top(x, y, 4000);
+  ```
+
+
  
   
 

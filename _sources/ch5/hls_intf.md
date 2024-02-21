@@ -61,7 +61,7 @@
   for each member of a composite argument using the interface pragma. 
 
 * All register-based data channels are bundled into the
-  `s_axi_control` interface.  All memory-based channels will be  bundled
+  `s_axi_control` interface.  All memory-based channels will be bundled
   into a default `m_axi` interface, called `m_axi_gmem`. Similarly,
   all stream-based channels will be bundled into a single `axis`
   interface by default. However, we may instruct Vitis HLS to generate
