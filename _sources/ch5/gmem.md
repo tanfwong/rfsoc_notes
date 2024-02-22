@@ -188,7 +188,7 @@
   consider the following example kernel code:
   ```c++
   #include <hls_burst_maxi.h>
-  #define MAX_N 8000
+  #define MAX_N 1000
   
   void read_task(hls::burst_maxi<int> in, int *buf, int N) {
     in.read_request(0, N);
@@ -243,6 +243,9 @@
   - Vitis HLS will not change the bit-width of a port synthesized from
     an `hls::burst_maxi<int>`-type argument. Thus, automatic port
     widening will not be applied in this case.
+  - A FIFO should be configured to be the streaming buffer between the
+    `read_task()` and `write_task()` for the dataflow optimization to
+    work efficiently.
 
   The testbench code can simply input arrays for the
   `hls::burst_maxi<int>`-type arguments when calling the top-level
@@ -252,7 +255,7 @@
   
   ...
 
-  top(x, y, 4000);
+  top(x, y, 1000);
   ```
 
 
