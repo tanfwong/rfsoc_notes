@@ -657,7 +657,8 @@ an <code class="docutils literal notranslate"><span class="pre">hls::burst_maxi&
 widening will not be applied in this case.</p></li>
 <li><p>A FIFO should be configured to be the streaming buffer between the
 <code class="docutils literal notranslate"><span class="pre">read_task()</span></code> and <code class="docutils literal notranslate"><span class="pre">write_task()</span></code> for the dataflow optimization to
-work efficiently.</p></li>
+work efficiently. This applies to all examples below involving
+the dataflow optimization.</p></li>
 </ul>
 <p>The testbench code can simply input arrays for the
 <code class="docutils literal notranslate"><span class="pre">hls::burst_maxi&lt;int&gt;</span></code>-type arguments when calling the top-level
@@ -743,7 +744,7 @@ in the C/RTL co-simulation, which models the behaviors of the
 </section>
 <section id="automatic-burst-access">
 <h3><span class="section-number">5.1.2.2. </span>Automatic Burst Access<a class="headerlink" href="#automatic-burst-access" title="Permalink to this headline">#</a></h3>
-<ul class="simple">
+<ul>
 <li><p>Vitis HLS automatic performs burst access optimization by inferring
 from the kernel code opportunities to implement pipeline and/or
 sequential bursting on a per function basis:</p>
@@ -758,7 +759,7 @@ loop, Vitis HLS will implement sequential bursting for the loop.</p></li>
 </li>
 <li><p>Vitis HLS will determine pipeline bursting for a loop if all the
 following conditions are satisfied:</p>
-<ul>
+<ul class="simple">
 <li><p>The loop must contain either all reads or all writes.</p></li>
 <li><p>The memory locations of the reads must be monotonically
 increasing as the loop iterates.</p></li>
@@ -779,6 +780,34 @@ initiated and completed.</p></li>
 <a class="reference internal" href="#sec-port-widen"><span class="std std-numref">Section 5.1.1</span></a>. Since there are both reads and writes in
 the loop <code class="docutils literal notranslate"><span class="pre">RW_Loop</span></code>, Vitis HLS will automatically implement
 sequential bursting with port-widening to 512 bits.</p></li>
+<li><p>Consider another example as shown below:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">read_task</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nl">Read_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS loop_tripcount max=MAX_N</span>
+<span class="w">    </span><span class="n">buf</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">write_task</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nl">Write_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS loop_tripcount max=MAX_N</span>
+<span class="w">    </span><span class="n">out</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">buf</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">top</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">buffer</span><span class="p">[</span><span class="n">MAX_N</span><span class="p">];</span>
+
+<span class="cp">#pragma HLS DATAFLOW</span>
+<span class="w">  </span><span class="n">read_task</span><span class="p">(</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
+<span class="w">  </span><span class="n">write_task</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span><span class="w"> </span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Vitis HLS in this case infers and implements pipeline bursting
+because all the conditions for pipeline bursting are satisfied in
+this example.</p>
+</li>
 </ul>
 </section>
 </section>

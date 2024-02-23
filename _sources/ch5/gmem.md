@@ -252,7 +252,8 @@
     widening will not be applied in this case.
   - A FIFO should be configured to be the streaming buffer between the
     `read_task()` and `write_task()` for the dataflow optimization to
-    work efficiently.
+    work efficiently. This applies to all examples below involving
+    the dataflow optimization. 
 
   The testbench code can simply input arrays for the
   `hls::burst_maxi<int>`-type arguments when calling the top-level
@@ -363,3 +364,32 @@
   {numref}`sec:port_widen`. Since there are both reads and writes in
   the loop `RW_Loop`, Vitis HLS will automatically implement
   sequential bursting with port-widening to 512 bits.
+
+* Consider another example as shown below:
+  ```c++
+  void read_task(int *in, int *buf, int N) {
+    Read_Loop: for (int n=0; n<N; n++) {
+  #pragma HLS loop_tripcount max=MAX_N
+      buf[n] = in[n];
+    }
+  }
+
+  void write_task(int *buf, int *out, int N) {
+    Write_Loop: for (int n=0; n<N; n++) {
+  #pragma HLS loop_tripcount max=MAX_N
+      out[n] = buf[n];
+    }
+  }
+
+  void top(int *in, int *out, int N) {
+    int buffer[MAX_N];
+  
+  #pragma HLS DATAFLOW
+    read_task(in, buffer, N);
+    write_task(buffer, out, N);
+  }
+  ```
+  
+  Vitis HLS in this case infers and implements pipeline bursting
+  because all the conditions for pipeline bursting are satisfied in
+  this example. 
