@@ -393,3 +393,42 @@
   Vitis HLS in this case infers and implements pipeline bursting
   because all the conditions for pipeline bursting are satisfied in
   this example. 
+
+
+## Caching
+
+* Caching creates a buffer in the `m_axi` adapter to store a
+  contiguous block of data that is pre-read from the global
+  memory. The idea of caching is based on the usual programming
+  scenarios that the same block of memory locations are read
+  repetitively over a short period of time. Thus, pre-reading the
+  block of data from the global memory (by bursting) and storing the
+  data temporarily in the caching buffer in the adapter may
+  statistically reduce the read latency.
+
+* Caching can be invoked in Vitis HLS by using [`#pragma HLS
+  cache`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-cache). For
+  example, consider the following piece of kernel code:
+  ```c++
+  #define N 1000
+  void top(int in[N], int out[N]) {
+  #pragma HLS interface mode=m_axi port=in bundle=gm0 num_read_outstanding=36
+  #pragma HLS interface mode=m_axi port=out bundle=gm1 num_write_outstanding=36
+  #pragma HLS cache port=in lines=1 depth=512
+
+    out[0] = in[0];
+    RW_Loop: for (int n=0; n<N-1; n++) {
+      out[n+1] = in[n] + in[n+1];
+    }
+  }
+  ```
+  - The memory location overlap and dependence in the reading process
+    of `in[n] + in[n+1]` from one iteration to the next in `RW_Loop`
+    cause VItis HLS to infer neither pipeline nor sequential bursting
+    for the reads from the global memory.
+  - Separating `in[N]` and `out[N]` into two different `m_axi`
+    interfaces allows Vitis HLS to infer sequential bursting for the writes.
+  - Using the cache pragma as shown reduces the latency of the loop by
+    about 10\% in this case. The bottleneck in reducing the latency is
+    the fact that the memory dependence in the two reads inside the
+    body of the loop forces II=2 when pipelining the loop. 
