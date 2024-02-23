@@ -1,0 +1,1 @@
+# Load-Compute-Store Pattern

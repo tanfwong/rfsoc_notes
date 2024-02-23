@@ -394,7 +394,7 @@
   because all the conditions for pipeline bursting are satisfied in
   this example. 
 
-
+(sec:cache)=
 ## Caching
 
 * Caching creates a buffer in the `m_axi` adapter to store a
