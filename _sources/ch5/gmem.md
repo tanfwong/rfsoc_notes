@@ -43,6 +43,7 @@
   burst access does not improve the global memory access throughput,
   we may then try caching.
 
+(sec:port_widen)=
 ## Port Widening
 * The maximum bit-width of an AXI4 port is 512. Thus, setting the
   `m_axi` interface of the kernel to 512 allows us to read/write 64
@@ -330,4 +331,35 @@
     `m_axi` adapter.
   ```
 
-  
+### Automatic Burst Access
+* Vitis HLS automatic performs burst access optimization by inferring
+  from the kernel code opportunities to implement pipeline and/or
+  sequential bursting on a per function basis:
+  1. Vitis HLS first look for sequences of statements that perform
+     global memory access in the body of a function to implement
+     sequential bursting across the sequences.
+  2. Vitis HLS then looks at loops to try to infer possibilities of
+     pipeline bursting. If pipeline bursting can not be inferred for a
+     loop, Vitis HLS will implement sequential bursting for the loop.
+
+* Vitis HLS will determine pipeline bursting for a loop if all the
+   following conditions are satisfied:
+   - The loop must contain either all reads or all writes.
+   - The memory locations of the reads must be monotonically
+     increasing as the loop iterates.
+   - The reads (writes) must be consecutive in memory.
+   - The number of reads (writes), i.e., the *burst length*, must be
+     determined before the read (write) request is sent.
+   - If more than one array is bundled to the same `m_axi` interface,
+     bursting can be implemented only for at most one array in each
+     direction (read or write) at any given time.
+   - If in a code region accesses of more than one array in the same
+     channel and same bundle are in the same direction, no pipeline
+     bursting will be implemented for any of these accesses.
+   - There must be no dependence issues between a burst access is
+     initiated and completed.
+     
+* For example, consider the top-level function iin
+  {numref}`sec:port_widen`. Since there are both reads and writes in
+  the loop `RW_Loop`, Vitis HLS will automatically implement
+  sequential bursting with port-widening to 512 bits.

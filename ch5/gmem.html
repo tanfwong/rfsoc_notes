@@ -383,6 +383,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#port-widening">5.1.1. Port Widening</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#burst-access">5.1.2. Burst Access</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#manual-burst-access">5.1.2.1. Manual Burst Access</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-burst-access">5.1.2.2. Automatic Burst Access</a></li>
 </ul>
 </li>
 </ul>
@@ -444,7 +445,7 @@ we may then try caching.</p>
 </li>
 </ul>
 <section id="port-widening">
-<h2><span class="section-number">5.1.1. </span>Port Widening<a class="headerlink" href="#port-widening" title="Permalink to this headline">#</a></h2>
+<span id="sec-port-widen"></span><h2><span class="section-number">5.1.1. </span>Port Widening<a class="headerlink" href="#port-widening" title="Permalink to this headline">#</a></h2>
 <ul>
 <li><p>The maximum bit-width of an AXI4 port is 512. Thus, setting the
 <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> interface of the kernel to 512 allows us to read/write 64
@@ -740,6 +741,46 @@ in the C/RTL co-simulation, which models the behaviors of the
 </li>
 </ul>
 </section>
+<section id="automatic-burst-access">
+<h3><span class="section-number">5.1.2.2. </span>Automatic Burst Access<a class="headerlink" href="#automatic-burst-access" title="Permalink to this headline">#</a></h3>
+<ul class="simple">
+<li><p>Vitis HLS automatic performs burst access optimization by inferring
+from the kernel code opportunities to implement pipeline and/or
+sequential bursting on a per function basis:</p>
+<ol class="arabic simple">
+<li><p>Vitis HLS first look for sequences of statements that perform
+global memory access in the body of a function to implement
+sequential bursting across the sequences.</p></li>
+<li><p>Vitis HLS then looks at loops to try to infer possibilities of
+pipeline bursting. If pipeline bursting can not be inferred for a
+loop, Vitis HLS will implement sequential bursting for the loop.</p></li>
+</ol>
+</li>
+<li><p>Vitis HLS will determine pipeline bursting for a loop if all the
+following conditions are satisfied:</p>
+<ul>
+<li><p>The loop must contain either all reads or all writes.</p></li>
+<li><p>The memory locations of the reads must be monotonically
+increasing as the loop iterates.</p></li>
+<li><p>The reads (writes) must be consecutive in memory.</p></li>
+<li><p>The number of reads (writes), i.e., the <em>burst length</em>, must be
+determined before the read (write) request is sent.</p></li>
+<li><p>If more than one array is bundled to the same <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> interface,
+bursting can be implemented only for at most one array in each
+direction (read or write) at any given time.</p></li>
+<li><p>If in a code region accesses of more than one array in the same
+channel and same bundle are in the same direction, no pipeline
+bursting will be implemented for any of these accesses.</p></li>
+<li><p>There must be no dependence issues between a burst access is
+initiated and completed.</p></li>
+</ul>
+</li>
+<li><p>For example, consider the top-level function iin
+<a class="reference internal" href="#sec-port-widen"><span class="std std-numref">Section 5.1.1</span></a>. Since there are both reads and writes in
+the loop <code class="docutils literal notranslate"><span class="pre">RW_Loop</span></code>, Vitis HLS will automatically implement
+sequential bursting with port-widening to 512 bits.</p></li>
+</ul>
+</section>
 </section>
 </section>
 
@@ -813,6 +854,7 @@ in the C/RTL co-simulation, which models the behaviors of the
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#port-widening">5.1.1. Port Widening</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#burst-access">5.1.2. Burst Access</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#manual-burst-access">5.1.2.1. Manual Burst Access</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-burst-access">5.1.2.2. Automatic Burst Access</a></li>
 </ul>
 </li>
 </ul>
