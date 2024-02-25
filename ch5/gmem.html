@@ -60,6 +60,8 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'ch5/gmem';</script>
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -781,9 +783,16 @@ initiated and completed.</p></li>
 <li><p>For example, consider the top-level function iin
 <a class="reference internal" href="#sec-port-widen"><span class="std std-numref">Section 5.1.1</span></a>. Since there are both reads and writes in
 the loop <code class="docutils literal notranslate"><span class="pre">RW_Loop</span></code>, Vitis HLS will automatically implement
-sequential bursting with port-widening to 512 bits.</p></li>
+sequential bursting with the <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> port widened to 512 bits. Note
+that for automatic port widening, the total number of bits in a
+burst must be divisible by the widened port bit-width. In the
+example, as <span class="math notranslate nohighlight">\(8000*32\)</span> is divisible by <span class="math notranslate nohighlight">\(512\)</span> Vitis HLS automatically
+widens the bit-width to 512 bits.</p></li>
 <li><p>Consider another example as shown below:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">read_task</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;assert.h&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">read_task</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">assert</span><span class="p">(</span><span class="n">N</span><span class="o">%</span><span class="mi">8</span><span class="o">==</span><span class="mi">0</span><span class="p">);</span>
 <span class="w">  </span><span class="nl">Read_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="cp">#pragma HLS loop_tripcount max=MAX_N</span>
 <span class="w">    </span><span class="n">buf</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
@@ -791,6 +800,7 @@ sequential bursting with port-widening to 512 bits.</p></li>
 <span class="p">}</span>
 
 <span class="kt">void</span><span class="w"> </span><span class="nf">write_task</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">assert</span><span class="p">(</span><span class="n">N</span><span class="o">%</span><span class="mi">8</span><span class="o">==</span><span class="mi">0</span><span class="p">);</span>
 <span class="w">  </span><span class="nl">Write_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="cp">#pragma HLS loop_tripcount max=MAX_N</span>
 <span class="w">    </span><span class="n">out</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">buf</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
@@ -798,6 +808,9 @@ sequential bursting with port-widening to 512 bits.</p></li>
 <span class="p">}</span>
 
 <span class="kt">void</span><span class="w"> </span><span class="nf">top</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS interface mode=m_axi port=in depth=MAX_N</span>
+<span class="cp">#pragma HLS interface mode=m_axi port=out depth=MAX_N</span>
+
 <span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">buffer</span><span class="p">[</span><span class="n">MAX_N</span><span class="p">];</span>
 
 <span class="cp">#pragma HLS DATAFLOW</span>
@@ -806,9 +819,20 @@ sequential bursting with port-widening to 512 bits.</p></li>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Vitis HLS in this case infers and implements pipeline bursting
+<ul class="simple">
+<li><p>Vitis HLS in this case infers and implements pipeline bursting
 because all the conditions for pipeline bursting are satisfied in
-this example.</p>
+this example.</p></li>
+<li><p>In this example, the loop bounds of <code class="docutils literal notranslate"><span class="pre">Read_Loop</span></code> and <code class="docutils literal notranslate"><span class="pre">Write_Loop</span></code>
+are variables. Since Vitis HLS can not infer the burst length during
+synthesis, it will not perform automatic port widening. To help
+Vitis HLS infer the best possible widened port bit-width, we may
+add an <code class="docutils literal notranslate"><span class="pre">assert</span></code> statement just right before each loop that access
+the global memory as shown in the example above. The <code class="docutils literal notranslate"><span class="pre">assert</span></code>
+statements before <code class="docutils literal notranslate"><span class="pre">Read_Loop</span></code> and <code class="docutils literal notranslate"><span class="pre">Write_Loop</span></code> basically inform
+Vitis HLS that the burst length is divisible by 8, and hence the
+port bit-width can be widened to 256 bits.</p></li>
+</ul>
 </li>
 </ul>
 </section>
@@ -843,7 +867,8 @@ example, consider the following piece of kernel code:</p>
 <li><p>The memory location overlap and dependence in the reading process
 of <code class="docutils literal notranslate"><span class="pre">in[n]</span> <span class="pre">+</span> <span class="pre">in[n+1]</span></code> from one iteration to the next in <code class="docutils literal notranslate"><span class="pre">RW_Loop</span></code>
 cause VItis HLS to infer neither pipeline nor sequential bursting
-for the reads from the global memory.</p></li>
+for the reads from the global memory. The port bit-width is also
+not widened as a result.</p></li>
 <li><p>Separating <code class="docutils literal notranslate"><span class="pre">in[N]</span></code> and <code class="docutils literal notranslate"><span class="pre">out[N]</span></code> into two different <code class="docutils literal notranslate"><span class="pre">m_axi</span></code>
 interfaces allows Vitis HLS to infer sequential bursting for the writes.</p></li>
 <li><p>Using the cache pragma as shown reduces the latency of the loop by

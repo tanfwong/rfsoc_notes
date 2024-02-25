@@ -363,11 +363,18 @@
 * For example, consider the top-level function iin
   {numref}`sec:port_widen`. Since there are both reads and writes in
   the loop `RW_Loop`, Vitis HLS will automatically implement
-  sequential bursting with port-widening to 512 bits.
+  sequential bursting with the `m_axi` port widened to 512 bits. Note
+  that for automatic port widening, the total number of bits in a
+  burst must be divisible by the widened port bit-width. In the
+  example, as $8000*32$ is divisible by $512$ Vitis HLS automatically
+  widens the bit-width to 512 bits.
 
 * Consider another example as shown below:
   ```c++
+  #include <assert.h>
+  
   void read_task(int *in, int *buf, int N) {
+    assert(N%8==0);
     Read_Loop: for (int n=0; n<N; n++) {
   #pragma HLS loop_tripcount max=MAX_N
       buf[n] = in[n];
@@ -375,6 +382,7 @@
   }
 
   void write_task(int *buf, int *out, int N) {
+    assert(N%8==0);
     Write_Loop: for (int n=0; n<N; n++) {
   #pragma HLS loop_tripcount max=MAX_N
       out[n] = buf[n];
@@ -382,6 +390,9 @@
   }
 
   void top(int *in, int *out, int N) {
+  #pragma HLS interface mode=m_axi port=in depth=MAX_N
+  #pragma HLS interface mode=m_axi port=out depth=MAX_N
+  
     int buffer[MAX_N];
   
   #pragma HLS DATAFLOW
@@ -389,10 +400,18 @@
     write_task(buffer, out, N);
   }
   ```
-  
-  Vitis HLS in this case infers and implements pipeline bursting
-  because all the conditions for pipeline bursting are satisfied in
-  this example. 
+  - Vitis HLS in this case infers and implements pipeline bursting
+    because all the conditions for pipeline bursting are satisfied in
+    this example.
+  - In this example, the loop bounds of `Read_Loop` and `Write_Loop`
+    are variables. Since Vitis HLS can not infer the burst length during
+    synthesis, it will not perform automatic port widening. To help 
+    Vitis HLS infer the best possible widened port bit-width, we may
+    add an `assert` statement just right before each loop that access
+    the global memory as shown in the example above. The `assert`
+    statements before `Read_Loop` and `Write_Loop` basically inform
+    Vitis HLS that the burst length is divisible by 8, and hence the
+    port bit-width can be widened to 256 bits.
 
 (sec:cache)=
 ## Caching
@@ -425,7 +444,8 @@
   - The memory location overlap and dependence in the reading process
     of `in[n] + in[n+1]` from one iteration to the next in `RW_Loop`
     cause VItis HLS to infer neither pipeline nor sequential bursting
-    for the reads from the global memory.
+    for the reads from the global memory. The port bit-width is also
+    not widened as a result.
   - Separating `in[N]` and `out[N]` into two different `m_axi`
     interfaces allows Vitis HLS to infer sequential bursting for the writes.
   - Using the cache pragma as shown reduces the latency of the loop by
