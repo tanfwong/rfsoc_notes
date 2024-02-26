@@ -59,6 +59,7 @@
   }
 
   void top(int in[N], int out[N]) {
+  
     int buf_in[N], buf_out[N];
   
   #pragma HLS dataflow
@@ -78,10 +79,10 @@
       the top-level function `top()` is made to less than a half of that
       of the example in  {numref}`sec:cache`.
       ```{tip}
-      The seemingly extraneous inside `Write_Loop`
-      is to add an extra operation to push Vitis HLS to schedule the
-      write and other operations into two different clock cycles in
-      order to prevent negative slack from happening. This is a common
-      trick to avoid negative slack in the synthesis process by Vitis HLS.
+      The port widening for the writes in `Write_Loop`
+      causes a small negative slack in the synthesis step. If that is
+      not desirable, we may use the set the option
+      `max_widen_bitwidth=32` using the interface pragma to turn off
+      port widening for a more conservative scheduling design.
       ```
  
