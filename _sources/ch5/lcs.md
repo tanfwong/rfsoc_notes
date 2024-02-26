@@ -5,13 +5,13 @@
   may conclude from the discussions in {numref}`sec:gmem` is that the
   DSP kernel code should be written in a way that enables burst access
   and port widening, preferably automatically inferred and implemented
-  by Vitis HLS. In addition, pipeline bursting is often more
-  preferable than sequential bursting. 
+  by Vitis HLS.
 
-* In order to help Vitis HLS infer opportunities for pipeling bursting and
-  port widening, we may employ the producer-consumer model discussed
-  in {numref}`sec:pro-con` to construct a data flow graph connecting
-  the following sequence of tasks:
+* In order to help Vitis HLS infer opportunities for pipeling or
+  sequential bursting and port widening, we may employ the
+  producer-consumer model discussed in {numref}`sec:pro-con` to
+  construct a data flow graph connecting the following sequence of
+  tasks:
   - a task specializing in loading data from the global memory to
     local buffers,
   - a number of tasks that process the data, and
@@ -24,7 +24,7 @@
 * With dedicated *load* and *store* tasks to read from and write to
     the global memory, the code of the load and store tasks can easily
     be written to conform to the conditions for automatic inference of
-    pipeline bursting stated in {numref}`sec:auto_burst`.
+    bursting stated in {numref}`sec:auto_burst`.
 
 * The compute task(s) on the other hand is (are) free up to access
   only local memory, which not only has shorter latency but also
@@ -54,7 +54,7 @@
 
   void store(int buf[N], int out[N]) {
     Write_Loop: for (int n=0; n<N; n++) {
-      out[n] = buf[n]+0;
+      out[n] = buf[n];
     }
   }
 
@@ -69,15 +69,16 @@
   ```
     - Both the `load` and `store` tasks satisfy all conditions stated
       in {numref}`sec:auto_burst`. Thus, Vitis HLS is able to infer
-      pipeline bursting and port widening (to 256 bits) for both reads
-      and writes of the global memory by the kernel.
+      bursting (Vitis HLS decides to implement sequential bursting in
+      this example) and port widening (to 256 bits) for both reads and
+      writes of the global memory by the kernel.
     - The `Compute_Loop` is rewritten to achieve an II=1.
     - Task-level optimization (with FIFOs as streaming buffer) is
       applied to the LCS dataflow graph. As a result, the latency of
       the top-level function `top()` is made to less than a half of that
       of the example in  {numref}`sec:cache`.
       ```{tip}
-      The seemingly extraneous addition `buf[n]+0` inside `Write_Loop`
+      The seemingly extraneous inside `Write_Loop`
       is to add an extra operation to push Vitis HLS to schedule the
       write and other operations into two different clock cycles in
       order to prevent negative slack from happening. This is a common
