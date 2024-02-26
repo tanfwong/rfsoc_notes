@@ -384,7 +384,29 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="load-compute-store-pattern">
-<h1><span class="section-number">5.2. </span>Load-Compute-Store Pattern<a class="headerlink" href="#load-compute-store-pattern" title="Permalink to this headline">#</a></h1>
+<span id="sec-lcs"></span><h1><span class="section-number">5.2. </span>Load-Compute-Store Pattern<a class="headerlink" href="#load-compute-store-pattern" title="Permalink to this headline">#</a></h1>
+<ul>
+<li><p>The overarching guideline about accessing the global memory that we
+may conclude from the discussions in <a class="reference internal" href="gmem.html#sec-gmem"><span class="std std-numref">Section 5.1</span></a> is that the
+DSP kernel code should be written in a way that enables burst access
+and port widening, preferably automatically inferred and implemented
+by Vitis HLS. In addition, pipeline bursting is often more
+preferable than sequential bursting.</p></li>
+<li><p>In order to help Vitis HLS infer opportunities for pipeling bursting and
+port widening, we may employ the producer-consumer model discussed
+in <a class="reference internal" href="../ch3/model.html#sec-pro-con"><span class="std std-numref">Section 3.2</span></a> to construct a data flow graph connecting
+the following sequence of tasks:</p>
+<ul class="simple">
+<li><p>a task specializing in loading data from the global memory to
+local buffers,</p></li>
+<li><p>a number of tasks that process the data, and</p></li>
+<li><p>a task specializing in storing processed data back to the global
+memory.</p></li>
+</ul>
+<p>This coding pattern is referred to as the <em><strong>load-compute-store
+(LCS)</strong></em> pattern.</p>
+</li>
+</ul>
 </section>
 
     <script type="text/x-thebe-config">

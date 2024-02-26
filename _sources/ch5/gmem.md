@@ -1,3 +1,4 @@
+(sec:gmem)=
 # Global Memory Access
 
 * A DSP kernel implemented in the PL exchanges data with the PS host
@@ -436,8 +437,8 @@
   #pragma HLS cache port=in lines=1 depth=512
 
     out[0] = in[0];
-    RW_Loop: for (int n=0; n<N-1; n++) {
-      out[n+1] = in[n] + in[n+1];
+    RW_Loop: for (int n=1; n<N; n++) {
+      out[n] = in[n-1] + in[n];
     }
   }
   ```
@@ -449,6 +450,10 @@
   - Separating `in[N]` and `out[N]` into two different `m_axi`
     interfaces allows Vitis HLS to infer sequential bursting for the writes.
   - Using the cache pragma as shown reduces the latency of the loop by
-    about 10\% in this case. The bottleneck in reducing the latency is
-    the fact that the memory dependence in the two reads inside the
-    body of the loop forces II=2 when pipelining the loop. 
+    about 10\% in this case. 
+  - The bottleneck in reducing the latency is the fact that the memory
+    dependence in the two reads inside the body of the loop forces
+    II=2 when pipelining the loop.  One may re-factor the code in
+    `RW_Loop` to do a single read from `in` and a single write to
+    `out` in each iteration to reduce the II to 1 clock cycle (see
+    {numref}`sec:lcs`).

@@ -402,7 +402,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="global-memory-access">
-<h1><span class="section-number">5.1. </span>Global Memory Access<a class="headerlink" href="#global-memory-access" title="Permalink to this headline">#</a></h1>
+<span id="sec-gmem"></span><h1><span class="section-number">5.1. </span>Global Memory Access<a class="headerlink" href="#global-memory-access" title="Permalink to this headline">#</a></h1>
 <ul>
 <li><p>A DSP kernel implemented in the PL exchanges data with the PS host
 via global memory (DDR4 on the RFSoC 4x2 board, see
@@ -857,8 +857,8 @@ example, consider the following piece of kernel code:</p>
 <span class="cp">#pragma HLS cache port=in lines=1 depth=512</span>
 
 <span class="w">  </span><span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-<span class="w">  </span><span class="nl">RW_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="mi">-1</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">out</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
+<span class="w">  </span><span class="nl">RW_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">out</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">n</span><span class="mi">-1</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -872,9 +872,13 @@ not widened as a result.</p></li>
 <li><p>Separating <code class="docutils literal notranslate"><span class="pre">in[N]</span></code> and <code class="docutils literal notranslate"><span class="pre">out[N]</span></code> into two different <code class="docutils literal notranslate"><span class="pre">m_axi</span></code>
 interfaces allows Vitis HLS to infer sequential bursting for the writes.</p></li>
 <li><p>Using the cache pragma as shown reduces the latency of the loop by
-about 10% in this case. The bottleneck in reducing the latency is
-the fact that the memory dependence in the two reads inside the
-body of the loop forces II=2 when pipelining the loop.</p></li>
+about 10% in this case.</p></li>
+<li><p>The bottleneck in reducing the latency is the fact that the memory
+dependence in the two reads inside the body of the loop forces
+II=2 when pipelining the loop.  One may re-factor the code in
+<code class="docutils literal notranslate"><span class="pre">RW_Loop</span></code> to do a single read from <code class="docutils literal notranslate"><span class="pre">in</span></code> and a single write to
+<code class="docutils literal notranslate"><span class="pre">out</span></code> in each iteration to reduce the II to 1 clock cycle (see
+<a class="reference internal" href="lcs.html#sec-lcs"><span class="std std-numref">Section 5.2</span></a>).</p></li>
 </ul>
 </li>
 </ul>
