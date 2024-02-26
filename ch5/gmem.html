@@ -749,16 +749,17 @@ in the C/RTL co-simulation, which models the behaviors of the
 <section id="automatic-burst-access">
 <span id="sec-auto-burst"></span><h3><span class="section-number">5.1.2.2. </span>Automatic Burst Access<a class="headerlink" href="#automatic-burst-access" title="Permalink to this headline">#</a></h3>
 <ul>
-<li><p>Vitis HLS automatic performs burst access optimization by inferring
+<li><p>Vitis HLS performs automatic burst access optimization by inferring
 from the kernel code opportunities to implement pipeline and/or
 sequential bursting on a per function basis:</p>
 <ol class="arabic simple">
-<li><p>Vitis HLS first look for sequences of statements that perform
+<li><p>Vitis HLS first looks for sequences of statements that perform
 global memory access in the body of a function to implement
 sequential bursting across the sequences.</p></li>
 <li><p>Vitis HLS then looks at loops to try to infer possibilities of
 pipeline bursting. If pipeline bursting can not be inferred for a
-loop, Vitis HLS will implement sequential bursting for the loop.</p></li>
+loop, Vitis HLS will try to implement sequential bursting for the
+loop.</p></li>
 </ol>
 </li>
 <li><p>Vitis HLS will determine pipeline bursting for a loop if all the
@@ -780,13 +781,13 @@ bursting will be implemented for any of these accesses.</p></li>
 initiated and completed.</p></li>
 </ul>
 </li>
-<li><p>For example, consider the top-level function iin
+<li><p>For example, consider the top-level function in
 <a class="reference internal" href="#sec-port-widen"><span class="std std-numref">Section 5.1.1</span></a>. Since there are both reads and writes in
 the loop <code class="docutils literal notranslate"><span class="pre">RW_Loop</span></code>, Vitis HLS will automatically implement
 sequential bursting with the <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> port widened to 512 bits. Note
 that for automatic port widening, the total number of bits in a
 burst must be divisible by the widened port bit-width. In the
-example, as <span class="math notranslate nohighlight">\(8000*32\)</span> is divisible by <span class="math notranslate nohighlight">\(512\)</span> Vitis HLS automatically
+example, as <span class="math notranslate nohighlight">\(8000*32\)</span> is divisible by <span class="math notranslate nohighlight">\(512\)</span>, Vitis HLS automatically
 widens the bit-width to 512 bits.</p></li>
 <li><p>Consider another example as shown below:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;assert.h&gt;</span>
@@ -824,14 +825,14 @@ widens the bit-width to 512 bits.</p></li>
 because all the conditions for pipeline bursting are satisfied in
 this example.</p></li>
 <li><p>In this example, the loop bounds of <code class="docutils literal notranslate"><span class="pre">Read_Loop</span></code> and <code class="docutils literal notranslate"><span class="pre">Write_Loop</span></code>
-are variables. Since Vitis HLS can not infer the burst length during
-synthesis, it will not perform automatic port widening. To help
-Vitis HLS infer the best possible widened port bit-width, we may
-add an <code class="docutils literal notranslate"><span class="pre">assert</span></code> statement just right before each loop that access
-the global memory as shown in the example above. The <code class="docutils literal notranslate"><span class="pre">assert</span></code>
-statements before <code class="docutils literal notranslate"><span class="pre">Read_Loop</span></code> and <code class="docutils literal notranslate"><span class="pre">Write_Loop</span></code> basically inform
-Vitis HLS that the burst length is divisible by 8, and hence the
-port bit-width can be widened to 256 bits.</p></li>
+are variables. Since Vitis HLS can not infer the burst length
+during synthesis, it will not perform automatic port widening. To
+help Vitis HLS infer the best possible widened port bit-width, we
+may add an <code class="docutils literal notranslate"><span class="pre">assert</span></code> statement just right before each loop that
+accesses the global memory as shown in the example above. The
+<code class="docutils literal notranslate"><span class="pre">assert</span></code> statements before <code class="docutils literal notranslate"><span class="pre">Read_Loop</span></code> and <code class="docutils literal notranslate"><span class="pre">Write_Loop</span></code> basically
+inform Vitis HLS that the burst length is divisible by 8, and
+hence the port bit-width can be widened to 256 bits.</p></li>
 </ul>
 </li>
 </ul>
@@ -865,8 +866,8 @@ example, consider the following piece of kernel code:</p>
 </div>
 <ul class="simple">
 <li><p>The memory location overlap and dependence in the reading process
-of <code class="docutils literal notranslate"><span class="pre">in[n]</span> <span class="pre">+</span> <span class="pre">in[n+1]</span></code> from one iteration to the next in <code class="docutils literal notranslate"><span class="pre">RW_Loop</span></code>
-cause VItis HLS to infer neither pipeline nor sequential bursting
+of <code class="docutils literal notranslate"><span class="pre">in[n-1]</span> <span class="pre">+</span> <span class="pre">in[n]</span></code> from one iteration to the next in <code class="docutils literal notranslate"><span class="pre">RW_Loop</span></code>
+cause Vitis HLS to infer neither pipeline nor sequential bursting
 for the reads from the global memory. The port bit-width is also
 not widened as a result.</p></li>
 <li><p>Separating <code class="docutils literal notranslate"><span class="pre">in[N]</span></code> and <code class="docutils literal notranslate"><span class="pre">out[N]</span></code> into two different <code class="docutils literal notranslate"><span class="pre">m_axi</span></code>

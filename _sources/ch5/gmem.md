@@ -335,15 +335,16 @@
 
 (sec:auto_burst)=
 ### Automatic Burst Access
-* Vitis HLS automatic performs burst access optimization by inferring
+* Vitis HLS performs automatic burst access optimization by inferring
   from the kernel code opportunities to implement pipeline and/or
   sequential bursting on a per function basis:
-  1. Vitis HLS first look for sequences of statements that perform
+  1. Vitis HLS first looks for sequences of statements that perform
      global memory access in the body of a function to implement
      sequential bursting across the sequences.
   2. Vitis HLS then looks at loops to try to infer possibilities of
      pipeline bursting. If pipeline bursting can not be inferred for a
-     loop, Vitis HLS will implement sequential bursting for the loop.
+     loop, Vitis HLS will try to implement sequential bursting for the
+     loop.
 
 * Vitis HLS will determine pipeline bursting for a loop if all the
    following conditions are satisfied:
@@ -362,13 +363,13 @@
    - There must be no dependence issues between a burst access is
      initiated and completed.
      
-* For example, consider the top-level function iin
+* For example, consider the top-level function in
   {numref}`sec:port_widen`. Since there are both reads and writes in
   the loop `RW_Loop`, Vitis HLS will automatically implement
   sequential bursting with the `m_axi` port widened to 512 bits. Note
   that for automatic port widening, the total number of bits in a
   burst must be divisible by the widened port bit-width. In the
-  example, as $8000*32$ is divisible by $512$ Vitis HLS automatically
+  example, as $8000*32$ is divisible by $512$, Vitis HLS automatically
   widens the bit-width to 512 bits.
 
 * Consider another example as shown below:
@@ -406,14 +407,14 @@
     because all the conditions for pipeline bursting are satisfied in
     this example.
   - In this example, the loop bounds of `Read_Loop` and `Write_Loop`
-    are variables. Since Vitis HLS can not infer the burst length during
-    synthesis, it will not perform automatic port widening. To help 
-    Vitis HLS infer the best possible widened port bit-width, we may
-    add an `assert` statement just right before each loop that access
-    the global memory as shown in the example above. The `assert`
-    statements before `Read_Loop` and `Write_Loop` basically inform
-    Vitis HLS that the burst length is divisible by 8, and hence the
-    port bit-width can be widened to 256 bits.
+    are variables. Since Vitis HLS can not infer the burst length
+    during synthesis, it will not perform automatic port widening. To
+    help Vitis HLS infer the best possible widened port bit-width, we
+    may add an `assert` statement just right before each loop that
+    accesses the global memory as shown in the example above. The
+    `assert` statements before `Read_Loop` and `Write_Loop` basically
+    inform Vitis HLS that the burst length is divisible by 8, and
+    hence the port bit-width can be widened to 256 bits.
 
 (sec:cache)=
 ## Caching
@@ -444,8 +445,8 @@
   }
   ```
   - The memory location overlap and dependence in the reading process
-    of `in[n] + in[n+1]` from one iteration to the next in `RW_Loop`
-    cause VItis HLS to infer neither pipeline nor sequential bursting
+    of `in[n-1] + in[n]` from one iteration to the next in `RW_Loop`
+    cause Vitis HLS to infer neither pipeline nor sequential bursting
     for the reads from the global memory. The port bit-width is also
     not widened as a result.
   - Separating `in[N]` and `out[N]` into two different `m_axi`
