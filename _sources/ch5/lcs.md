@@ -29,8 +29,8 @@
 * The compute task(s) on the other hand is (are) free up to access
   only local memory, which not only has shorter latency but also
   provides more flexibility to be structured by us. This is
-  particularly beneficial when complex processing steps are needed to
-  be implemented in the DSP kernel.
+  particularly beneficial when complex processing steps are to be
+  implemented in the DSP kernel.
 
 * For example, consider rewriting the code in the caching example in
   {numref}`sec:cache` in the LCS pattern as below:
@@ -76,13 +76,13 @@
     - The `Compute_Loop` is rewritten to achieve an II=1.
     - Task-level optimization (with FIFOs as streaming buffer) is
       applied to the LCS dataflow graph. As a result, the latency of
-      the top-level function `top()` is made to less than a half of that
-      of the example in  {numref}`sec:cache`.
+      the top-level function `top()` less than a half of that
+      of the example in  {numref}`sec:cache` is achieved.
       ```{tip}
       The port widening for the writes in `Write_Loop`
       causes a small negative slack in the synthesis step. If that is
-      not desirable, we may use the set the option
-      `max_widen_bitwidth=32` using the interface pragma to turn off
+      not desirable, we may use the option
+      `max_widen_bitwidth=32` in an interface pragma to turn off
       port widening for a more conservative scheduling design.
       ```
  
