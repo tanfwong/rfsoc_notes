@@ -333,6 +333,7 @@
     `m_axi` adapter.
   ```
 
+(sec:auto_burst)=
 ### Automatic Burst Access
 * Vitis HLS automatic performs burst access optimization by inferring
   from the kernel code opportunities to implement pipeline and/or
