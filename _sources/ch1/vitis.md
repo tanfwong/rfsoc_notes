@@ -1,5 +1,6 @@
 # Software Development Tools
 
+(sec:dsp_conf)=
 ## DSP Implementation Configuration
 There are many possible configurations of utilizing the various
 compute resources in the three subsystems in the XCZU48DR RFSoC

@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>5.2. Load-Compute-Store Pattern &#8212; Real-time DSP Notes</title>
+    <title>6.1. OpenCL Platform &#8212; Real-time DSP Notes</title>
   
   
   
@@ -60,12 +60,12 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'ch5/lcs';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ch6/opencl_platform';</script>
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="6. Host Programming" href="../ch6/host.html" />
-    <link rel="prev" title="5.1. Global Memory Access" href="gmem.html" />
+    <link rel="next" title="7. References" href="../refs.html" />
+    <link rel="prev" title="6. Host Programming" href="host.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
   </head>
@@ -182,13 +182,13 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="../ch4/math.html">4.4. Math Data Types</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="hls_intf.html">5. HLS Kernel Interface</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="gmem.html">5.1. Global Memory Access</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">5.2. Load-Compute-Store Pattern</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../ch5/hls_intf.html">5. HLS Kernel Interface</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ch5/gmem.html">5.1. Global Memory Access</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ch5/lcs.html">5.2. Load-Compute-Store Pattern</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../ch6/host.html">6. Host Programming</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../ch6/opencl.html">6.1. OpenCL</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="host.html">6. Host Programming</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">6.1. OpenCL Platform</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">7. References</a></li>
@@ -263,7 +263,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Fch5/lcs.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Fch6/opencl_platform.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -293,7 +293,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../_sources/ch5/lcs.md" target="_blank"
+      <li><a href="../_sources/ch6/opencl_platform.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -373,7 +373,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Load-Compute-Store Pattern</h1>
+    <h1>OpenCL Platform</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -387,96 +387,60 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="load-compute-store-pattern">
-<span id="sec-lcs"></span><h1><span class="section-number">5.2. </span>Load-Compute-Store Pattern<a class="headerlink" href="#load-compute-store-pattern" title="Permalink to this headline">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="opencl-platform">
+<h1><span class="section-number">6.1. </span>OpenCL Platform<a class="headerlink" href="#opencl-platform" title="Permalink to this headline">#</a></h1>
 <ul>
-<li><p>The overarching guideline about accessing the global memory that we
-may conclude from the discussions in <a class="reference internal" href="gmem.html#sec-gmem"><span class="std std-numref">Section 5.1</span></a> is that the
-DSP kernel code should be written in a way that enables burst access
-and port widening, preferably automatically inferred and implemented
-by Vitis HLS.</p></li>
-<li><p>In order to help Vitis HLS infer opportunities for pipeling or
-sequential bursting and port widening, we may employ the
-producer-consumer model discussed in <a class="reference internal" href="../ch3/model.html#sec-pro-con"><span class="std std-numref">Section 3.2</span></a> to
-construct a data flow graph connecting the following sequence of
-tasks:</p>
+<li><p><a class="reference external" href="https://github.com/KhronosGroup/OpenCL-Guide/blob/main/README.md">OpenCL</a>,
+which stands for Open Computing Language, is an industrial standard
+to support cross-platform parallel programming in computing systems
+with hetergeneous compute resources, such as CPUs, GPUs, FPGAs, dsps,
+and TPUs</p></li>
+<li><p>The OpenCL <em>platform model</em> describes how the compute resources in a
+system are topologically connected. The typical OpenCL platform
+model is shown in the following figure:</p>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/opencl_platform.jpg"><img alt="OpenCL Platform Model" src="../_images/opencl_platform.jpg" style="width: 800px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 6.1 </span><span class="caption-text">OpenCL Platform Model (figure taken from
+<a class="reference external" href="https://github.com/KhronosGroup/OpenCL-Guide/blob/main/images/platform_model.jpg">here</a>)</span><a class="headerlink" href="#id1" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
 <ul class="simple">
-<li><p>a task specializing in loading data from the global memory to
-local buffers,</p></li>
-<li><p>a number of tasks that process the data, and</p></li>
-<li><p>a task specializing in storing processed data back to the global
-memory.</p></li>
-</ul>
-<p>This coding pattern is referred to as the <em><strong>load-compute-store
-(LCS)</strong></em> pattern.</p>
-</li>
-<li><p>With dedicated <em>load</em> and <em>store</em> tasks to read from and write to
-the global memory, the code of the load and store tasks can easily
-be written to conform to the conditions for automatic inference of
-bursting stated in <a class="reference internal" href="gmem.html#sec-auto-burst"><span class="std std-numref">Section 5.1.2.2</span></a>.</p></li>
-<li><p>The compute task(s) on the other hand is (are) free up to access
-only local memory, which not only has shorter latency but also
-provides more flexibility to be structured by us. This is
-particularly beneficial when complex processing steps are to be
-implemented in the DSP kernel.</p></li>
-<li><p>For example, consider rewriting the code in the caching example in
-<a class="reference internal" href="gmem.html#sec-cache"><span class="std std-numref">Section 5.1.3</span></a> in the LCS pattern as below:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define N 1000</span>
-
-<span class="kt">void</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">N</span><span class="p">],</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">buf</span><span class="p">[</span><span class="n">N</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nl">Read_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">buf</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
-
-<span class="kt">void</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">N</span><span class="p">],</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">out</span><span class="p">[</span><span class="n">N</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">past</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
-<span class="w">  </span><span class="nl">Compute_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
-<span class="w">    </span><span class="n">out</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">past</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">now</span><span class="p">;</span>
-<span class="w">    </span><span class="n">past</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">now</span><span class="p">;</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
-
-<span class="kt">void</span><span class="w"> </span><span class="nf">store</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">buf</span><span class="p">[</span><span class="n">N</span><span class="p">],</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">out</span><span class="p">[</span><span class="n">N</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nl">Write_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">out</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">buf</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
-
-<span class="kt">void</span><span class="w"> </span><span class="nf">top</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">N</span><span class="p">],</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">out</span><span class="p">[</span><span class="n">N</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
-
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">buf_in</span><span class="p">[</span><span class="n">N</span><span class="p">],</span><span class="w"> </span><span class="n">buf_out</span><span class="p">[</span><span class="n">N</span><span class="p">];</span>
-
-<span class="cp">#pragma HLS dataflow</span>
-<span class="w">  </span><span class="n">load</span><span class="p">(</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">buf_in</span><span class="p">);</span>
-<span class="w">  </span><span class="n">compute</span><span class="p">(</span><span class="n">buf_in</span><span class="p">,</span><span class="w"> </span><span class="n">buf_out</span><span class="p">);</span>
-<span class="w">  </span><span class="n">store</span><span class="p">(</span><span class="n">buf_out</span><span class="p">,</span><span class="w"> </span><span class="n">out</span><span class="p">);</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<ul>
-<li><p>Both the <code class="docutils literal notranslate"><span class="pre">load</span></code> and <code class="docutils literal notranslate"><span class="pre">store</span></code> tasks satisfy all conditions stated
-in <a class="reference internal" href="gmem.html#sec-auto-burst"><span class="std std-numref">Section 5.1.2.2</span></a>. Thus, Vitis HLS is able to infer
-bursting (Vitis HLS decides to implement sequential bursting in
-this example) and port widening (to 256 bits) for both reads and
-writes of the global memory by the kernel.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">Compute_Loop</span></code> is rewritten to achieve an II=1.</p></li>
-<li><p>Task-level optimization (with FIFOs as streaming buffer) is
-applied to the LCS dataflow graph. As a result, the latency of
-the top-level function <code class="docutils literal notranslate"><span class="pre">top()</span></code> less than a half of that
-of the example in  <a class="reference internal" href="gmem.html#sec-cache"><span class="std std-numref">Section 5.1.3</span></a> is achieved.</p>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>The port widening for the writes in <code class="docutils literal notranslate"><span class="pre">Write_Loop</span></code>
-causes a small negative slack in the synthesis step. If that is
-not desirable, we may use the option
-<code class="docutils literal notranslate"><span class="pre">max_widen_bitwidth=32</span></code> in an interface pragma to turn off
-port widening for a more conservative scheduling design.</p>
-</div>
-</li>
+<li><p>A <em>host</em> (usually a CPU) is connected to one or more <em>compute
+devices</em> (CPUs, GPUs, FPGAs, dsps, TPUs), each of which is in a
+collection of one or more <em>compute units</em>. Each compute unit may
+in turn consists of one or more <em>processing elements</em>.</p></li>
+<li><p>The host controls the compute devices whose compute units may
+perform computing tasks in parallel.</p></li>
+<li><p>Correspondingly in our case, we may regard the XCZU48DR RFSoC
+device as our <em>platform</em>, in which the ARM Cortex-A53 APU is the
+<em>host</em> and the PL is a <em>compute device</em>. The DSP kernels in the PL
+are <em>compute units</em>, each of which is composed of the tasks in the
+data flow graph that defines the kernel serving as <em>processing
+elements</em>.</p></li>
 </ul>
 </li>
+<li><p>OpenCL provides a programming framework for us to develop programs
+that run on the host as well as the compute devices. In particular,
+the OpenCL framework contains two layers of APIs:</p>
+<ul class="simple">
+<li><p>The <em>platform-layer APIs</em> support an application program that runs
+on the host to discover the platform architecture, and to set up,
+configure, and initialize the compute devices in the platform.</p></li>
+<li><p>The <em>runtime APIs</em> support the development of <em>kernel programs</em>
+that run on the compute devices. Some runtime APIs also run on the
+host to transfer kernel programs and data to the compute units in
+the compute devices, execute the kernel programs to perform
+computing tasks in the compute units, and transfer results back
+from the compute devices back to the host.</p></li>
+</ul>
+</li>
+<li><p>As discussed in <a class="reference internal" href="../ch1/workflow.html#sec-vaad"><span class="std std-numref">Section 1.3</span></a>, we will use Vitis HLS to develop
+kernel programs in C/C++, we will not use the runtime APIs that
+support that purpose. However, we will use both the platform-layer
+and runtime APIs in the host program to set up the OpenCL platform,
+control the DSP kernels, and execute the DSP computing task in the
+kernels.</p></li>
 </ul>
 </section>
 
@@ -493,7 +457,7 @@ port widening for a more conservative scheduling design.</p>
         },
         kernelOptions: {
             name: "python3",
-            path: "./ch5"
+            path: "./ch6"
         },
         predefinedOutput: true
     }
@@ -512,20 +476,20 @@ port widening for a more conservative scheduling design.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="gmem.html"
+       href="host.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title"><span class="section-number">5.1. </span>Global Memory Access</p>
+        <p class="prev-next-title"><span class="section-number">6. </span>Host Programming</p>
       </div>
     </a>
     <a class="right-next"
-       href="../ch6/host.html"
+       href="../refs.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">6. </span>Host Programming</p>
+        <p class="prev-next-title"><span class="section-number">7. </span>References</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
