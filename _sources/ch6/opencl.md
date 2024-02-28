@@ -108,12 +108,11 @@
   ```
 * To execute computing tasks in a platform, we must first create a
   **context**, which includes a set of compute devices, the memory
-  objects accessible to those compute devices, the corresponding
-  memory properties and one or more command queues that are used to
-  schedule execution of kernel programs and operations on memory
-  objects. In essence, the context is an environment within which the
-  kernel programs execute and memory management and synchronization
-  are performed.
+  objects accessible to those compute devices, and one or more command
+  queues that are used to schedule execution of kernel programs and
+  operations on memory objects. In essence, the context is an
+  environment within which the kernel programs execute and memory
+  management and synchronization are performed.
 
 * A **kernel program** executes on a compute device. This corresponds
   to the kernel code of our DSP kernel. Multiple instances of the same
@@ -124,4 +123,23 @@
   kernels.  A **memory object** is a handle to a region of the global
   memory.
   
+* A **command queue** holds commands that will be executed on a
+  specific compute device.  The host places commands into the command queue to
+  schedule their execution. There are three types of commands:
+  - A **kernel execution command** executes a kernel on a compute unit
+    of a compute device.
+  - A **memory command** transfers data to, from, or between memory
+    objects, or map and unmap memory objects from the host's address space.
+  - A **synchronization command** constrains the order of execution of
+    commands.
+
+* Commands in the command queue can be executed in two modes:
+  - **In-order execution**: The commands are executed in the order
+    that they are placed into the command queue. A command must complete
+    before the next one begins.
+  - **Out-of-order execution**: Commands are launched in the order,
+    but a command can execute without waiting for completion of prior
+    commands. Specific ordering constraints on the execution of
+    commands can be enforced by explicitly issuing synchronization
+    commands.
   
