@@ -1,4 +1,4 @@
-# OpenCL
+# OpenCL Basics
 
 * [OpenCL](https://github.com/KhronosGroup/OpenCL-Guide/blob/main/README.md),
   which stands for Open Computing Language, is an industrial standard
