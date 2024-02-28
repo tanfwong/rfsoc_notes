@@ -1,4 +1,4 @@
-# OpenCL Platform
+# OpenCL
 
 * [OpenCL](https://github.com/KhronosGroup/OpenCL-Guide/blob/main/README.md),
   which stands for Open Computing Language, is an industrial standard
@@ -6,6 +6,7 @@
   with hetergeneous compute resources, such as CPUs, GPUs, FPGAs, dsps,
   and TPUs
 
+## Platform Model
 * The OpenCL *platform model* describes how the compute resources in a
   system are topologically connected. The typical OpenCL platform
   model is shown in the following figure:
@@ -46,9 +47,48 @@
     from the compute devices back to the host.
 
 * As discussed in {numref}`sec:vaad`, we will use Vitis HLS to develop
-  kernel programs in C/C++, we will not use the runtime APIs that
+  kernel programs in C/C++. Thus, we will not use the runtime APIs that
   support that purpose. However, we will use both the platform-layer
   and runtime APIs in the host program to set up the OpenCL platform,
   control the DSP kernels, and execute the DSP computing task in the
   kernels.
+  
+## Memory Model
+* The OpenCL *memory model* describes how different memory resources
+  in the system are connected to the various components in the OpenCl
+  platform. The typial OpenCL memory model is shown in the following
+  figure:
+  ```{figure} ../figs/opencl_memory.jpg
+  ---
+  name: opencl_memory
+  alt: OpenCL Memory Model
+  width: 800px
+  align: center
+  ---
+  OpenCL Memory Model (figure taken from
+  [here](https://github.com/KhronosGroup/OpenCL-Guide/blob/main/images/memory_model.jpg))
+  ```
+  - **Host memory**: accessible only to the host
+  - **Global memory**: accessible to all compute units in a compute
+    device
+  - **Local memory**: available only within in a compute unit
+  - **Private memory**: available only to a single processing element
+
+* Again, mapping this memory model back to our case (see {numref}`sec:hardware`):
+  - The DDR4 bank connected to the PS is the host memory.
+  - The DDR4 back connected to the PL is the global memory.
+  - Local memory includes all memory resources within a DSP kernel
+    generated for global variables, variables in the top-level
+    function,  and streaming buffers.
+  - Private memory includes all memory resources generated within a
+    task function.
+
+* Memory management in OpenCL is explicit. That is, the host
+  application program and kernel programs must explicitly moves data
+  between the different types of memory types above. In particular,
+  the host program is expected to employ the OpenCL runtime APIs to
+  move data between the host and global memory to implement data
+  transfer between the host and a compute device.
+
+
  
