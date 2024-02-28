@@ -13,7 +13,7 @@
   kernels as well as transfer data to and from the kernels via the
   global memory.
 
-* The XRT library provides two different classes of APIs:
+* The Vitis and XRT library provide two different classes of APIs:
   - [native XRT APIs](https://xilinx.github.io/XRT/master/html/xrt_native_apis.html)
   - [OpenCL
     APIs](https://xilinx.github.io/XRT/master/html/opencl_extension.html)
