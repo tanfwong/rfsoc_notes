@@ -35,23 +35,24 @@
 
 * OpenCL provides a programming framework for us to develop programs
   that run on the host as well as the compute devices. In particular,
-  the OpenCL framework contains two layers of APIs:
+  the OpenCL framework contains three layers of APIs:
   - The *platform-layer APIs* support an application program that runs
     on the host to discover the platform architecture, and to set up,
     configure, and initialize the compute devices in the platform.
-  - The *runtime APIs* support the development of *kernel programs*
-    that run on the compute devices. Some runtime APIs also run on the
-    host to transfer kernel programs and data to the compute units in
-    the compute devices, execute the kernel programs to perform
+  - The *kernel compiler* generates *kernel programs* that run on the
+    compute devices.
+  - The *runtime APIs* support the application program that runs on
+    the host to transfer kernel programs and data to the compute units
+    in the compute devices, execute the kernel programs to perform
     computing tasks in the compute units, and transfer results back
     from the compute devices back to the host.
 
 * As discussed in {numref}`sec:vaad`, we will use Vitis HLS to develop
-  kernel programs in C/C++. Thus, we will not use the runtime APIs that
-  support that purpose. However, we will use both the platform-layer
-  and runtime APIs in the host program to set up the OpenCL platform,
-  control the DSP kernels, and execute the DSP computing task in the
-  kernels.
+  kernel programs in C/C++. Thus, we will not use the kernel compiler
+  that supports that purpose. However, we will use both the
+  platform-layer and runtime APIs in the host program to set up the
+  OpenCL platform, control the DSP kernels, and execute the DSP
+  computing task in the kernels.
   
 ## Memory Model
 * The OpenCL *memory model* describes how different memory resources

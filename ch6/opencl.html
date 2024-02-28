@@ -437,25 +437,26 @@ elements</em>.</p></li>
 </li>
 <li><p>OpenCL provides a programming framework for us to develop programs
 that run on the host as well as the compute devices. In particular,
-the OpenCL framework contains two layers of APIs:</p>
+the OpenCL framework contains three layers of APIs:</p>
 <ul class="simple">
 <li><p>The <em>platform-layer APIs</em> support an application program that runs
 on the host to discover the platform architecture, and to set up,
 configure, and initialize the compute devices in the platform.</p></li>
-<li><p>The <em>runtime APIs</em> support the development of <em>kernel programs</em>
-that run on the compute devices. Some runtime APIs also run on the
-host to transfer kernel programs and data to the compute units in
-the compute devices, execute the kernel programs to perform
+<li><p>The <em>kernel compiler</em> generates <em>kernel programs</em> that run on the
+compute devices.</p></li>
+<li><p>The <em>runtime APIs</em> support the application program that runs on
+the host to transfer kernel programs and data to the compute units
+in the compute devices, execute the kernel programs to perform
 computing tasks in the compute units, and transfer results back
 from the compute devices back to the host.</p></li>
 </ul>
 </li>
 <li><p>As discussed in <a class="reference internal" href="../ch1/workflow.html#sec-vaad"><span class="std std-numref">Section 1.3</span></a>, we will use Vitis HLS to develop
-kernel programs in C/C++. Thus, we will not use the runtime APIs that
-support that purpose. However, we will use both the platform-layer
-and runtime APIs in the host program to set up the OpenCL platform,
-control the DSP kernels, and execute the DSP computing task in the
-kernels.</p></li>
+kernel programs in C/C++. Thus, we will not use the kernel compiler
+that supports that purpose. However, we will use both the
+platform-layer and runtime APIs in the host program to set up the
+OpenCL platform, control the DSP kernels, and execute the DSP
+computing task in the kernels.</p></li>
 </ul>
 </section>
 <section id="memory-model">
