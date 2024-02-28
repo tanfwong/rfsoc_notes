@@ -8,7 +8,7 @@
 
 ## Platform Model
 * The OpenCL *platform model* describes how the compute resources in a
-  system are topologically connected. The typical OpenCL platform
+  system are topologically connected. The OpenCL platform
   model is shown in the following figure:
   ```{figure} ../figs/opencl_platform.jpg
   ---
@@ -57,7 +57,7 @@
 ## Memory Model
 * The OpenCL *memory model* describes how different memory resources
   in the system are connected to the various components in the OpenCl
-  platform. The typial OpenCL memory model is shown in the following
+  platform. The OpenCL memory model is shown in the following
   figure:
   ```{figure} ../figs/opencl_memory.jpg
   ---
@@ -91,5 +91,18 @@
   move data between the host and global memory to implement data
   transfer between the host and a compute device.
 
-
- 
+## Execution Model
+* The OpenCL *execution model* describes how computing tasks are
+  executed in the different compute devices in the OpenCl
+  platform. The typial OpenCL execution model is shown in the following
+  figure:
+  ```{figure} ../figs/opencl_execution.jpg
+  ---
+  name: opencl_execution
+  alt: OpenCL Execution Model
+  width: 800px
+  align: center
+  ---
+  OpenCL Execution Model (figure taken from
+  [here](https://github.com/KhronosGroup/OpenCL-Guide/blob/main/images/executing_programs.jpg))
+  ```
