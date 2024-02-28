@@ -516,6 +516,22 @@ figure:</p>
 </figcaption>
 </figure>
 </li>
+<li><p>To execute computing tasks in a platform, we must first create a
+<strong>context</strong>, which includes a set of compute devices, the memory
+objects accessible to those compute devices, the corresponding
+memory properties and one or more command queues that are used to
+schedule execution of kernel programs and operations on memory
+objects. In essence, the context is an environment within which the
+kernel programs execute and memory management and synchronization
+are performed.</p></li>
+<li><p>A <strong>kernel program</strong> executes on a compute device. This corresponds
+to the kernel code of our DSP kernel. Multiple instances of the same
+kernel program can be implemented in the PL forming individual
+compute units. We will slightly carelessly use the term <strong>kernel</strong>
+to refer to both the kernel code and the compute unit that is
+implemented in the PL. An OpenCL <strong>program</strong> is a collection of
+kernels.  A <strong>memory object</strong> is a handle to a region of the global
+memory.</p></li>
 </ul>
 </section>
 </section>

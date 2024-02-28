@@ -106,3 +106,22 @@
   OpenCL Execution Model (figure taken from
   [here](https://github.com/KhronosGroup/OpenCL-Guide/blob/main/images/executing_programs.jpg))
   ```
+* To execute computing tasks in a platform, we must first create a
+  **context**, which includes a set of compute devices, the memory
+  objects accessible to those compute devices, the corresponding
+  memory properties and one or more command queues that are used to
+  schedule execution of kernel programs and operations on memory
+  objects. In essence, the context is an environment within which the
+  kernel programs execute and memory management and synchronization
+  are performed.
+
+* A **kernel program** executes on a compute device. This corresponds
+  to the kernel code of our DSP kernel. Multiple instances of the same
+  kernel program can be implemented in the PL forming individual
+  compute units. We will slightly carelessly use the term **kernel**
+  to refer to both the kernel code and the compute unit that is
+  implemented in the PL. An OpenCL **program** is a collection of
+  kernels.  A **memory object** is a handle to a region of the global
+  memory.
+  
+  
