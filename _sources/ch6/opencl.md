@@ -1,10 +1,10 @@
 # OpenCL Basics
 
-* [OpenCL](https://github.com/KhronosGroup/OpenCL-Guide/blob/main/README.md),
-  which stands for Open Computing Language, is an industrial standard
-  to support cross-platform parallel programming in computing systems
-  with hetergeneous compute resources, such as CPUs, GPUs, FPGAs, dsps,
-  and TPUs
+[OpenCL](https://github.com/KhronosGroup/OpenCL-Guide/blob/main/README.md),
+which stands for Open Computing Language, is an industrial standard to
+support cross-platform parallel programming in computing systems with
+hetergeneous compute resources, such as CPUs, GPUs, FPGAs, dsps, and
+TPUs
 
 ## Platform Model
 * The OpenCL *platform model* describes how the compute resources in a
