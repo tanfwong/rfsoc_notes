@@ -364,7 +364,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -380,6 +382,14 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-transfer">6.3.1. Data Transfer</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -415,6 +425,126 @@ host code to support pipelining the steps of data transfer and
 kernel execution as well as parallelization with multiple compute
 units in the PL.</p></li>
 </ul>
+<section id="data-transfer">
+<h2><span class="section-number">6.3.1. </span>Data Transfer<a class="headerlink" href="#data-transfer" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>Under the OpenCL memory model, data exchange between the host and
+the kernels amounts to synchronization of contents between the host
+memory and the global memory. As the latency of this memory
+synchronization process is significant, it is important to optimize
+the performance of  this process.</p></li>
+<li><p>The first step of data exchange as discussed in
+<a class="reference internal" href="ocl_prog.html#sec-ocl-steps"><span class="std std-numref">Section 6.2</span></a> is to create memory objects (step 6).  i.e.,
+allocate buffers (regions) in the global memory for the kernels to
+use. There are two main ways to allocate global memory buffers:</p>
+<ul>
+<li><p><strong>Allocation by XRT</strong>:</p>
+<p>This is the method employed in the vector addition example in <a class="reference internal" href="ocl_prog.html#sec-ocl-steps"><span class="std std-numref">Section 6.2</span></a>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Step 6: First part</span>
+<span class="c1">// These commands will allocate memory on the Device. The cl::Buffer objects can</span>
+<span class="c1">// be used to reference the memory locations on the device.</span>
+<span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">Buffer</span><span class="w"> </span><span class="n">buffer_a</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">CL_MEM_ALLOC_HOST_PTR</span><span class="o">|</span><span class="n">CL_MEM_READ_ONLY</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="n">size_in_bytes</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
+<span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">Buffer</span><span class="w"> </span><span class="n">buffer_b</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">CL_MEM_ALLOC_HOST_PTR</span><span class="o">|</span><span class="n">CL_MEM_READ_ONLY</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="n">size_in_bytes</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
+<span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">Buffer</span><span class="w"> </span><span class="n">buffer_result</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">CL_MEM_ALLOC_HOST_PTR</span><span class="o">|</span><span class="n">CL_MEM_WRITE_ONLY</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="n">size_in_bytes</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
+
+<span class="p">...</span>
+
+<span class="c1">// Step 6: Second part</span>
+<span class="c1">// We then need to map our OpenCL buffers to get the pointers</span>
+<span class="kt">int</span><span class="o">*</span><span class="w"> </span><span class="n">ptr_a</span><span class="p">;</span>
+<span class="kt">int</span><span class="o">*</span><span class="w"> </span><span class="n">ptr_b</span><span class="p">;</span>
+<span class="kt">int</span><span class="o">*</span><span class="w"> </span><span class="n">ptr_result</span><span class="p">;</span>
+<span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">ptr_a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">q</span><span class="p">.</span><span class="n">enqueueMapBuffer</span><span class="p">(</span><span class="n">buffer_a</span><span class="p">,</span>
+<span class="w">  </span><span class="n">CL_TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">CL_MAP_WRITE</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">size_in_bytes</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
+<span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">ptr_b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">q</span><span class="p">.</span><span class="n">enqueueMapBuffer</span><span class="p">(</span><span class="n">buffer_b</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="n">CL_TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">CL_MAP_WRITE</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">size_in_bytes</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
+<span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">ptr_result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">q</span><span class="p">.</span><span class="n">enqueueMapBuffer</span><span class="p">(</span><span class="n">buffer_result</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="n">CL_TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">CL_MAP_READ</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">size_in_bytes</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>First, instantiate a <code class="docutils literal notranslate"><span class="pre">cl::Buffer</span></code> memory object using the
+<code class="docutils literal notranslate"><span class="pre">CL_MEM_ALLOC_HOST_PTR</span></code> flag to let XRT allocate the buffer
+in the global memory and the corresponding region in the host
+memory that is mapped to the global memory buffer, taking
+care of all alignment requirements.</p></li>
+<li><p>Then, put an <code class="docutils literal notranslate"><span class="pre">enqueueMapBuffer</span></code> command to the command queue
+to obtain the handle (pointer) to the mapped region in the
+host memory.</p></li>
+<li><p>In the example above, <code class="docutils literal notranslate"><span class="pre">buffer_a</span></code>, <code class="docutils literal notranslate"><span class="pre">buffer_b</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">buffer_result</span></code> are pointers to the respective buffers in the
+global memory while <code class="docutils literal notranslate"><span class="pre">ptr_a</span></code>, <code class="docutils literal notranslate"><span class="pre">ptr_b</span></code>, and <code class="docutils literal notranslate"><span class="pre">ptr_result</span></code> are
+pointers to the corresponding mapped regions in the host
+memory.</p></li>
+</ul>
+</li>
+<li><p><strong>Allocation by host</strong>:</p>
+<p>This method can be explained using this
+<a class="reference external" href="https://github.com/Xilinx/Vitis_Accel_Examples/blob/2023.1/host/device_only_buffer/src/host.cpp">example</a>
+from the <a class="reference external" href="https://github.com/Xilinx/Vitis_Accel_Examples/tree/2023.1">Vitis repository</a>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Use this allocator if user wish to create Buffer/Memory Object with </span>
+<span class="c1">// CL_MEM_USE_HOST_PTR to align user buffer to the page boundary. </span>
+<span class="c1">// It will ensure that user buffer will be used when user create</span>
+<span class="c1">// Buffer/Mem Object with CL_MEM_USE_HOST_PTR.</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">aligned_allocator</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">value_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">T</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">aligned_allocator</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">  </span><span class="n">aligned_allocator</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">aligned_allocator</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">U</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">aligned_allocator</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">aligned_allocator</span><span class="o">&lt;</span><span class="n">U</span><span class="o">&gt;&amp;</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">  </span><span class="n">T</span><span class="o">*</span><span class="w"> </span><span class="n">allocate</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">posix_memalign</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ptr</span><span class="p">,</span><span class="w"> </span><span class="mi">4096</span><span class="p">,</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">T</span><span class="p">)))</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">bad_alloc</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">T</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">ptr</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">deallocate</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">free</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="w">    </span>
+<span class="c1">// allocate memory on host for input and output matrices</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">aligned_allocator</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="n">array_size</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">aligned_allocator</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">B</span><span class="p">(</span><span class="n">array_size</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">aligned_allocator</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">C</span><span class="p">(</span><span class="n">array_size</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">aligned_allocator</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">hw_results</span><span class="p">(</span><span class="n">array_size</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+
+<span class="p">...</span>
+
+<span class="c1">// Allocate Buffer in Global Memory</span>
+<span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">Buffer</span><span class="w"> </span><span class="n">buffer_a</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">CL_MEM_USE_HOST_PTR</span><span class="o">|</span><span class="n">CL_MEM_READ_ONLY</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="n">size_in_bytes</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
+<span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">Buffer</span><span class="w"> </span><span class="n">buffer_b</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">CL_MEM_USE_HOST_PTR</span><span class="o">|</span><span class="n">CL_MEM_READ_ONLY</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="n">size_in_bytes</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
+<span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">Buffer</span><span class="w"> </span><span class="n">buffer_c</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">CL_MEM_USE_HOST_PTR</span><span class="o">|</span><span class="n">CL_MEM_READ_ONLY</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="n">size_in_bytes</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
+<span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">Buffer</span><span class="w"> </span><span class="n">buffer_d</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">CL_MEM_USE_HOST_PTR</span><span class="o">|</span><span class="n">CL_MEM_WRITE_ONLY</span><span class="p">,</span>
+<span class="w">  </span><span class="n">size_in_bytes</span><span class="p">,</span><span class="w"> </span><span class="n">hw_results</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>First, instantiate a buffer in the host memory with page
+alignment (e.g., use the <code class="docutils literal notranslate"><span class="pre">align</span> <span class="pre">allocator</span></code> template as shown
+above).</p></li>
+<li><p>Then, instantiate a <code class="docutils literal notranslate"><span class="pre">cl::Buffer</span></code> memory object using the
+<code class="docutils literal notranslate"><span class="pre">CL_MEM_USE_HOST_PTR</span></code> flag to tell XRT to allocate the buffer
+in the global memory and map provided host pointer to the
+global memory buffer.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -475,6 +605,20 @@ units in the PL.</p></li>
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-transfer">6.3.1. Data Transfer</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

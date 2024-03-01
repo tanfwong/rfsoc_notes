@@ -141,9 +141,12 @@
     // Step 6: First part
     // These commands will allocate memory on the Device. The cl::Buffer objects can
     // be used to reference the memory locations on the device.
-    OCL_CHECK(err, cl::Buffer buffer_a(context, CL_MEM_READ_ONLY, size_in_bytes, NULL, &err));
-    OCL_CHECK(err, cl::Buffer buffer_b(context, CL_MEM_READ_ONLY, size_in_bytes, NULL, &err));
-    OCL_CHECK(err, cl::Buffer buffer_result(context, CL_MEM_WRITE_ONLY, size_in_bytes, NULL, &err));
+    OCL_CHECK(err, cl::Buffer buffer_a(context, CL_MEM_ALLOC_HOST_PTR|CL_MEM_READ_ONLY, 
+      size_in_bytes, NULL, &err));
+    OCL_CHECK(err, cl::Buffer buffer_b(context, CL_MEM_ALLOC_HOST_PTR|CL_MEM_READ_ONLY, 
+      size_in_bytes, NULL, &err));
+    OCL_CHECK(err, cl::Buffer buffer_result(context, CL_MEM_ALLOC_HOST_PTR|CL_MEM_WRITE_ONLY, 
+      size_in_bytes, NULL, &err));
 
     // Step 5:
     // Select kernels to execute and set the kernel Arguments
@@ -159,12 +162,12 @@
     int* ptr_a;
     int* ptr_b;
     int* ptr_result;
-    OCL_CHECK(err,
-              ptr_a = (int*)q.enqueueMapBuffer(buffer_a, CL_TRUE, CL_MAP_WRITE, 0, size_in_bytes, NULL, NULL, &err));
-    OCL_CHECK(err,
-              ptr_b = (int*)q.enqueueMapBuffer(buffer_b, CL_TRUE, CL_MAP_WRITE, 0, size_in_bytes, NULL, NULL, &err));
-    OCL_CHECK(err, ptr_result = (int*)q.enqueueMapBuffer(buffer_result, CL_TRUE, CL_MAP_READ, 0, size_in_bytes, NULL,
-                                                         NULL, &err));
+    OCL_CHECK(err, ptr_a = (int*) q.enqueueMapBuffer(buffer_a, 
+      CL_TRUE, CL_MAP_WRITE, 0, size_in_bytes, NULL, NULL, &err));
+    OCL_CHECK(err, ptr_b = (int*) q.enqueueMapBuffer(buffer_b, 
+      CL_TRUE, CL_MAP_WRITE, 0, size_in_bytes, NULL, NULL, &err));
+    OCL_CHECK(err, ptr_result = (int*) q.enqueueMapBuffer(buffer_result, 
+      CL_TRUE, CL_MAP_READ, 0, size_in_bytes, NULL, NULL, &err));
 
     // Initialize the vectors used in the test
     for (int i = 0; i < DATA_SIZE; i++) {
