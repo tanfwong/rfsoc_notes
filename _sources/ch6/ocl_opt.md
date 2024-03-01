@@ -137,3 +137,27 @@
         `CL_MEM_USE_HOST_PTR` flag to tell XRT to allocate the buffer
         in the global memory and map provided host pointer to the
         global memory buffer.
+
+* After the memory objects are created, we can transfer data between
+  the host and global memory by putting `enqueueMigrateMemObjects`
+  commands in the command queue to synchronize the contents of the
+  mapped buffers in the host and global memory as done in the example
+  in {numref}`sec:ocl_steps`:
+  ```c++
+  // Step 7: Transfer data from host to kernel 
+  OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_a, buffer_b}, 0 
+    /* 0 means from host*/));
+
+  ... 
+  
+  // Step 9:
+  // The result of the previous kernel execution will need to be retrieved in
+  // order to view the results. This call will transfer the data from FPGA to
+  // source_results vector
+  OCL_CHECK(err, q.enqueueMigrateMemObjects({buffer_result}, 
+    CL_MIGRATE_MEM_OBJECT_HOST));
+  ```
+    - The flag `CL_MIGRATE_MEM_OBJECT_HOST` indicates the direction of
+      migration is from global memory to host memory. If the flag
+      value is `0`, then the default direction of migration is from
+      host memory to global memory.
