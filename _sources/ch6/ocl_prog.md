@@ -1,3 +1,4 @@
+(sec:ocl_steps)=
 # OpenCL Steps
 
 * Under the VAAD flow, an application program running on the PS host
