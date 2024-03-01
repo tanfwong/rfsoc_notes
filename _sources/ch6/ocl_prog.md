@@ -60,9 +60,6 @@
     // Compute the size of array in bytes
     size_t size_in_bytes = DATA_SIZE * sizeof(int);
 
-    // Creates a vector of DATA_SIZE elements with an initial value of 10 and 32
-    // using customized allocator for getting buffer alignment to 4k boundary
-
     std::vector<cl::Device> devices;
     cl_int err;
     cl::Context context;
@@ -116,13 +113,13 @@
     for (unsigned int i = 0; i < devices.size(); i++) {
       auto device = devices[i];
       // Step 2:
-      // Creating Context for selected Device
+      // Creat Context for selected Device
       OCL_CHECK(err, context = cl::Context(device, nullptr, nullptr, nullptr, &err));
       // Step 3:
-      // Creating Command Queue for selected Device
+      // Creat Command Queue for selected Device
       OCL_CHECK(err, q = cl::CommandQueue(context, device, CL_QUEUE_PROFILING_ENABLE, &err));
       // Step 4:
-      // Creating a Program and load PL bit-stream to selected Device
+      // Creat Program and load PL bit-stream to selected Device
       std::cout << "Trying to program device[" << i << "]: " << device.getInfo<CL_DEVICE_NAME>() << std::endl;
       cl::Program program(context, {device}, bins, nullptr, &err);
       if (err != CL_SUCCESS) {
@@ -208,4 +205,80 @@
     std::cout << "TEST " << (match ? "FAILED" : "PASSED") << std::endl;
     return (match ? EXIT_FAILURE : EXIT_SUCCESS);
   }
+  ```
+  - Detailed usage information of the OpenCL APIs used in the example
+     code above can be found in {cite}`opencl1.2`
+
+* The PL kernel code for this example is shown below for reference:
+  ```c++
+  #include <stdint.h>
+  #include <hls_stream.h>
+
+  #define DATA_SIZE 4096
+
+  // TRIPCOUNT identifier
+  const int c_size = DATA_SIZE;
+
+  static void load_input(uint32_t* in, hls::stream<uint32_t>& inStream, int size) {
+    mem_rd: for (int i = 0; i < size; i++) {
+  #pragma HLS LOOP_TRIPCOUNT min = c_size max = c_size
+      inStream << in[i];
+    }
+  }
+
+  static void compute_add(hls::stream<uint32_t>& in1_stream,
+                          hls::stream<uint32_t>& in2_stream,
+                          hls::stream<uint32_t>& out_stream,
+                          int size) {
+  // The kernel is operating with vector of NUM_WORDS integers. The + operator performs
+  // an element-wise add, resulting in NUM_WORDS parallel additions.
+  execute:
+    for (int i = 0; i < size; i++) {
+  #pragma HLS LOOP_TRIPCOUNT min = c_size max = c_size
+      out_stream << (in1_stream.read() + in2_stream.read());
+    }
+  }
+
+  static void store_result(uint32_t* out, hls::stream<uint32_t>& out_stream, int size) {
+    mem_wr: for (int i = 0; i < size; i++) {
+  #pragma HLS LOOP_TRIPCOUNT min = c_size max = c_size
+      out[i] = out_stream.read();
+    }
+  }
+
+  extern "C" {
+  /*
+    Vector Addition Kernel
+
+    Arguments:
+        in1  (input)  --> Input vector 1
+        in2  (input)  --> Input vector 2
+        out  (output) --> Output vector
+        size (input)  --> Number of elements in vector
+  */
+
+  void krnl_vadd(uint32_t* in1, uint32_t* in2, uint32_t* out, int size) {
+  #pragma HLS INTERFACE m_axi port = in1 bundle = gmem0
+  #pragma HLS INTERFACE m_axi port = in2 bundle = gmem1
+  #pragma HLS INTERFACE m_axi port = out bundle = gmem0
+
+    static hls::stream<uint32_t> in1_stream("input_stream_1");
+    static hls::stream<uint32_t> in2_stream("input_stream_2");
+    static hls::stream<uint32_t> out_stream("output_stream");
+
+  #pragma HLS dataflow
+    // dataflow pragma instruct compiler to run following three APIs in parallel
+    load_input(in1, in1_stream, size);
+    load_input(in2, in2_stream, size);
+    compute_add(in1_stream, in2_stream, out_stream, size);
+    store_result(out, out_stream, size);
+  }
+  }
+  ```
+  ```{tip}
+  In order for Vitis to properly build both the host code and kernel
+  code in a system project, the top-level function of the kernel must
+  be wrapped with the `extern "C"` linkage as shown in the example
+  above. This is to avoid the Vitis' C++ compiler from adding argument
+  information to the name of the top-level function used for linkage.
   ```

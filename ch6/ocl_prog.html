@@ -64,7 +64,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="7. References" href="../refs.html" />
+    <link rel="next" title="6.3. OpenCL Optimization" href="ocl_opt.html" />
     <link rel="prev" title="6.1. OpenCL Basics" href="opencl.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
@@ -190,6 +190,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="host.html">6. Host Programming</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="opencl.html">6.1. OpenCL Basics</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">6.2. OpenCL Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ocl_opt.html">6.3. OpenCL Optimization</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">7. References</a></li>
@@ -451,9 +452,6 @@ used in Lab 1:</p>
 <span class="w">  </span><span class="c1">// Compute the size of array in bytes</span>
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size_in_bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DATA_SIZE</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">// Creates a vector of DATA_SIZE elements with an initial value of 10 and 32</span>
-<span class="w">  </span><span class="c1">// using customized allocator for getting buffer alignment to 4k boundary</span>
-
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">cl</span><span class="o">::</span><span class="n">Device</span><span class="o">&gt;</span><span class="w"> </span><span class="n">devices</span><span class="p">;</span>
 <span class="w">  </span><span class="n">cl_int</span><span class="w"> </span><span class="n">err</span><span class="p">;</span>
 <span class="w">  </span><span class="n">cl</span><span class="o">::</span><span class="n">Context</span><span class="w"> </span><span class="n">context</span><span class="p">;</span>
@@ -507,13 +505,13 @@ used in Lab 1:</p>
 <span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">devices</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">devices</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
 <span class="w">    </span><span class="c1">// Step 2:</span>
-<span class="w">    </span><span class="c1">// Creating Context for selected Device</span>
+<span class="w">    </span><span class="c1">// Creat Context for selected Device</span>
 <span class="w">    </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">Context</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
 <span class="w">    </span><span class="c1">// Step 3:</span>
-<span class="w">    </span><span class="c1">// Creating Command Queue for selected Device</span>
+<span class="w">    </span><span class="c1">// Creat Command Queue for selected Device</span>
 <span class="w">    </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">CommandQueue</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="n">CL_QUEUE_PROFILING_ENABLE</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
 <span class="w">    </span><span class="c1">// Step 4:</span>
-<span class="w">    </span><span class="c1">// Creating a Program and load PL bit-stream to selected Device</span>
+<span class="w">    </span><span class="c1">// Creat Program and load PL bit-stream to selected Device</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Trying to program device[&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;]: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">device</span><span class="p">.</span><span class="n">getInfo</span><span class="o">&lt;</span><span class="n">CL_DEVICE_NAME</span><span class="o">&gt;</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 <span class="w">    </span><span class="n">cl</span><span class="o">::</span><span class="n">Program</span><span class="w"> </span><span class="n">program</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">device</span><span class="p">},</span><span class="w"> </span><span class="n">bins</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">);</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">CL_SUCCESS</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -601,6 +599,85 @@ used in Lab 1:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
+<ul class="simple">
+<li><p>Detailed usage information of the OpenCL APIs used in the example
+code above can be found in <span id="id1">[<a class="reference internal" href="../refs.html#id15" title="The OpenCL Specification. Khronos OpenCL Working Group, Nov. 2012. v1.2. URL: https://registry.khronos.org/OpenCL/specs/opencl-1.2.pdf.">Khronos OpenCL Working Group12</a>]</span></p></li>
+</ul>
+</li>
+<li><p>The PL kernel code for this example is shown below for reference:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdint.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;hls_stream.h&gt;</span>
+
+<span class="cp">#define DATA_SIZE 4096</span>
+
+<span class="c1">// TRIPCOUNT identifier</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">c_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DATA_SIZE</span><span class="p">;</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">load_input</span><span class="p">(</span><span class="kt">uint32_t</span><span class="o">*</span><span class="w"> </span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">inStream</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">size</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nl">mem_rd</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">size</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS LOOP_TRIPCOUNT min = c_size max = c_size</span>
+<span class="w">    </span><span class="n">inStream</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">compute_add</span><span class="p">(</span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">in1_stream</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">in2_stream</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">out_stream</span><span class="p">,</span>
+<span class="w">                        </span><span class="kt">int</span><span class="w"> </span><span class="n">size</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="c1">// The kernel is operating with vector of NUM_WORDS integers. The + operator performs</span>
+<span class="c1">// an element-wise add, resulting in NUM_WORDS parallel additions.</span>
+<span class="nl">execute</span><span class="p">:</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">size</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS LOOP_TRIPCOUNT min = c_size max = c_size</span>
+<span class="w">    </span><span class="n">out_stream</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">in1_stream</span><span class="p">.</span><span class="n">read</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">in2_stream</span><span class="p">.</span><span class="n">read</span><span class="p">());</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">store_result</span><span class="p">(</span><span class="kt">uint32_t</span><span class="o">*</span><span class="w"> </span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">out_stream</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">size</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nl">mem_wr</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">size</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS LOOP_TRIPCOUNT min = c_size max = c_size</span>
+<span class="w">    </span><span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">out_stream</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="cm">/*</span>
+<span class="cm">  Vector Addition Kernel</span>
+
+<span class="cm">  Arguments:</span>
+<span class="cm">      in1  (input)  --&gt; Input vector 1</span>
+<span class="cm">      in2  (input)  --&gt; Input vector 2</span>
+<span class="cm">      out  (output) --&gt; Output vector</span>
+<span class="cm">      size (input)  --&gt; Number of elements in vector</span>
+<span class="cm">*/</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">krnl_vadd</span><span class="p">(</span><span class="kt">uint32_t</span><span class="o">*</span><span class="w"> </span><span class="n">in1</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="o">*</span><span class="w"> </span><span class="n">in2</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="o">*</span><span class="w"> </span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">size</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS INTERFACE m_axi port = in1 bundle = gmem0</span>
+<span class="cp">#pragma HLS INTERFACE m_axi port = in2 bundle = gmem1</span>
+<span class="cp">#pragma HLS INTERFACE m_axi port = out bundle = gmem0</span>
+
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">in1_stream</span><span class="p">(</span><span class="s">&quot;input_stream_1&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">in2_stream</span><span class="p">(</span><span class="s">&quot;input_stream_2&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">out_stream</span><span class="p">(</span><span class="s">&quot;output_stream&quot;</span><span class="p">);</span>
+
+<span class="cp">#pragma HLS dataflow</span>
+<span class="w">  </span><span class="c1">// dataflow pragma instruct compiler to run following three APIs in parallel</span>
+<span class="w">  </span><span class="n">load_input</span><span class="p">(</span><span class="n">in1</span><span class="p">,</span><span class="w"> </span><span class="n">in1_stream</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+<span class="w">  </span><span class="n">load_input</span><span class="p">(</span><span class="n">in2</span><span class="p">,</span><span class="w"> </span><span class="n">in2_stream</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+<span class="w">  </span><span class="n">compute_add</span><span class="p">(</span><span class="n">in1_stream</span><span class="p">,</span><span class="w"> </span><span class="n">in2_stream</span><span class="p">,</span><span class="w"> </span><span class="n">out_stream</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+<span class="w">  </span><span class="n">store_result</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">out_stream</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>In order for Vitis to properly build both the host code and kernel
+code in a system project, the top-level function of the kernel must
+be wrapped with the <code class="docutils literal notranslate"><span class="pre">extern</span> <span class="pre">&quot;C&quot;</span></code> linkage as shown in the example
+above. This is to avoid the Vitis’ C++ compiler from adding argument
+information to the name of the top-level function used for linkage.</p>
+</div>
 </li>
 </ul>
 </section>
@@ -646,11 +723,11 @@ used in Lab 1:</p>
       </div>
     </a>
     <a class="right-next"
-       href="../refs.html"
+       href="ocl_opt.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">7. </span>References</p>
+        <p class="prev-next-title"><span class="section-number">6.3. </span>OpenCL Optimization</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

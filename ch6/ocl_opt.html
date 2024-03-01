@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>6.1. OpenCL Basics &#8212; Real-time DSP Notes</title>
+    <title>6.3. OpenCL Optimization &#8212; Real-time DSP Notes</title>
   
   
   
@@ -60,12 +60,12 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'ch6/opencl';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ch6/ocl_opt';</script>
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="6.2. OpenCL Steps" href="ocl_prog.html" />
-    <link rel="prev" title="6. Host Programming" href="host.html" />
+    <link rel="next" title="7. References" href="../refs.html" />
+    <link rel="prev" title="6.2. OpenCL Steps" href="ocl_prog.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
   </head>
@@ -188,9 +188,9 @@ const thebe_selector_output = ".output, .cell_output"
 </ul>
 </li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="host.html">6. Host Programming</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">6.1. OpenCL Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="opencl.html">6.1. OpenCL Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ocl_prog.html">6.2. OpenCL Steps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ocl_opt.html">6.3. OpenCL Optimization</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">6.3. OpenCL Optimization</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">7. References</a></li>
@@ -265,7 +265,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Fch6/opencl.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Fch6/ocl_opt.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -295,7 +295,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../_sources/ch6/opencl.md" target="_blank"
+      <li><a href="../_sources/ch6/ocl_opt.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -364,9 +364,7 @@ document.write(`
   </button>
 `);
 </script>
-<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</label>
+
 </div></div>
       
     </div>
@@ -377,21 +375,11 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>OpenCL Basics</h1>
+    <h1>OpenCL Optimization</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
-            <div>
-                <h2> Contents </h2>
-            </div>
-            <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#platform-model">6.1.1. Platform Model</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#memory-model">6.1.2. Memory Model</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#execution-model">6.1.3. Execution Model</a></li>
-</ul>
-            </nav>
         </div>
     </div>
 </div>
@@ -401,162 +389,8 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="opencl-basics">
-<h1><span class="section-number">6.1. </span>OpenCL Basics<a class="headerlink" href="#opencl-basics" title="Permalink to this headline">#</a></h1>
-<p><a class="reference external" href="https://github.com/KhronosGroup/OpenCL-Guide/blob/main/README.md">OpenCL</a>,
-which stands for Open Computing Language, is an industrial standard to
-support cross-platform parallel programming in computing systems with
-hetergeneous compute resources, such as CPUs, GPUs, FPGAs, dsps, and
-TPUs</p>
-<section id="platform-model">
-<h2><span class="section-number">6.1.1. </span>Platform Model<a class="headerlink" href="#platform-model" title="Permalink to this headline">#</a></h2>
-<ul>
-<li><p>The OpenCL <em>platform model</em> describes how the compute resources in a
-system are topologically connected. The OpenCL platform
-model is shown in the following figure:</p>
-<figure class="align-center" id="opencl-platform">
-<a class="reference internal image-reference" href="../_images/opencl_platform.jpg"><img alt="OpenCL Platform Model" src="../_images/opencl_platform.jpg" style="width: 800px;" /></a>
-<figcaption>
-<p><span class="caption-number">Fig. 6.1 </span><span class="caption-text">OpenCL Platform Model (figure taken from
-<a class="reference external" href="https://github.com/KhronosGroup/OpenCL-Guide/blob/main/images/platform_model.jpg">here</a>)</span><a class="headerlink" href="#opencl-platform" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
-<ul class="simple">
-<li><p>A <em>host</em> (usually a CPU) is connected to one or more <em>compute
-devices</em> (CPUs, GPUs, FPGAs, dsps, TPUs), each of which is in a
-collection of one or more <em>compute units</em>. Each compute unit may
-in turn consists of one or more <em>processing elements</em>.</p></li>
-<li><p>The host controls the compute devices whose compute units may
-perform computing tasks in parallel.</p></li>
-<li><p>Correspondingly in our case, we may regard the XCZU48DR RFSoC
-device as our <em>platform</em>, in which the ARM Cortex-A53 APU is the
-<em>host</em> and the PL is a <em>compute device</em>. The DSP kernels in the PL
-are <em>compute units</em>, each of which is composed of the tasks in the
-data flow graph that defines the kernel serving as <em>processing
-elements</em>.</p></li>
-</ul>
-</li>
-<li><p>OpenCL provides a programming framework for us to develop programs
-that run on the host as well as the compute devices. In particular,
-the OpenCL framework contains three layers of APIs:</p>
-<ul class="simple">
-<li><p>The <em>platform-layer APIs</em> support an application program that runs
-on the host to discover the platform architecture, and to set up,
-configure, and initialize the compute devices in the platform.</p></li>
-<li><p>The <em>kernel compiler</em> generates <em>kernel programs</em> that run on the
-compute devices.</p></li>
-<li><p>The <em>runtime APIs</em> support the application program that runs on
-the host to transfer kernel programs and data to the compute units
-in the compute devices, execute the kernel programs to perform
-computing tasks in the compute units, and transfer results back
-from the compute devices back to the host.</p></li>
-</ul>
-</li>
-<li><p>As discussed in <a class="reference internal" href="../ch1/workflow.html#sec-vaad"><span class="std std-numref">Section 1.3</span></a>, we will use Vitis HLS to develop
-kernel programs in C/C++. Thus, we will not use the kernel compiler
-that supports that purpose. However, we will use both the
-platform-layer and runtime APIs in the host program to set up the
-OpenCL platform, control the DSP kernels, and execute the DSP
-computing task in the kernels.</p></li>
-</ul>
-</section>
-<section id="memory-model">
-<h2><span class="section-number">6.1.2. </span>Memory Model<a class="headerlink" href="#memory-model" title="Permalink to this headline">#</a></h2>
-<ul>
-<li><p>The OpenCL <em>memory model</em> describes how different memory resources
-in the system are connected to the various components in the OpenCl
-platform. The OpenCL memory model is shown in the following
-figure:</p>
-<figure class="align-center" id="opencl-memory">
-<a class="reference internal image-reference" href="../_images/opencl_memory.jpg"><img alt="OpenCL Memory Model" src="../_images/opencl_memory.jpg" style="width: 800px;" /></a>
-<figcaption>
-<p><span class="caption-number">Fig. 6.2 </span><span class="caption-text">OpenCL Memory Model (figure taken from
-<a class="reference external" href="https://github.com/KhronosGroup/OpenCL-Guide/blob/main/images/memory_model.jpg">here</a>)</span><a class="headerlink" href="#opencl-memory" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
-<ul class="simple">
-<li><p><strong>Host memory</strong>: accessible only to the host</p></li>
-<li><p><strong>Global memory</strong>: accessible to all compute units in a compute
-device</p></li>
-<li><p><strong>Local memory</strong>: available only within in a compute unit</p></li>
-<li><p><strong>Private memory</strong>: available only to a single processing element</p></li>
-</ul>
-</li>
-<li><p>Again, mapping this memory model back to our case (see <a class="reference internal" href="../ch1/rfsoc4x2.html#sec-hardware"><span class="std std-numref">Section 1.1</span></a>):</p>
-<ul class="simple">
-<li><p>The DDR4 bank connected to the PS is the host memory.</p></li>
-<li><p>The DDR4 back connected to the PL is the global memory.</p></li>
-<li><p>Local memory includes all memory resources within a DSP kernel
-generated for global variables, variables in the top-level
-function,  and streaming buffers.</p></li>
-<li><p>Private memory includes all memory resources generated within a
-task function.</p></li>
-</ul>
-</li>
-<li><p>Memory management in OpenCL is explicit. That is, the host
-application program and kernel programs must explicitly moves data
-between the different types of memory types above. In particular,
-the host program is expected to employ the OpenCL runtime APIs to
-move data between the host and global memory to implement data
-transfer between the host and a compute device.</p></li>
-</ul>
-</section>
-<section id="execution-model">
-<h2><span class="section-number">6.1.3. </span>Execution Model<a class="headerlink" href="#execution-model" title="Permalink to this headline">#</a></h2>
-<ul>
-<li><p>The OpenCL <em>execution model</em> describes how computing tasks are
-executed in the different compute devices in the OpenCl
-platform. The typial OpenCL execution model is shown in the following
-figure:</p>
-<figure class="align-center" id="opencl-execution">
-<a class="reference internal image-reference" href="../_images/opencl_execution.jpg"><img alt="OpenCL Execution Model" src="../_images/opencl_execution.jpg" style="width: 800px;" /></a>
-<figcaption>
-<p><span class="caption-number">Fig. 6.3 </span><span class="caption-text">OpenCL Execution Model (figure taken from
-<a class="reference external" href="https://github.com/KhronosGroup/OpenCL-Guide/blob/main/images/executing_programs.jpg">here</a>)</span><a class="headerlink" href="#opencl-execution" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
-</li>
-<li><p>To execute computing tasks in a platform, we must first create a
-<strong>context</strong>, which includes a set of compute devices, the memory
-objects accessible to those compute devices, and one or more command
-queues that are used to schedule execution of kernel programs and
-operations on memory objects. In essence, the context is an
-environment within which the kernel programs execute and memory
-management and synchronization are performed.</p></li>
-<li><p>A <strong>kernel program</strong> executes on a compute device. This corresponds
-to the kernel code of our DSP kernel. Multiple instances of the same
-kernel program can be implemented in the PL forming individual
-compute units. We will slightly carelessly use the term <strong>kernel</strong>
-to refer to both the kernel code and the compute unit that is
-implemented in the PL. An OpenCL <strong>program</strong> is a collection of
-kernels.  A <strong>memory object</strong> is a handle to a region of the global
-memory.</p></li>
-<li><p>A <strong>command queue</strong> holds commands that will be executed on a
-specific compute device.  The host places commands into the command queue to
-schedule their execution. There are three types of commands:</p>
-<ul class="simple">
-<li><p>A <strong>kernel execution command</strong> executes a kernel on a compute unit
-of a compute device.</p></li>
-<li><p>A <strong>memory command</strong> transfers data to, from, or between memory
-objects, or map and unmap memory objects from the host’s address space.</p></li>
-<li><p>A <strong>synchronization command</strong> constrains the order of execution of
-commands.</p></li>
-</ul>
-</li>
-<li><p>Commands in the command queue can be executed in two modes:</p>
-<ul class="simple">
-<li><p><strong>In-order execution</strong>: The commands are executed in the order
-that they are placed into the command queue. A command must complete
-before the next one begins.</p></li>
-<li><p><strong>Out-of-order execution</strong>: Commands are launched in the order,
-but a command can execute without waiting for completion of prior
-commands. Specific ordering constraints on the execution of
-commands can be enforced by explicitly issuing synchronization
-commands.</p></li>
-</ul>
-</li>
-</ul>
-</section>
+  <section class="tex2jax_ignore mathjax_ignore" id="opencl-optimization">
+<h1><span class="section-number">6.3. </span>OpenCL Optimization<a class="headerlink" href="#opencl-optimization" title="Permalink to this headline">#</a></h1>
 </section>
 
     <script type="text/x-thebe-config">
@@ -591,20 +425,20 @@ commands.</p></li>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="host.html"
+       href="ocl_prog.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title"><span class="section-number">6. </span>Host Programming</p>
+        <p class="prev-next-title"><span class="section-number">6.2. </span>OpenCL Steps</p>
       </div>
     </a>
     <a class="right-next"
-       href="ocl_prog.html"
+       href="../refs.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">6.2. </span>OpenCL Steps</p>
+        <p class="prev-next-title"><span class="section-number">7. </span>References</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -617,22 +451,6 @@ commands.</p></li>
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#platform-model">6.1.1. Platform Model</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#memory-model">6.1.2. Memory Model</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#execution-model">6.1.3. Execution Model</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>
