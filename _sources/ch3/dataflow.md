@@ -261,7 +261,10 @@ which are also often referred to as ***channels***.
     PIPOs (while scalar arguments are mapped to FIFOs). In this
     example, users can also choose to map the arrays to FIFOs as they
     are accessed sequentially as shown in the bodies of the task
-    functions.
+    functions. The choice of streaming buffer type can be specified in
+    the configuration file in Vitis HLS (see Lab 2) or by using
+    [`#pragma HLS
+    stream`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-stream).
   - It can be easily check that the dataflow region is specified in
     the canonical form in this example. Instruction-level pipelining
     is also requested by the pipeline pragma in the loop in each task

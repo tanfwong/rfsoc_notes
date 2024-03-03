@@ -669,7 +669,9 @@ independency between tasks <span class="math notranslate nohighlight">\(B\)</spa
 PIPOs (while scalar arguments are mapped to FIFOs). In this
 example, users can also choose to map the arrays to FIFOs as they
 are accessed sequentially as shown in the bodies of the task
-functions.</p></li>
+functions. The choice of streaming buffer type can be specified in
+the configuration file in Vitis HLS (see Lab 2) or by using
+<a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-stream"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">stream</span></code></a>.</p></li>
 <li><p>It can be easily check that the dataflow region is specified in
 the canonical form in this example. Instruction-level pipelining
 is also requested by the pipeline pragma in the loop in each task

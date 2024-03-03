@@ -161,3 +161,42 @@
       migration is from global memory to host memory. If the flag
       value is `0`, then the default direction of migration is from
       host memory to global memory.
+
+## Pipelining Data Transfer and Kernel Execution
+
+* Consider again the vector addition example in
+  {numref}`sec:ocl_steps`, the command queue is set up to operate in
+  the in-order execution mode by default in the code line
+  ```c++
+  OCL_CHECK(err, q = cl::CommandQueue(context, device, CL_QUEUE_PROFILING_ENABLE, &err));
+  ```
+  Under the in-order execution mode, the two writes to `buffer_a` and
+  `buffer_b` from the host memory to the global memory have to
+  complete, one after the other, before the kernel can be
+  executed. In turn, the execution of the kernel has to complete
+  before the result can be migrated from `buffer_result` in the
+  global memory back to the host memory. Thus, if we break down the
+  addition of two long vectors into processing shorter blocks by calling the
+  kernel multiple times in the host application, the following
+  execution timing diagram will result:
+  ```{figure} ../figs/in-order.png
+  ---
+  name: in-order
+  alt: Timing diagram of in-order execution of commands in the command queue
+  width: 800px
+  align: center
+  ---
+  Timing diagram of in-order execution of commands in the command queue (figure taken from
+  {cite}`ug1393`): `Wa0` and `Wb0` stand for writing data from host memory
+  to `buffer_a` and `buffer_b` in global memory, and `Rc0` stands for
+  reading data from `buffer_result` in global memory back to host
+  memory.
+  ```
+  We see from the timing diagram that there are large idling gaps in using
+  the AXI interconnect for data transfer between the host and the
+  kernel as well as large idling gaps in executing the kernel in the
+  PL. These idling gaps are due to the latency of data transfer and
+  that of the kernel. The cause a lower throughput of the overall
+  implementation, despite the kernel implementation may have been
+  optimized. 
+  

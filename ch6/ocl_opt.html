@@ -388,6 +388,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-transfer">6.3.1. Data Transfer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipelining-data-transfer-and-kernel-execution">6.3.2. Pipelining Data Transfer and Kernel Execution</a></li>
 </ul>
             </nav>
         </div>
@@ -571,6 +572,44 @@ host memory to global memory.</p></li>
 </li>
 </ul>
 </section>
+<section id="pipelining-data-transfer-and-kernel-execution">
+<h2><span class="section-number">6.3.2. </span>Pipelining Data Transfer and Kernel Execution<a class="headerlink" href="#pipelining-data-transfer-and-kernel-execution" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>Consider again the vector addition example in
+<a class="reference internal" href="ocl_prog.html#sec-ocl-steps"><span class="std std-numref">Section 6.2</span></a>, the command queue is set up to operate in
+the in-order execution mode by default in the code line</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">CommandQueue</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="n">CL_QUEUE_PROFILING_ENABLE</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>Under the in-order execution mode, the two writes to <code class="docutils literal notranslate"><span class="pre">buffer_a</span></code> and
+<code class="docutils literal notranslate"><span class="pre">buffer_b</span></code> from the host memory to the global memory have to
+complete, one after the other, before the kernel can be
+executed. In turn, the execution of the kernel has to complete
+before the result can be migrated from <code class="docutils literal notranslate"><span class="pre">buffer_result</span></code> in the
+global memory back to the host memory. Thus, if we break down the
+addition of two long vectors into processing shorter blocks by calling the
+kernel multiple times in the host application, the following
+execution timing diagram will result:</p>
+<figure class="align-center" id="in-order">
+<a class="reference internal image-reference" href="../_images/in-order.png"><img alt="Timing diagram of in-order execution of commands in the command queue" src="../_images/in-order.png" style="width: 800px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 6.4 </span><span class="caption-text">Timing diagram of in-order execution of commands in the command queue (figure taken from
+<span id="id1">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23b</a>]</span>): <code class="docutils literal notranslate"><span class="pre">Wa0</span></code> and <code class="docutils literal notranslate"><span class="pre">Wb0</span></code> stand for writing data from host memory
+to <code class="docutils literal notranslate"><span class="pre">buffer_a</span></code> and <code class="docutils literal notranslate"><span class="pre">buffer_b</span></code> in global memory, and <code class="docutils literal notranslate"><span class="pre">Rc0</span></code> stands for
+reading data from <code class="docutils literal notranslate"><span class="pre">buffer_result</span></code> in global memory back to host
+memory.</span><a class="headerlink" href="#in-order" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<p>We see from the timing diagram that there are large idling gaps in using
+the AXI interconnect for data transfer between the host and the
+kernel as well as large idling gaps in executing the kernel in the
+PL. These idling gaps are due to the latency of data transfer and
+that of the kernel. The cause a lower throughput of the overall
+implementation, despite the kernel implementation may have been
+optimized.</p>
+</li>
+</ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -641,6 +680,7 @@ host memory to global memory.</p></li>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-transfer">6.3.1. Data Transfer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipelining-data-transfer-and-kernel-execution">6.3.2. Pipelining Data Transfer and Kernel Execution</a></li>
 </ul>
   </nav></div>
 
