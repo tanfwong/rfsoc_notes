@@ -600,13 +600,25 @@ reading data from <code class="docutils literal notranslate"><span class="pre">b
 memory.</span><a class="headerlink" href="#in-order" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-<p>We see from the timing diagram that there are large idling gaps in using
-the AXI interconnect for data transfer between the host and the
-kernel as well as large idling gaps in executing the kernel in the
-PL. These idling gaps are due to the latency of data transfer and
-that of the kernel. The cause a lower throughput of the overall
-implementation, despite the kernel implementation may have been
-optimized.</p>
+<p>We see from the timing diagram that there are large idling gaps in
+using the AXI interconnect for data transfer between the host and
+the kernel as well as large idling gaps in executing the kernel in
+the PL. These idling gaps are due to the latency of data transfer
+and that of the kernel. They lower the throughput achieved by the
+overall implementation, despite the kernel implementation may have
+been optimized.</p>
+</li>
+<li><p>To increase the throughput of the overall implementation, we can
+overlap the data transfer between the host and the kernel and the
+execution of the kernel across multiple blocks. In order to achieve
+this form of <em>command-level</em> pipelining, we need to:</p>
+<ol class="arabic simple">
+<li><p>make the command queue operate in the out-of-order execution mode,</p></li>
+<li><p>use more buffers, e.g., PIPOs, to store data of multiple blocks, and</p></li>
+<li><p>synchronize the sequence of transfer of data from host to
+global memory, kernel execution, and transfer of results back
+from global to host memory for each block.</p></li>
+</ol>
 </li>
 </ul>
 </section>

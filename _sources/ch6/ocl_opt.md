@@ -192,11 +192,23 @@
   reading data from `buffer_result` in global memory back to host
   memory.
   ```
-  We see from the timing diagram that there are large idling gaps in using
-  the AXI interconnect for data transfer between the host and the
-  kernel as well as large idling gaps in executing the kernel in the
-  PL. These idling gaps are due to the latency of data transfer and
-  that of the kernel. The cause a lower throughput of the overall
-  implementation, despite the kernel implementation may have been
-  optimized. 
+  We see from the timing diagram that there are large idling gaps in
+  using the AXI interconnect for data transfer between the host and
+  the kernel as well as large idling gaps in executing the kernel in
+  the PL. These idling gaps are due to the latency of data transfer
+  and that of the kernel. They lower the throughput achieved by the
+  overall implementation, despite the kernel implementation may have
+  been optimized.
+
+* To increase the throughput of the overall implementation, we can
+  overlap the data transfer between the host and the kernel and the
+  execution of the kernel across multiple blocks. In order to achieve
+  this form of *command-level* pipelining, we need to:
+  1. make the command queue operate in the out-of-order execution mode,
+  2. use more buffers, e.g., PIPOs, to store data of multiple blocks, and
+  3. synchronize the sequence of transfer of data from host to
+     global memory, kernel execution, and transfer of results back
+     from global to host memory for each block.
+ 
+
   
