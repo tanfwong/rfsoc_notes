@@ -211,9 +211,9 @@
      global memory, kernel execution, and transfer of results back
      from global to host memory for each block.
 
-  To see how this is done, consider the
-  [example](https://github.com/Xilinx/Vitis_Accel_Examples/tree/2023.1/host/overlap)
-  from Vitis' repository below:
+  To see how this is done, consider 
+  [this example](https://github.com/Xilinx/Vitis_Accel_Examples/tree/2023.1/host/overlap)
+  from the Vitis repository below:
   ```c++
   #include "xcl2.hpp"
 
@@ -505,7 +505,7 @@
        set_callback(kernel_events[flag], "ooo_queue");
        ```
         where the event `kernel_events[flag]` is associated with this
-        command, and the command should wait for the (one) event
+        command, and the command should wait for the event
         `write_event[0]` in `waitList` to complete before it starts.
      3. The command of transferring results back from the PIPO buffer
         in the global memory is finally issued by
@@ -527,6 +527,238 @@
         ```
         before restarting the sequence of operations.
   
- 
+## Parallel Execution of Kernels
+* Multiple kernels, or compute units generated from the same kernel,
+  with no data dependence can be executed in parallel using either
+  multiple in-order command queues or a single out-of-order command
+  queue.
+  ```{tip}
+  Multiple symmetrical compute units can be generated from the same
+  kernel by setting the connectivity argument `nk` in the configuration
+  file of the kernel. For example, the following lines in the
+  configuration file of the kernel `vadd` tells Vitis to synthesize 4
+  symmetricak compute units of `vadd`:
+  ~~~
+  [connectivity]
+  nk=vadd:4
+  ~~~
+  XRT will use all symmetrical compute units interchangeably. 
+  ```
+* We focus on the use of a single out-of-order command queue to
+  support parallel execution of kernels here by considering the
+  following snippet of host code from  
+  [this example](https://github.com/Xilinx/Vitis_Accel_Examples/tree/2023.1/host/concurrent_kernel_execution)
+  in the Vitis repository:
+  ```c++
+  void out_of_order_queue(cl::Context& context,
+                          cl::Device& device,
+                          cl::Kernel& kernel_mscale,
+                          cl::Kernel& kernel_madd,
+                          cl::Kernel& kernel_mmult,
+                          cl::Buffer& buffer_a,
+                          cl::Buffer& buffer_a1,
+                          cl::Buffer& buffer_b,
+                          cl::Buffer& buffer_c,
+                          cl::Buffer& buffer_d,
+                          cl::Buffer& buffer_e,
+                          cl::Buffer& buffer_f,
+                          size_t size_in_bytes) {
+    cl_int err;
+    vector<cl::Event> ooo_events(6);
+    vector<cl::Event> kernel_wait_events;
 
-  
+    // We are creating an out of order queue here.
+    OCL_CHECK(err, cl::CommandQueue ooo_queue(context, device, 
+      CL_QUEUE_PROFILING_ENABLE|CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &err));
+
+    // Clear values in the result buffers
+    {
+      int zero = 0;
+      int one = 1;
+      vector<cl::Event> fill_events(3);
+      OCL_CHECK(err, err = ooo_queue.enqueueFillBuffer(buffer_a, one, 0, 
+        size_in_bytes, nullptr, &fill_events[0]));
+      OCL_CHECK(err, err = ooo_queue.enqueueFillBuffer(buffer_c, zero, 0, 
+        size_in_bytes, nullptr, &fill_events[1]));
+      OCL_CHECK(err, err = ooo_queue.enqueueFillBuffer(buffer_f, zero, 0, 
+        size_in_bytes, nullptr, &fill_events[2]));
+      OCL_CHECK(err, err = cl::Event::waitForEvents(fill_events));
+    }
+
+    // copy the input arrays to input memory allocated on the accelerator
+    // devices
+    const int matrix_scale_factor = 2;
+    OCL_CHECK(err, err = kernel_mscale.setArg(0, buffer_a));
+    OCL_CHECK(err, err = kernel_mscale.setArg(1, matrix_scale_factor));
+    OCL_CHECK(err, err = kernel_mscale.setArg(2, MAT_DIM0));
+    OCL_CHECK(err, err = kernel_mscale.setArg(3, MAT_DIM1));
+
+    printf("[OOO Queue]: Enqueueing scale kernel\n");
+    OCL_CHECK(err, err = ooo_queue.enqueueNDRangeKernel(kernel_mscale, 
+      offset, global, local, nullptr, &ooo_events[0]));
+    set_callback(ooo_events[0], "scale");
+
+    // set OpenCL kernel parameters to add scaled matrix A and matrix B
+    OCL_CHECK(err, err = kernel_madd.setArg(0, buffer_c));
+    OCL_CHECK(err, err = kernel_madd.setArg(1, buffer_a1));
+    OCL_CHECK(err, err = kernel_madd.setArg(2, buffer_b));
+    OCL_CHECK(err, err = kernel_madd.setArg(3, MAT_DIM0));
+    OCL_CHECK(err, err = kernel_madd.setArg(4, MAT_DIM1));
+
+    // This is an out of order queue, events can be executed in any order. Since
+    // this call depends on the results of the previous call we must pass the
+    // event object from the previous call to this kernel's event wait list.
+    printf("[OOO Queue]: Enqueueing addition kernel (Depends on scale)\n");
+
+    kernel_wait_events.resize(0);
+    kernel_wait_events.push_back(ooo_events[0]);
+    OCL_CHECK(err, 
+      err = ooo_queue.enqueueNDRangeKernel(kernel_madd, offset, global, local,
+                                           &kernel_wait_events, // Event from previous call
+                                           &ooo_events[1]));
+    set_callback(ooo_events[1], "addition");
+
+    // set OpenCL kernel parameters to multiply matrix D and E */
+    OCL_CHECK(err, err = kernel_mmult.setArg(0, buffer_f));
+    OCL_CHECK(err, err = kernel_mmult.setArg(1, buffer_d));
+    OCL_CHECK(err, err = kernel_mmult.setArg(2, buffer_e));
+    OCL_CHECK(err, err = kernel_mmult.setArg(3, MAT_DIM0));
+    OCL_CHECK(err, err = kernel_mmult.setArg(4, MAT_DIM1));
+
+    // This call does not depend on previous calls so we are passing nullptr
+    // into the event wait list. The runtime should schedule this kernel in
+    // parallel to the previous calls.
+    printf("[OOO Queue]: Enqueueing matrix multiplication kernel\n");
+    OCL_CHECK(err, 
+      err = ooo_queue.enqueueNDRangeKernel(kernel_mmult, offset, global, local,
+                                           nullptr, // Does not depend on previous call
+                                           &ooo_events[2]));
+    set_callback(ooo_events[2], "matrix multiplication");
+
+    const size_t array_size = MAT_DIM0 * MAT_DIM1;
+    vector<int> A(array_size);
+    vector<int> C(array_size);
+    vector<int> F(array_size);
+
+    // Depends on the addition kernel
+    printf("[OOO Queue]: Enqueueing Read Buffer A (depends on addition)\n");
+    kernel_wait_events.resize(0);
+    kernel_wait_events.push_back(ooo_events[1]);
+    OCL_CHECK(err, 
+      err = ooo_queue.enqueueReadBuffer(buffer_a, CL_FALSE, 0, size_in_bytes, A.data(),
+                                        &kernel_wait_events, &ooo_events[3]));
+    set_callback(ooo_events[3], "A");
+
+    printf("[OOO Queue]: Enqueueing Read Buffer C (depends on addition)\n");
+    kernel_wait_events.resize(0);
+    kernel_wait_events.push_back(ooo_events[1]);
+    OCL_CHECK(err, 
+      err = ooo_queue.enqueueReadBuffer(buffer_c, CL_FALSE, 0, size_in_bytes, C.data(),
+                                        &kernel_wait_events, &ooo_events[4]));
+    set_callback(ooo_events[4], "C");
+
+    // Depends on the matrix multiplication kernel
+    printf(
+        "[OOO Queue]: Enqueueing Read Buffer F (depends on matrix "
+        "multiplication)\n");
+    kernel_wait_events.resize(0);
+    kernel_wait_events.push_back(ooo_events[2]);
+    OCL_CHECK(err, 
+      err = ooo_queue.enqueueReadBuffer(buffer_f, CL_FALSE, 0, size_in_bytes, F.data(),
+                                        &kernel_wait_events, &ooo_events[5]));
+    set_callback(ooo_events[5], "F");
+
+    // Block until all operations have completed
+    ooo_queue.flush();
+    ooo_queue.finish();
+    verify_results(C, F);
+  }
+
+  int main(int argc, char** argv) {
+    if (argc != 2) {
+      std::cout << "Usage: " << argv[0] << " <XCLBIN File>" << std::endl;
+      return EXIT_FAILURE;
+    }
+
+    std::string binaryFile = argv[1];
+
+    cl_int err;
+    cl::Device device;
+    cl::Context context;
+    cl::Kernel kernel_madd, kernel_mscale, kernel_mmult;
+    const size_t array_size = MAT_DIM0 * MAT_DIM1;
+    const size_t size_in_bytes = array_size * sizeof(int);
+
+    // allocate memory on host for input and output matrices
+    vector<int, aligned_allocator<int> > A(array_size, 1);
+    vector<int, aligned_allocator<int> > A1(array_size, 1);
+    vector<int, aligned_allocator<int> > B(array_size, 1);
+    vector<int, aligned_allocator<int> > D(array_size, 1);
+    vector<int, aligned_allocator<int> > E(array_size, 1);
+
+    // Called to set environment variables
+    // The get_xil_devices will return vector of Xilinx Devices
+    // platforms and will return list of devices connected to Xilinx platform
+    auto devices = xcl::get_xil_devices();
+
+    // read_binary_file() is a utility API which will load the binaryFile
+    // and will return pointer to file buffer.
+    auto fileBuf = xcl::read_binary_file(binaryFile);
+    cl::Program::Binaries bins{{fileBuf.data(), fileBuf.size()}};
+    bool valid_device = false;
+    for (unsigned int i = 0; i < devices.size(); i++) {
+      device = devices[i];
+      // Creating Context and Command Queue for selected Device
+      OCL_CHECK(err, context = cl::Context(device, nullptr, nullptr, nullptr, &err));
+      std::cout << "Trying to program device[" << i << "]: " << device.getInfo<CL_DEVICE_NAME>() << std::endl;
+      cl::Program program(context, {device}, bins, nullptr, &err);
+      if (err != CL_SUCCESS) {
+        std::cout << "Failed to program device[" << i << "] with xclbin file!\n";
+      } else {
+        std::cout << "Device[" << i << "]: program successful!\n";
+        OCL_CHECK(err, kernel_madd = cl::Kernel(program, "madd", &err));
+        OCL_CHECK(err, kernel_mscale = cl::Kernel(program, "mscale", &err));
+        OCL_CHECK(err, kernel_mmult = cl::Kernel(program, "mmult", &err));
+        valid_device = true;
+        break; // we break because we found a valid device
+      }
+    }
+    if (!valid_device) {
+      std::cout << "Failed to program any device found, exit!\n";
+      exit(EXIT_FAILURE);
+    }
+
+    // Allocate Buffer in Global Memory
+    // Buffers are allocated using CL_MEM_USE_HOST_PTR for efficient memory and
+    // Device-to-host communication
+    OCL_CHECK(err,
+      cl::Buffer buffer_a(context, CL_MEM_USE_HOST_PTR|CL_MEM_READ_WRITE, size_in_bytes, A.data(), &err));
+    OCL_CHECK(err,
+      cl::Buffer buffer_a1(context, CL_MEM_USE_HOST_PTR|CL_MEM_READ_ONLY, size_in_bytes, A1.data(), &err));
+    OCL_CHECK(err, 
+      cl::Buffer buffer_b(context, CL_MEM_USE_HOST_PTR|CL_MEM_READ_ONLY, size_in_bytes, B.data(), &err));
+    OCL_CHECK(err, cl::Buffer buffer_c(context, CL_MEM_WRITE_ONLY, size_in_bytes, nullptr, &err));
+    OCL_CHECK(err, 
+      cl::Buffer buffer_d(context, CL_MEM_USE_HOST_PTR|CL_MEM_READ_ONLY, size_in_bytes, D.data(), &err));
+    OCL_CHECK(err, 
+      cl::Buffer buffer_e(context, CL_MEM_USE_HOST_PTR|CL_MEM_READ_ONLY, size_in_bytes, E.data(), &err));
+    OCL_CHECK(err, cl::Buffer buffer_f(context, CL_MEM_WRITE_ONLY, size_in_bytes, nullptr, &err));
+
+    ...
+
+    // Use out of order command queue to execute the kernels
+    out_of_order_queue(context, device, kernel_mscale, kernel_madd,
+                       kernel_mmult, buffer_a, buffer_a1, buffer_b,
+                       buffer_c, buffer_d, buffer_e, buffer_f, size_in_bytes);
+
+    printf(
+      "View the timeline trace in Vitis for a visual overview of the\n"
+      "execution of this example. Refer to the \"Timeline Trace\" section "
+      "of\n"
+      "the Vitis Development Environment Methodology Guide for additional\n"
+      "details.\n");
+
+    printf("TEST PASSED\n");
+    return EXIT_SUCCESS;
+  }
+  ```
