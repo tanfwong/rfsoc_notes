@@ -322,9 +322,11 @@
       OCL_CHECK(err, context = cl::Context(device, nullptr, nullptr, nullptr, &err));
       // This example will use an out of order command queue. The default command
       // queue created by cl::CommandQueue is an inorder command queue.
-      OCL_CHECK(err, q = cl::CommandQueue(context, device, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &err));
+      OCL_CHECK(err, q = cl::CommandQueue(context, device, 
+        CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &err));
 
-      std::cout << "Trying to program device[" << i << "]: " << device.getInfo<CL_DEVICE_NAME>() << std::endl;
+      std::cout << "Trying to program device[" << i << "]: " << 
+        device.getInfo<CL_DEVICE_NAME>() << std::endl;
       cl::Program program(context, {device}, bins, nullptr, &err);
       if (err != CL_SUCCESS) {
         std::cout << "Failed to program device[" << i << "] with xclbin file!\n";
@@ -371,13 +373,12 @@
       // Buffers are allocated using CL_MEM_USE_HOST_PTR for efficient memory and
       // Device-to-host communication
       std::cout << "Creating Buffers..." << std::endl;
-      OCL_CHECK(err, buffer_a[flag] = cl::Buffer(context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, bytes_per_iteration,
-                                                 &A[iteration_idx * elements_per_iteration], &err));
-      OCL_CHECK(err, buffer_b[flag] = cl::Buffer(context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, bytes_per_iteration,
-                                                 &B[iteration_idx * elements_per_iteration], &err));
-      OCL_CHECK(err,
-                buffer_c[flag] = cl::Buffer(context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, bytes_per_iteration,
-                                            &device_result[iteration_idx * elements_per_iteration], &err));
+      OCL_CHECK(err, buffer_a[flag] = cl::Buffer(context, CL_MEM_READ_ONLY|CL_MEM_USE_HOST_PTR, 
+        bytes_per_iteration, &A[iteration_idx * elements_per_iteration], &err));
+      OCL_CHECK(err, buffer_b[flag] = cl::Buffer(context, CL_MEM_READ_ONLY|CL_MEM_USE_HOST_PTR, 
+        bytes_per_iteration, &B[iteration_idx * elements_per_iteration], &err));
+      OCL_CHECK(err, buffer_c[flag] = cl::Buffer(context, CL_MEM_WRITE_ONLY|CL_MEM_USE_HOST_PTR, 
+        bytes_per_iteration, &device_result[iteration_idx * elements_per_iteration], &err));
 
       vector<cl::Event> write_event(1);
 
@@ -391,8 +392,8 @@
       // Because we are passing the write_event, it returns an event object
       // that identifies this particular command and can be used to query
       // or queue a wait for this particular command to complete.
-      OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_a[flag], buffer_b[flag]}, 0 /*0 means from host*/,
-                                                      nullptr, &write_event[0]));
+      OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_a[flag], buffer_b[flag]},
+        0 /*0 means from host*/, nullptr, &write_event[0]));
       set_callback(write_event[0], "ooo_queue");
 
       printf("Enqueueing NDRange kernel.\n");
@@ -402,7 +403,8 @@
       // Launch the Kernel
       std::vector<cl::Event> waitList;
       waitList.push_back(write_event[0]);
-      OCL_CHECK(err, err = q.enqueueNDRangeKernel(krnl_vadd, 0, 1, 1, &waitList, &kernel_events[flag]));
+      OCL_CHECK(err, err = q.enqueueNDRangeKernel(krnl_vadd, 0, 1, 1, 
+        &waitList, &kernel_events[flag]));
       set_callback(kernel_events[flag], "ooo_queue");
 
       // Copy Result from Device Global Memory to Host Local Memory
@@ -412,8 +414,8 @@
       // This operation only needs to wait for the kernel call. This call will
       // potentially overlap the next kernel call as well as the next read
       // operations
-      OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_c[flag]}, CL_MIGRATE_MEM_OBJECT_HOST, &eventList,
-                                                      &read_events[flag]));
+      OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_c[flag]}, 
+        CL_MIGRATE_MEM_OBJECT_HOST, &eventList, &read_events[flag]));
       set_callback(read_events[flag], "ooo_queue");
     }
 
@@ -470,7 +472,61 @@
   - We see that the data transfer and kernel execution overlap in such
     a way that the idling gaps between successive executions of the
     kernel are significantly shortened, resulting in an increase in
-    the throughput of the overall implementation. 
+    the throughput of the overall implementation.
+  - Each arrow-linked sequence of operations (issued as commands to
+    the command queue) in the timing diagram above indicates that the
+    operations must be performed in order, i.e., the current operation
+    must be completed before the next operation in the sequence can
+    start.
+  - The synchronization of an ordered sequence of commands is achieved
+    by the use of vectors `std::vector<cl::Event>` of class
+    `cl::Event` objects, `kernel_events`, `read_events`, and
+    `write_event`. For example,
+    1. The command of transferring data in the host memory to the PIPO
+       buffers in the global memory is first issued by
+       ```c++
+       err = q.enqueueMigrateMemObjects({buffer_a[flag], buffer_b[flag]}, 0,
+         nullptr, &write_event[0]);
+       set_callback(write_event[0], "ooo_queue");
+       ``` 
+       where the event `write_event[0]` is associated with this
+       command, and the `set_callback()` function is simply a wrapper
+       to call the class method `setCallback()` of `write_event[0]` to
+       set up the callback function handler `event_cb()` to print out
+       information about the execution of the command when it
+       completes, as set by the `CL_COMPLETE` flag in the first
+       argument of `setCallback()`.
+    2. The command of execution of `krnl_vadd` is then issued by
+       ```c++
+       std::vector<cl::Event> waitList;
+       waitList.push_back(write_event[0]);
+       err = q.enqueueNDRangeKernel(krnl_vadd, 0, 1, 1, &waitList, 
+         &kernel_events[flag]);
+       set_callback(kernel_events[flag], "ooo_queue");
+       ```
+        where the event `kernel_events[flag]` is associated with this
+        command, and the command should wait for the (one) event
+        `write_event[0]` in `waitList` to complete before it starts.
+     3. The command of transferring results back from the PIPO buffer
+        in the global memory is finally issued by
+        ```c++
+        std::vector<cl::Event> eventList;
+        eventList.push_back(kernel_events[flag]);
+        err = q.enqueueMigrateMemObjects({buffer_c[flag]}, 
+          CL_MIGRATE_MEM_OBJECT_HOST, &eventList, &read_events[flag]);
+        set_callback(read_events[flag], "ooo_queue");
+        ```
+        where the event `read_events[flag]` is associated with this
+        command, and the command should wait for the event `kernel_events[flag]`
+        in `eventList` to complete before it starts.
+     4. Then, in the next iteration that use the same PIPO component
+        buffers as indicated by the value `flag`, we wait for the command in 3. to
+        complete using
+        ```c++
+        err = read_events[flag].wait();
+        ```
+        before restarting the sequence of operations.
+  
  
 
   
