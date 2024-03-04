@@ -60,6 +60,8 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'ch6/ocl_opt';</script>
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -427,7 +429,7 @@ kernel execution as well as parallelization with multiple compute
 units in the PL.</p></li>
 </ul>
 <section id="data-transfer">
-<h2><span class="section-number">6.3.1. </span>Data Transfer<a class="headerlink" href="#data-transfer" title="Permalink to this headline">#</a></h2>
+<span id="sec-data-transfer"></span><h2><span class="section-number">6.3.1. </span>Data Transfer<a class="headerlink" href="#data-transfer" title="Permalink to this headline">#</a></h2>
 <ul>
 <li><p>Under the OpenCL memory model, data exchange between the host and
 the kernels amounts to synchronization of contents between the host
@@ -594,19 +596,19 @@ execution timing diagram will result:</p>
 <a class="reference internal image-reference" href="../_images/in-order.png"><img alt="Timing diagram of in-order execution of commands in the command queue" src="../_images/in-order.png" style="width: 800px;" /></a>
 <figcaption>
 <p><span class="caption-number">Fig. 6.4 </span><span class="caption-text">Timing diagram of in-order execution of commands in the command queue (figure taken from
-<span id="id1">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23b</a>]</span>): <code class="docutils literal notranslate"><span class="pre">Wa0</span></code> and <code class="docutils literal notranslate"><span class="pre">Wb0</span></code> stand for writing data from host memory
-to <code class="docutils literal notranslate"><span class="pre">buffer_a</span></code> and <code class="docutils literal notranslate"><span class="pre">buffer_b</span></code> in global memory, and <code class="docutils literal notranslate"><span class="pre">Rc0</span></code> stands for
-reading data from <code class="docutils literal notranslate"><span class="pre">buffer_result</span></code> in global memory back to host
-memory.</span><a class="headerlink" href="#in-order" title="Permalink to this image">#</a></p>
+<span id="id1">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23b</a>]</span>)</span><a class="headerlink" href="#in-order" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-<p>We see from the timing diagram that there are large idling gaps in
-using the AXI interconnect for data transfer between the host and
-the kernel as well as large idling gaps in executing the kernel in
-the PL. These idling gaps are due to the latency of data transfer
-and that of the kernel. They lower the throughput achieved by the
-overall implementation, despite the kernel implementation may have
-been optimized.</p>
+<p>where <code class="docutils literal notranslate"><span class="pre">Wa0</span></code> and <code class="docutils literal notranslate"><span class="pre">Wb0</span></code> stand for writing data from host memory to
+<code class="docutils literal notranslate"><span class="pre">buffer_a</span></code> and <code class="docutils literal notranslate"><span class="pre">buffer_b</span></code> in global memory, and <code class="docutils literal notranslate"><span class="pre">Rc0</span></code> stands for
+reading data from <code class="docutils literal notranslate"><span class="pre">buffer_result</span></code> in global memory back to host
+memory.  We see from the timing diagram that there are large idling
+gaps in using the AXI interconnect for data transfer between the
+host and the kernel as well as large idling gaps in executing the
+kernel in the PL. These idling gaps are due to the latency of data
+transfer and that of the kernel. They lower the throughput achieved
+by the overall implementation, despite the kernel implementation may
+have been optimized.</p>
 </li>
 <li><p>To increase the throughput of the overall implementation, we can
 overlap the data transfer between the host and the kernel and the
@@ -619,6 +621,266 @@ this form of <em>command-level</em> pipelining, we need to:</p>
 global memory, kernel execution, and transfer of results back
 from global to host memory for each block.</p></li>
 </ol>
+<p>To see how this is done, consider the
+<a class="reference external" href="https://github.com/Xilinx/Vitis_Accel_Examples/tree/2023.1/host/overlap">example</a>
+from Vitis’ repository below:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;xcl2.hpp&quot;</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;algorithm&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdio&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;random&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
+
+<span class="k">using</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">default_random_engine</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">generate</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">uniform_int_distribution</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="p">;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ARRAY_SIZE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">14</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">gen_random</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">default_random_engine</span><span class="w"> </span><span class="n">e</span><span class="p">;</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">uniform_int_distribution</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">dist</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">dist</span><span class="p">(</span><span class="n">e</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// An event callback function that prints the operations performed by the OpenCL</span>
+<span class="c1">// runtime.</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">event_cb</span><span class="p">(</span><span class="n">cl_event</span><span class="w"> </span><span class="n">event1</span><span class="p">,</span><span class="w"> </span><span class="n">cl_int</span><span class="w"> </span><span class="n">cmd_status</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">cl_int</span><span class="w"> </span><span class="n">err</span><span class="p">;</span>
+<span class="w">  </span><span class="n">cl_command_type</span><span class="w"> </span><span class="n">command</span><span class="p">;</span>
+<span class="w">  </span><span class="n">cl</span><span class="o">::</span><span class="n">Event</span><span class="w"> </span><span class="n">event</span><span class="p">(</span><span class="n">event1</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
+<span class="w">  </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="n">getInfo</span><span class="p">(</span><span class="n">CL_EVENT_COMMAND_TYPE</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">command</span><span class="p">));</span>
+<span class="w">  </span><span class="n">cl_int</span><span class="w"> </span><span class="n">status</span><span class="p">;</span>
+<span class="w">  </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="n">getInfo</span><span class="p">(</span><span class="n">CL_EVENT_COMMAND_EXECUTION_STATUS</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">status</span><span class="p">));</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">command_str</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">status_str</span><span class="p">;</span>
+<span class="w">  </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">command</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">CL_COMMAND_READ_BUFFER</span><span class="p">:</span>
+<span class="w">      </span><span class="n">command_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;buffer read&quot;</span><span class="p">;</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">CL_COMMAND_WRITE_BUFFER</span><span class="p">:</span>
+<span class="w">      </span><span class="n">command_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;buffer write&quot;</span><span class="p">;</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">CL_COMMAND_NDRANGE_KERNEL</span><span class="p">:</span>
+<span class="w">      </span><span class="n">command_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;kernel&quot;</span><span class="p">;</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">CL_COMMAND_MAP_BUFFER</span><span class="p">:</span>
+<span class="w">      </span><span class="n">command_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;kernel&quot;</span><span class="p">;</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">CL_COMMAND_COPY_BUFFER</span><span class="p">:</span>
+<span class="w">      </span><span class="n">command_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;kernel&quot;</span><span class="p">;</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">CL_COMMAND_MIGRATE_MEM_OBJECTS</span><span class="p">:</span>
+<span class="w">      </span><span class="n">command_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;buffer migrate&quot;</span><span class="p">;</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">      </span><span class="k">default</span><span class="o">:</span>
+<span class="w">        </span><span class="n">command_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;unknown&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">CL_QUEUED</span><span class="p">:</span>
+<span class="w">      </span><span class="n">status_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Queued&quot;</span><span class="p">;</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">CL_SUBMITTED</span><span class="p">:</span>
+<span class="w">      </span><span class="n">status_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Submitted&quot;</span><span class="p">;</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">CL_RUNNING</span><span class="p">:</span>
+<span class="w">      </span><span class="n">status_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Executing&quot;</span><span class="p">;</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">CL_COMPLETE</span><span class="p">:</span>
+<span class="w">      </span><span class="n">status_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Completed&quot;</span><span class="p">;</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;[%s]: %s %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">data</span><span class="p">),</span><span class="w"> </span><span class="n">status_str</span><span class="p">,</span><span class="w"> </span><span class="n">command_str</span><span class="p">);</span>
+<span class="w">  </span><span class="n">fflush</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Sets the callback for a particular event</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">set_callback</span><span class="p">(</span><span class="n">cl</span><span class="o">::</span><span class="n">Event</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">queue_name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">cl_int</span><span class="w"> </span><span class="n">err</span><span class="p">;</span>
+<span class="w">  </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="n">setCallback</span><span class="p">(</span><span class="n">CL_COMPLETE</span><span class="p">,</span><span class="w"> </span><span class="n">event_cb</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="n">queue_name</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">argc</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Usage: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; &lt;XCLBIN File&gt;&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">EXIT_FAILURE</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">binaryFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="w">  </span><span class="n">cl_int</span><span class="w"> </span><span class="n">err</span><span class="p">;</span>
+<span class="w">  </span><span class="n">cl</span><span class="o">::</span><span class="n">CommandQueue</span><span class="w"> </span><span class="n">q</span><span class="p">;</span>
+<span class="w">  </span><span class="n">cl</span><span class="o">::</span><span class="n">Context</span><span class="w"> </span><span class="n">context</span><span class="p">;</span>
+<span class="w">  </span><span class="n">cl</span><span class="o">::</span><span class="n">Kernel</span><span class="w"> </span><span class="n">krnl_vadd</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// OPENCL HOST CODE AREA START</span>
+<span class="w">  </span><span class="c1">// get_xil_devices() is a utility API which will find the xilinx</span>
+<span class="w">  </span><span class="c1">// platforms and will return list of devices connected to Xilinx platform</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Creating Context...&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">devices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">xcl</span><span class="o">::</span><span class="n">get_xil_devices</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">// read_binary_file() is a utility API which will load the binaryFile</span>
+<span class="w">  </span><span class="c1">// and will return the pointer to file buffer.</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">fileBuf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">xcl</span><span class="o">::</span><span class="n">read_binary_file</span><span class="p">(</span><span class="n">binaryFile</span><span class="p">);</span>
+<span class="w">  </span><span class="n">cl</span><span class="o">::</span><span class="n">Program</span><span class="o">::</span><span class="n">Binaries</span><span class="w"> </span><span class="n">bins</span><span class="p">{{</span><span class="n">fileBuf</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="n">fileBuf</span><span class="p">.</span><span class="n">size</span><span class="p">()}};</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">valid_device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">devices</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">devices</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">    </span><span class="c1">// Creating Context and Command Queue for selected Device</span>
+<span class="w">    </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">Context</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
+<span class="w">    </span><span class="c1">// This example will use an out of order command queue. The default command</span>
+<span class="w">    </span><span class="c1">// queue created by cl::CommandQueue is an inorder command queue.</span>
+<span class="w">    </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">CommandQueue</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="n">CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Trying to program device[&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;]: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">device</span><span class="p">.</span><span class="n">getInfo</span><span class="o">&lt;</span><span class="n">CL_DEVICE_NAME</span><span class="o">&gt;</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cl</span><span class="o">::</span><span class="n">Program</span><span class="w"> </span><span class="n">program</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">device</span><span class="p">},</span><span class="w"> </span><span class="n">bins</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">CL_SUCCESS</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Failed to program device[&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;] with xclbin file!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Device[&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;]: program successful!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">      </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">krnl_vadd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">Kernel</span><span class="p">(</span><span class="n">program</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;vadd&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
+<span class="w">      </span><span class="n">valid_device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span><span class="w"> </span><span class="c1">// we break because we found a valid device</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">valid_device</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Failed to program any device found, exit!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// We will break down our problem into multiple iterations. Each iteration</span>
+<span class="w">  </span><span class="c1">// will perform computation on a subset of the entire data-set.</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">elements_per_iteration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2048</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">bytes_per_iteration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">elements_per_iteration</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_iterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ARRAY_SIZE</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">elements_per_iteration</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// Allocate memory on the host and fill with random data.</span>
+<span class="w">  </span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">aligned_allocator</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="n">ARRAY_SIZE</span><span class="p">);</span>
+<span class="w">  </span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">aligned_allocator</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">B</span><span class="p">(</span><span class="n">ARRAY_SIZE</span><span class="p">);</span>
+<span class="w">  </span><span class="n">generate</span><span class="p">(</span><span class="n">begin</span><span class="p">(</span><span class="n">A</span><span class="p">),</span><span class="w"> </span><span class="n">end</span><span class="p">(</span><span class="n">A</span><span class="p">),</span><span class="w"> </span><span class="n">gen_random</span><span class="p">);</span>
+<span class="w">  </span><span class="n">generate</span><span class="p">(</span><span class="n">begin</span><span class="p">(</span><span class="n">B</span><span class="p">),</span><span class="w"> </span><span class="n">end</span><span class="p">(</span><span class="n">B</span><span class="p">),</span><span class="w"> </span><span class="n">gen_random</span><span class="p">);</span>
+<span class="w">  </span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">aligned_allocator</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">device_result</span><span class="p">(</span><span class="n">ARRAY_SIZE</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// THIS PAIR OF EVENTS WILL BE USED TO TRACK WHEN A KERNEL IS FINISHED WITH</span>
+<span class="w">  </span><span class="c1">// THE INPUT BUFFERS. ONCE THE KERNEL IS FINISHED PROCESSING THE DATA, A NEW</span>
+<span class="w">  </span><span class="c1">// SET OF ELEMENTS WILL BE WRITTEN INTO THE BUFFER.</span>
+<span class="w">  </span><span class="n">vector</span><span class="o">&lt;</span><span class="n">cl</span><span class="o">::</span><span class="n">Event</span><span class="o">&gt;</span><span class="w"> </span><span class="n">kernel_events</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="w">  </span><span class="n">vector</span><span class="o">&lt;</span><span class="n">cl</span><span class="o">::</span><span class="n">Event</span><span class="o">&gt;</span><span class="w"> </span><span class="n">read_events</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="w">  </span><span class="n">cl</span><span class="o">::</span><span class="n">Buffer</span><span class="w"> </span><span class="n">buffer_a</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="n">buffer_b</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="n">buffer_c</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">iteration_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">iteration_idx</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num_iterations</span><span class="p">;</span><span class="w"> </span><span class="n">iteration_idx</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">flag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iteration_idx</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">iteration_idx</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read_events</span><span class="p">[</span><span class="n">flag</span><span class="p">].</span><span class="n">wait</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Allocate Buffer in Global Memory</span>
+<span class="w">    </span><span class="c1">// Buffers are allocated using CL_MEM_USE_HOST_PTR for efficient memory and</span>
+<span class="w">    </span><span class="c1">// Device-to-host communication</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Creating Buffers...&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">buffer_a</span><span class="p">[</span><span class="n">flag</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">Buffer</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">CL_MEM_READ_ONLY</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">CL_MEM_USE_HOST_PTR</span><span class="p">,</span><span class="w"> </span><span class="n">bytes_per_iteration</span><span class="p">,</span>
+<span class="w">                                               </span><span class="o">&amp;</span><span class="n">A</span><span class="p">[</span><span class="n">iteration_idx</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">elements_per_iteration</span><span class="p">],</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
+<span class="w">    </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">buffer_b</span><span class="p">[</span><span class="n">flag</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">Buffer</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">CL_MEM_READ_ONLY</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">CL_MEM_USE_HOST_PTR</span><span class="p">,</span><span class="w"> </span><span class="n">bytes_per_iteration</span><span class="p">,</span>
+<span class="w">                                               </span><span class="o">&amp;</span><span class="n">B</span><span class="p">[</span><span class="n">iteration_idx</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">elements_per_iteration</span><span class="p">],</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
+<span class="w">    </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span>
+<span class="w">              </span><span class="n">buffer_c</span><span class="p">[</span><span class="n">flag</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">Buffer</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">CL_MEM_WRITE_ONLY</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">CL_MEM_USE_HOST_PTR</span><span class="p">,</span><span class="w"> </span><span class="n">bytes_per_iteration</span><span class="p">,</span>
+<span class="w">                                          </span><span class="o">&amp;</span><span class="n">device_result</span><span class="p">[</span><span class="n">iteration_idx</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">elements_per_iteration</span><span class="p">],</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
+
+<span class="w">    </span><span class="n">vector</span><span class="o">&lt;</span><span class="n">cl</span><span class="o">::</span><span class="n">Event</span><span class="o">&gt;</span><span class="w"> </span><span class="n">write_event</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">krnl_vadd</span><span class="p">.</span><span class="n">setArg</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">buffer_c</span><span class="p">[</span><span class="n">flag</span><span class="p">]));</span>
+<span class="w">    </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">krnl_vadd</span><span class="p">.</span><span class="n">setArg</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">buffer_a</span><span class="p">[</span><span class="n">flag</span><span class="p">]));</span>
+<span class="w">    </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">krnl_vadd</span><span class="p">.</span><span class="n">setArg</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">buffer_b</span><span class="p">[</span><span class="n">flag</span><span class="p">]));</span>
+<span class="w">    </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">krnl_vadd</span><span class="p">.</span><span class="n">setArg</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">(</span><span class="n">elements_per_iteration</span><span class="p">)));</span>
+
+<span class="w">    </span><span class="c1">// Copy input data to device global memory</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Copying data (Host to Device)...&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// Because we are passing the write_event, it returns an event object</span>
+<span class="w">    </span><span class="c1">// that identifies this particular command and can be used to query</span>
+<span class="w">    </span><span class="c1">// or queue a wait for this particular command to complete.</span>
+<span class="w">    </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">q</span><span class="p">.</span><span class="n">enqueueMigrateMemObjects</span><span class="p">({</span><span class="n">buffer_a</span><span class="p">[</span><span class="n">flag</span><span class="p">],</span><span class="w"> </span><span class="n">buffer_b</span><span class="p">[</span><span class="n">flag</span><span class="p">]},</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="cm">/*0 means from host*/</span><span class="p">,</span>
+<span class="w">                                                    </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">write_event</span><span class="p">[</span><span class="mi">0</span><span class="p">]));</span>
+<span class="w">    </span><span class="n">set_callback</span><span class="p">(</span><span class="n">write_event</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="s">&quot;ooo_queue&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Enqueueing NDRange kernel.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// This event needs to wait for the write buffer operations to complete</span>
+<span class="w">    </span><span class="c1">// before executing. We are sending the write_events into its wait list to</span>
+<span class="w">    </span><span class="c1">// ensure that the order of operations is correct.</span>
+<span class="w">    </span><span class="c1">// Launch the Kernel</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">cl</span><span class="o">::</span><span class="n">Event</span><span class="o">&gt;</span><span class="w"> </span><span class="n">waitList</span><span class="p">;</span>
+<span class="w">    </span><span class="n">waitList</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">write_event</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="w">    </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">q</span><span class="p">.</span><span class="n">enqueueNDRangeKernel</span><span class="p">(</span><span class="n">krnl_vadd</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">waitList</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">kernel_events</span><span class="p">[</span><span class="n">flag</span><span class="p">]));</span>
+<span class="w">    </span><span class="n">set_callback</span><span class="p">(</span><span class="n">kernel_events</span><span class="p">[</span><span class="n">flag</span><span class="p">],</span><span class="w"> </span><span class="s">&quot;ooo_queue&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Copy Result from Device Global Memory to Host Local Memory</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Getting Results (Device to Host)...&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">cl</span><span class="o">::</span><span class="n">Event</span><span class="o">&gt;</span><span class="w"> </span><span class="n">eventList</span><span class="p">;</span>
+<span class="w">    </span><span class="n">eventList</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">kernel_events</span><span class="p">[</span><span class="n">flag</span><span class="p">]);</span>
+<span class="w">    </span><span class="c1">// This operation only needs to wait for the kernel call. This call will</span>
+<span class="w">    </span><span class="c1">// potentially overlap the next kernel call as well as the next read</span>
+<span class="w">    </span><span class="c1">// operations</span>
+<span class="w">    </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">q</span><span class="p">.</span><span class="n">enqueueMigrateMemObjects</span><span class="p">({</span><span class="n">buffer_c</span><span class="p">[</span><span class="n">flag</span><span class="p">]},</span><span class="w"> </span><span class="n">CL_MIGRATE_MEM_OBJECT_HOST</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">eventList</span><span class="p">,</span>
+<span class="w">                                                    </span><span class="o">&amp;</span><span class="n">read_events</span><span class="p">[</span><span class="n">flag</span><span class="p">]));</span>
+<span class="w">    </span><span class="n">set_callback</span><span class="p">(</span><span class="n">read_events</span><span class="p">[</span><span class="n">flag</span><span class="p">],</span><span class="w"> </span><span class="s">&quot;ooo_queue&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// Wait for all of the OpenCL operations to complete</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Waiting...</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">q</span><span class="p">.</span><span class="n">flush</span><span class="p">());</span>
+<span class="w">  </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">q</span><span class="p">.</span><span class="n">finish</span><span class="p">());</span>
+<span class="w">  </span><span class="c1">// OPENCL HOST CODE AREA ENDS</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">match</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// Verify the results</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">ARRAY_SIZE</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">host_result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">device_result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">host_result</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Error: Result mismatch:</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">      </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;i = %d CPU result = %d Device result = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">host_result</span><span class="p">,</span><span class="w"> </span><span class="n">device_result</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+<span class="w">      </span><span class="n">match</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;TEST %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">match</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">&quot;PASSED&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;FAILED&quot;</span><span class="p">));</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">match</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">EXIT_SUCCESS</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Vectors of length <span class="math notranslate nohighlight">\(2^{14} = 16384\)</span> are broken down into blocks of
+length <span class="math notranslate nohighlight">\(2048\)</span> for the vector addition kernel <code class="docutils literal notranslate"><span class="pre">krnl_vadd</span></code> to
+operate on.</p></li>
+<li><p>PIPO buffers, <code class="docutils literal notranslate"><span class="pre">buffer_a[2]</span></code>, <code class="docutils literal notranslate"><span class="pre">buffer_b[2]</span></code>, and <code class="docutils literal notranslate"><span class="pre">buffer_c[2]</span></code>, are
+instantiated to store the input and output blocks of data for
+<code class="docutils literal notranslate"><span class="pre">krnl_vadd</span></code> in each iteration of calling <code class="docutils literal notranslate"><span class="pre">krnl_vadd</span></code> to process a
+block. The “allocation by host” approach discussed in
+<a class="reference internal" href="#sec-data-transfer"><span class="std std-numref">Section 6.3.1</span></a> is employed to map an alternating
+component of the PIPO buffer to the location of the corresponding
+block of data in the host memory.</p></li>
+<li><p>An out-of-order command queue is instantiated using the
+<code class="docutils literal notranslate"><span class="pre">CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE,</span> <span class="pre">&amp;err));</span></code> flag.</p></li>
+</ul>
+</li>
+<li><p>The execution of the example code follows the timing diagram below:</p>
+<figure class="align-center" id="out-of-order">
+<a class="reference internal image-reference" href="../_images/out-of-order.png"><img alt="Timing diagram of overlapped execution of commands in the command queue" src="../_images/out-of-order.png" style="width: 800px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 6.5 </span><span class="caption-text">Timing diagram of overlapped execution of commands in the command queue (figure taken from
+<span id="id2">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23b</a>]</span>)</span><a class="headerlink" href="#out-of-order" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<p>where <code class="docutils literal notranslate"><span class="pre">Wak</span></code> and <code class="docutils literal notranslate"><span class="pre">Wbk</span></code> stand for writing data from host memory to the
+PIPO buffer components <code class="docutils literal notranslate"><span class="pre">buffer_a[k]</span></code> and <code class="docutils literal notranslate"><span class="pre">buffer_b[k]</span></code> in global
+memory, and <code class="docutils literal notranslate"><span class="pre">Rck</span></code> stands for reading data from <code class="docutils literal notranslate"><span class="pre">buffer_result[k]</span></code> in
+global memory back to host memory, for <code class="docutils literal notranslate"><span class="pre">k=0,1</span></code>.</p>
+<ul class="simple">
+<li><p>We see that the data transfer and kernel execution overlap in such
+a way that the idling gaps between successive executions of the
+kernel are significantly shortened, resulting in an increase in
+the throughput of the overall implementation.</p></li>
+</ul>
 </li>
 </ul>
 </section>
