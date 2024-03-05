@@ -163,6 +163,7 @@
       value is `0`, then the default direction of migration is from
       host memory to global memory.
 
+(sec:command_pipeline)=
 ## Pipelining Data Transfer and Kernel Execution
 
 * Consider again the vector addition example in
@@ -451,7 +452,7 @@
     component of the PIPO buffer to the location of the corresponding
     block of data in the host memory.
   - An out-of-order command queue is instantiated using the
-    `CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &err));` flag.
+    `CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE` flag.
    
 * The execution of the example code follows the timing diagram below:
   ```{figure} ../figs/out-of-order.png
@@ -548,7 +549,7 @@
   support parallel execution of kernels here by considering the
   following snippet of host code from  
   [this example](https://github.com/Xilinx/Vitis_Accel_Examples/tree/2023.1/host/concurrent_kernel_execution)
-  in the Vitis repository:
+  in the Vitis repository (with some modifications):
   ```c++
   void out_of_order_queue(cl::Context& context,
                           cl::Device& device,
@@ -556,7 +557,6 @@
                           cl::Kernel& kernel_madd,
                           cl::Kernel& kernel_mmult,
                           cl::Buffer& buffer_a,
-                          cl::Buffer& buffer_a1,
                           cl::Buffer& buffer_b,
                           cl::Buffer& buffer_c,
                           cl::Buffer& buffer_d,
@@ -600,7 +600,7 @@
 
     // set OpenCL kernel parameters to add scaled matrix A and matrix B
     OCL_CHECK(err, err = kernel_madd.setArg(0, buffer_c));
-    OCL_CHECK(err, err = kernel_madd.setArg(1, buffer_a1));
+    OCL_CHECK(err, err = kernel_madd.setArg(1, buffer_a));
     OCL_CHECK(err, err = kernel_madd.setArg(2, buffer_b));
     OCL_CHECK(err, err = kernel_madd.setArg(3, MAT_DIM0));
     OCL_CHECK(err, err = kernel_madd.setArg(4, MAT_DIM1));
@@ -691,7 +691,6 @@
 
     // allocate memory on host for input and output matrices
     vector<int, aligned_allocator<int> > A(array_size, 1);
-    vector<int, aligned_allocator<int> > A1(array_size, 1);
     vector<int, aligned_allocator<int> > B(array_size, 1);
     vector<int, aligned_allocator<int> > D(array_size, 1);
     vector<int, aligned_allocator<int> > E(array_size, 1);
@@ -734,8 +733,6 @@
     OCL_CHECK(err,
       cl::Buffer buffer_a(context, CL_MEM_USE_HOST_PTR|CL_MEM_READ_WRITE, size_in_bytes, A.data(), &err));
     OCL_CHECK(err,
-      cl::Buffer buffer_a1(context, CL_MEM_USE_HOST_PTR|CL_MEM_READ_ONLY, size_in_bytes, A1.data(), &err));
-    OCL_CHECK(err, 
       cl::Buffer buffer_b(context, CL_MEM_USE_HOST_PTR|CL_MEM_READ_ONLY, size_in_bytes, B.data(), &err));
     OCL_CHECK(err, cl::Buffer buffer_c(context, CL_MEM_WRITE_ONLY, size_in_bytes, nullptr, &err));
     OCL_CHECK(err, 
@@ -748,8 +745,8 @@
 
     // Use out of order command queue to execute the kernels
     out_of_order_queue(context, device, kernel_mscale, kernel_madd,
-                       kernel_mmult, buffer_a, buffer_a1, buffer_b,
-                       buffer_c, buffer_d, buffer_e, buffer_f, size_in_bytes);
+                       kernel_mmult, buffer_a, buffer_b, buffer_c, 
+                       buffer_d, buffer_e, buffer_f, size_in_bytes);
 
     printf(
       "View the timeline trace in Vitis for a visual overview of the\n"
@@ -762,3 +759,15 @@
     return EXIT_SUCCESS;
   }
   ```
+  - The host code above executes three kernels, `mscale`, `madd`, and
+    `mmult`.  One input to `madd` is the output of `mscale`. Hence,
+    the execution of `madd` must not begin until that of `madd`
+    completes. On the other hand, the execution of `mmult` is
+    completely independent of that of `mscale` and `madd`; hence can
+    be performed in parallel.
+  - Parallel execution of `mmult` and the sequence `mscale` and `madd`
+    is implemented using an out-of-order command queue with
+    `cl::Event` objects to synchronize the execution of `mscale` and
+    `madd` in sequence. The approach is similar to that employed in
+    {numref}`sec: command_pipeline`.
+
