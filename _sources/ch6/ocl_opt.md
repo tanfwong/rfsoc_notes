@@ -769,5 +769,5 @@
     is implemented using an out-of-order command queue with
     `cl::Event` objects to synchronize the execution of `mscale` and
     `madd` in sequence. The approach is similar to that employed in
-    {numref}`sec: command_pipeline`.
+    {numref}`sec:command_pipeline`.
 
