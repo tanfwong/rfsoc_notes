@@ -547,9 +547,10 @@
   ```
 * We focus on the use of a single out-of-order command queue to
   support parallel execution of kernels here by considering the
-  following snippet of host code from  
-  [this example](https://github.com/Xilinx/Vitis_Accel_Examples/tree/2023.1/host/concurrent_kernel_execution)
+  following snippet of host code from [this
+  example](https://github.com/Xilinx/Vitis_Accel_Examples/tree/2023.1/host/concurrent_kernel_execution)
   in the Vitis repository (with some modifications):
+  
   ```c++
   void out_of_order_queue(cl::Context& context,
                           cl::Device& device,
