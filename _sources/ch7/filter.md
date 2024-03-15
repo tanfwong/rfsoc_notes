@@ -42,5 +42,5 @@
     (a_0 =1) 
     \end{align}
     ```
-    where $x[n] \stackrel{z}{\leftrightarrow} X(z)$ and $y[n]
-    \stackrel{z}{\leftrightarrow} Y(z)$.
+    where $x[n] \stackrel{z}{\longleftrightarrow} X(z)$ and $y[n]
+    \stackrel{z}{\longleftrightarrow} Y(z)$.
