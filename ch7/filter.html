@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>1.3. Vitis Application Acceleration Development &#8212; Real-time DSP Notes</title>
+    <title>7. Filter Implementation &#8212; Real-time DSP Notes</title>
   
   
   
@@ -62,12 +62,12 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'ch1/workflow';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ch7/filter';</script>
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="2. Introduction to HLS" href="../ch2/hls.html" />
-    <link rel="prev" title="1.2. Software Development Tools" href="vitis.html" />
+    <link rel="next" title="8. References" href="../refs.html" />
+    <link rel="prev" title="6.3. OpenCL Optimization" href="../ch6/ocl_opt.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
   </head>
@@ -159,10 +159,10 @@ const thebe_selector_output = ".output, .cell_output"
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="overview.html">1. Overview</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="rfsoc4x2.html">1.1. Hardware Platform</a></li>
-<li class="toctree-l2"><a class="reference internal" href="vitis.html">1.2. Software Development Tools</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">1.3. Vitis Application Acceleration Development</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../ch1/overview.html">1. Overview</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ch1/rfsoc4x2.html">1.1. Hardware Platform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ch1/vitis.html">1.2. Software Development Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ch1/workflow.html">1.3. Vitis Application Acceleration Development</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../ch2/hls.html">2. Introduction to HLS</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -195,7 +195,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="../ch6/ocl_opt.html">6.3. OpenCL Optimization</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../ch7/filter.html">7. Filter Implementation</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">7. Filter Implementation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">8. References</a></li>
 </ul>
 
@@ -268,7 +268,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Fch1/workflow.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Fch7/filter.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -298,7 +298,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../_sources/ch1/workflow.md" target="_blank"
+      <li><a href="../_sources/ch7/filter.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -367,9 +367,7 @@ document.write(`
   </button>
 `);
 </script>
-<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</label>
+
 </div></div>
       
     </div>
@@ -380,21 +378,11 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Vitis Application Acceleration Development</h1>
+    <h1>Filter Implementation</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
-            <div>
-                <h2> Contents </h2>
-            </div>
-            <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vitis-application-acceleration-development-flow">1.3.1. Vitis Application Acceleration Development Flow</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vaad-procedures-in-vitis">1.3.2. VAAD Procedures in Vitis</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#class-vitis-extensible-platform">1.3.3. Class Vitis Extensible Platform</a></li>
-</ul>
-            </nav>
         </div>
     </div>
 </div>
@@ -404,139 +392,54 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="vitis-application-acceleration-development">
-<span id="sec-vaad"></span><h1><span class="section-number">1.3. </span>Vitis Application Acceleration Development<a class="headerlink" href="#vitis-application-acceleration-development" title="Permalink to this headline">#</a></h1>
-<ul class="simple">
-<li><p>As discussed in <a class="reference internal" href="vitis.html#sec-vitis"><span class="std std-numref">Section 1.2.2</span></a>, we have to program the
-different compute components and construct interfaces (both hardware
-and software) between them in the typical embedded system
-development process. In particular, the development of the AXI4
-interfaces between the DSP kernels and the DMA interface with the
-global memory can be rather laborious. While the implementation of
-these interfaces may serve as good design exercises in a digital
-design class, it is not exactly the focus of what we want to do
-here, namely DSP kernel implementation.</p></li>
-<li><p>In order to simplify our development process, we will employ the
-following approach:</p>
-<ol class="arabic simple">
-<li><p>Follow the <em>Vitis Application Acceleration Development (VAAD) Flow</em>.</p></li>
-<li><p>Use HLS to develop DSP kernels under the VAAD flow.  We will
-discuss more about the HLS design process in <a class="reference internal" href="../ch2/hls.html#sec-hls"><span class="std std-numref">Section 2</span></a>.</p></li>
-</ol>
-</li>
-</ul>
-<section id="vitis-application-acceleration-development-flow">
-<h2><span class="section-number">1.3.1. </span>Vitis Application Acceleration Development Flow<a class="headerlink" href="#vitis-application-acceleration-development-flow" title="Permalink to this headline">#</a></h2>
+  <section class="tex2jax_ignore mathjax_ignore" id="filter-implementation">
+<h1><span class="section-number">7. </span>Filter Implementation<a class="headerlink" href="#filter-implementation" title="Permalink to this headline">#</a></h1>
 <ul>
-<li><p>The VAAD flow <span id="id1">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23b</a>]</span> is essentially a design process that
-allows developers to focus on developing the core functionalities of
-the PL kernels while the development of the required interfaces is
-all automated by Vitis.</p></li>
-<li><p>It contains:</p>
+<li><p>We will discuss in this section implementation of finite impulse
+response (FIR) and infinite impulse response (IIR) filters in HLS.</p></li>
+<li><p>Recall that both FIR and IIR filters can be defined by linear
+I/O difference equations in the time domain:</p>
 <ul>
-<li><p>a <em>Vitis extensible platform</em> which serves as an abstraction of
-the PL hardware to the host application development process, and
-the platform is composed of</p>
-<ul class="simple">
-<li><p>a <em>domain</em> with the necessary software to run Linux on the PS host</p></li>
-<li><p>a base PL hardware block with a predefined configuration of AXI4
-interfaces for PL kernel control by the PS host and for data
-transfer between the PS host and the PL kernels via global
-memory, clocks, and interrupt signals</p></li>
-</ul>
-<figure class="align-center" id="vitis-platform">
-<a class="reference internal image-reference" href="../_images/vitis_platform.png"><img alt="Vitis extensible platform" src="../_images/vitis_platform.png" style="width: 600px;" /></a>
-<figcaption>
-<p><span class="caption-number">Fig. 1.4 </span><span class="caption-text">Components of a Vitis extensible platform
-(image taken from <span id="id2">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23b</a>]</span>)</span><a class="headerlink" href="#vitis-platform" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
+<li><p><strong>FIR</strong> filter of order <span class="math notranslate nohighlight">\(M\)</span>:</p>
+<div class="math notranslate nohighlight" id="equation-fir">
+<span class="eqno">(7.1)<a class="headerlink" href="#equation-fir" title="Permalink to this equation">#</a></span>\[\begin{align} 
+y[n] = \sum_{k=0}^M b_k x[n-k] &amp; \hspace{90pt} &amp; (b_0 \neq 0) 
+\end{align}\]</div>
 </li>
-<li><p>a predefined configuration of AXI4 interfaces for kernel control
-and data transfer, clock input, and interrupt signals to which
-each PL kernel must conform</p></li>
-<li><p>the <a class="reference external" href="https://xilinx.github.io/XRT/2023.2/html/index.html">Xilinx Runtime
-(XRT)</a>
-library which contains Linux drivers and APIs to support PL kernel
-control and data transfer in host application programming.</p></li>
+<li><p><strong>IIR</strong> filter of <em>feedforward</em> order <span class="math notranslate nohighlight">\(M\)</span> and <em>feedback</em> order <span class="math notranslate nohighlight">\(N\)</span>
+(or simply of order <span class="math notranslate nohighlight">\(N\)</span>):</p>
+<div class="math notranslate nohighlight" id="equation-iir">
+<span class="eqno">(7.2)<a class="headerlink" href="#equation-iir" title="Permalink to this equation">#</a></span>\[\begin{align} 
+\sum_{k=0}^N a_k y[n-k] = \sum_{k=0}^M b_k x[n-k] &amp; \hspace{50pt} &amp;
+(a_0 =1) 
+\end{align}\]</div>
+<p>where <span class="math notranslate nohighlight">\(x[n]\)</span> and <span class="math notranslate nohighlight">\(y[n]\)</span> denote the input and output signals,
+respectively.</p>
+</li>
 </ul>
 </li>
-<li><p>In addition, Vitis HLS can be employed to automatically synthesize
-interfaces that conform to the predefined configuration required by
-VAAD for a PL kernel.</p></li>
-<li><p>The tradeoffs for adopting VAAD are potential losses in flexibility
-of the implementation architecture and in PL utilization
-efficiency. Nonetheless, these potential losses are rather
-acceptable for us since we will not be interested in developing
-interfaces to other peripherals, and the adoption of VAAD allows us
-to focus only on the “DSP stuff” in our development.</p></li>
-</ul>
-</section>
-<section id="vaad-procedures-in-vitis">
-<span id="sec-vaadf-steps"></span><h2><span class="section-number">1.3.2. </span>VAAD Procedures in Vitis<a class="headerlink" href="#vaad-procedures-in-vitis" title="Permalink to this headline">#</a></h2>
-<p>The followings are the steps of performing our DSP development under
-VAAD:</p>
-<ol class="arabic simple">
-<li><p>Build a Vitis extensible platform for the RFSoC 4x2 board:</p>
-<ul class="simple">
-<li><p>Use Vivado to build a hardware platform component</p></li>
-<li><p>Use PetaLinux to build an image for the Linux domain with the
-required boot files, device tree, and XRT library</p></li>
-<li><p>Create a <em>Platform Component</em> in Vitis to build the Vitis
-extensible platform</p></li>
+<li><p>Equivalently, in the <span class="math notranslate nohighlight">\(z\)</span>-domain, the above difference equations are
+transformed to the following algebraic equations:</p>
+<ul>
+<li><p><strong>FIR</strong> filter of order <span class="math notranslate nohighlight">\(M\)</span>:</p>
+<div class="math notranslate nohighlight" id="equation-firz">
+<span class="eqno">(7.3)<a class="headerlink" href="#equation-firz" title="Permalink to this equation">#</a></span>\[\begin{align} 
+Y(z) = \sum_{k=0}^M b_k z^k X(Z) &amp; \hspace{80pt} &amp; (b_0 \neq 0) 
+\end{align}\]</div>
+</li>
+<li><p><strong>IIR</strong> filter of <em>feedforward</em> order <span class="math notranslate nohighlight">\(M\)</span> and <em>feedback</em> order <span class="math notranslate nohighlight">\(N\)</span>
+(or simply of order <span class="math notranslate nohighlight">\(N\)</span>):</p>
+<div class="math notranslate nohighlight" id="equation-iirz">
+<span class="eqno">(7.4)<a class="headerlink" href="#equation-iirz" title="Permalink to this equation">#</a></span>\[\begin{align} 
+\sum_{k=0}^N a_k z^k Y(z) = \sum_{k=0}^M b_k z^k X(z) &amp; \hspace{50pt} &amp;
+(a_0 =1) 
+\end{align}\]</div>
+<p>where <span class="math notranslate nohighlight">\(x[n] \stackrel{z}{\leftrightarrow} X(z)\)</span> and <span class="math notranslate nohighlight">\(y[n]
+\stackrel{z}{\leftrightarrow} Y(z)\)</span>.</p>
+</li>
 </ul>
 </li>
-<li><p>Create a <em>System Project</em> in Vitis by selecting to use the Vitis
-platform, the Linux kernel image, rootfs, and sysroot generated in
-step 1. The system project will serve as a system container for
-developing our embedded application.</p></li>
-<li><p>Create a <em>HLS Component</em> (multiple HLS components) in Vitis to use
-Vitis HLS to develop DSP kernel(s).</p></li>
-<li><p>Create an <em>Application Component</em> in Vitis to develop PS host application.</p></li>
-<li><p>Add the HLS and application components to the system project.</p></li>
-<li><p>Build the system project for software emulation, hardware
-emulation, and/or hardware in Vitis.</p></li>
-<li><p>Deploy the host executable and FPGA bit-stream, if applicable, for
-testing, debugging, and verification. The usual sequence of testing
-build is to start from software emulation, then to hardware
-emulation, and finally to hardware.</p></li>
-</ol>
-<ul class="simple">
-<li><p>Note that steps 2-5 can be replaced, and often simplified, by
-generating all the components from an <em>Acceleration Example</em> in
-Vitis and modifying the corresponding components in the example.</p></li>
 </ul>
-<figure class="align-center" id="vitis-build">
-<a class="reference internal image-reference" href="../_images/vitis_build.png"><img alt="Vitis extensible platform" src="../_images/vitis_build.png" style="width: 1000px;" /></a>
-<figcaption>
-<p><span class="caption-number">Fig. 1.5 </span><span class="caption-text">VAAD Procedures in Vitis
-(image modified from <span id="id3">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23b</a>]</span>)</span><a class="headerlink" href="#vitis-build" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
-</section>
-<section id="class-vitis-extensible-platform">
-<span id="sec-class-platform"></span><h2><span class="section-number">1.3.3. </span>Class Vitis Extensible Platform<a class="headerlink" href="#class-vitis-extensible-platform" title="Permalink to this headline">#</a></h2>
-<ul class="simple">
-<li><p>To ease the development process, I have built a simple Vitis
-extensible platform described in step 1 of <a class="reference internal" href="#sec-vaadf-steps"><span class="std std-numref">Section 1.3.2</span></a>
-for use in class. The platform is called <code class="docutils literal notranslate"><span class="pre">rfsoc_adc_vitis_platform</span></code>
-and will be provided. Those interested may follow the steps similar
-to those in <a class="reference external" href="https://github.com/tanfwong/rfsoc4x2/blob/main/vitis_adc_platform.md">this
-tutorial</a>
-to generate the Vitis platform.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">rfsoc_adc_vitis_platform</span></code> has ADC-D (ADC0 on tile 224) on the
-RFSoC4x2 board enabled at sampling rate <span class="math notranslate nohighlight">\(307.2\)</span> Msps. It also
-provides two clocks at <span class="math notranslate nohighlight">\(200\)</span> MHz and <span class="math notranslate nohighlight">\(400\)</span> MHz to drive the PL
-kernels. The block diagram of the hardware platform component
-generated by Vivado is given below:</p></li>
-</ul>
-<figure class="align-center" id="hardware">
-<a class="reference internal image-reference" href="../_images/rfsoc_adc_block_design.png"><img alt="Hardware component of `rfsoc_adc_vitis_platform`" src="../_images/rfsoc_adc_block_design.png" style="width: 1000px;" /></a>
-<figcaption>
-<p><span class="caption-number">Fig. 1.6 </span><span class="caption-text">Hardware platform component of <code class="docutils literal notranslate"><span class="pre">rfsoc_adc_vitis_platform</span></code></span><a class="headerlink" href="#hardware" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
-</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -552,7 +455,7 @@ generated by Vivado is given below:</p></li>
         },
         kernelOptions: {
             name: "python3",
-            path: "./ch1"
+            path: "./ch7"
         },
         predefinedOutput: true
     }
@@ -571,20 +474,20 @@ generated by Vivado is given below:</p></li>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="vitis.html"
+       href="../ch6/ocl_opt.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title"><span class="section-number">1.2. </span>Software Development Tools</p>
+        <p class="prev-next-title"><span class="section-number">6.3. </span>OpenCL Optimization</p>
       </div>
     </a>
     <a class="right-next"
-       href="../ch2/hls.html"
+       href="../refs.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">2. </span>Introduction to HLS</p>
+        <p class="prev-next-title"><span class="section-number">8. </span>References</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -597,22 +500,6 @@ generated by Vivado is given below:</p></li>
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vitis-application-acceleration-development-flow">1.3.1. Vitis Application Acceleration Development Flow</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vaad-procedures-in-vitis">1.3.2. VAAD Procedures in Vitis</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#class-vitis-extensible-platform">1.3.3. Class Vitis Extensible Platform</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>
