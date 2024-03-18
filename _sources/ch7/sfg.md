@@ -69,7 +69,12 @@
     $z^{-1}$ means $W_2(z) = z^{-1} W_1(z)$ in the $z$-domain, or
     equivalently $w_2[n] = w_1[n-1]$ in the time domain. 
   - The signal associated with a vertex is the "output" signal in the
-    sense that it is the sum of the incident signals to the vertex.
+    sense that it is the sum of the incident signals to the
+    vertex. For example, consider that the two unit-scaled edges
+    $(w_1,w_3)$ and $(w_2,w_3)$, and that the signal $w_3$ has only
+    $w_1$ and $w_2$ as its incident signals. This means $w_3[n] =
+    w_1[n]+w_2[n]$ in the time domain, or equivalently $W_3(z) =
+    W_1(z)+W_2(z)$ in the $z$-domain.
 
 
  
