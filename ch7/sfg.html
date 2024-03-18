@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>7.1. Signal Flow Graph &#8212; Real-time DSP Notes</title>
+    <title>7.1. Block Diagram &amp; Signal Flow Graph &#8212; Real-time DSP Notes</title>
   
   
   
@@ -196,7 +196,7 @@ const thebe_selector_output = ".output, .cell_output"
 </ul>
 </li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="filter.html">7. Filter Implementation</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">7.1. Signal Flow Graph</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">7.1. Block Diagram &amp; Signal Flow Graph</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">8. References</a></li>
@@ -370,7 +370,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -381,11 +383,20 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Signal Flow Graph</h1>
+    <h1>Block Diagram & Signal Flow Graph</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#block-diagram">7.1.1. Block Diagram</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#signal-flow-graph">7.1.2. Signal Flow Graph</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -395,8 +406,10 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="signal-flow-graph">
-<h1><span class="section-number">7.1. </span>Signal Flow Graph<a class="headerlink" href="#signal-flow-graph" title="Permalink to this headline">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="block-diagram-signal-flow-graph">
+<h1><span class="section-number">7.1. </span>Block Diagram &amp; Signal Flow Graph<a class="headerlink" href="#block-diagram-signal-flow-graph" title="Permalink to this headline">#</a></h1>
+<section id="block-diagram">
+<h2><span class="section-number">7.1.1. </span>Block Diagram<a class="headerlink" href="#block-diagram" title="Permalink to this headline">#</a></h2>
 <ul>
 <li><p>All FIR and IIR filters can be constructed using the following three
 basic components:</p>
@@ -450,6 +463,37 @@ component is often expressed in the form of a block diagram.</p>
 </ul>
 </li>
 </ul>
+</section>
+<section id="signal-flow-graph">
+<h2><span class="section-number">7.1.2. </span>Signal Flow Graph<a class="headerlink" href="#signal-flow-graph" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>The block diagram of an FIR/IIR filter can be represented by a
+<em>signal flow graph (SFG)</em>. It is often more convenient to draw the SFG
+of a higher-order FIR/IIR filter than the block diagram
+representation.</p></li>
+<li><p>The SFG of a filter is a <em>directed graph</em> <span class="math notranslate nohighlight">\(G=(V,E)\)</span> consisting of:</p>
+<ul class="simple">
+<li><p>a set <span class="math notranslate nohighlight">\(V\)</span> of vertices that are signals generated in the block
+diagram of the filter,</p></li>
+<li><p>a set <span class="math notranslate nohighlight">\(E\)</span> of edges, each of which is an ordered pair of vertices
+showing the direction of the signal flow,</p></li>
+<li><p>at least one <em>source</em> vertex in <span class="math notranslate nohighlight">\(V\)</span> with no incident edges, and</p></li>
+<li><p>at least one <em>sink</em> vertex in <span class="math notranslate nohighlight">\(V\)</span> with no emanating edges.</p></li>
+</ul>
+<p>In addition, the vertices and the edges must satisfy the following conditions:</p>
+<ul class="simple">
+<li><p>Each edge is associated with a <em>gain factor</em> that is either a
+scalar constant or <span class="math notranslate nohighlight">\(z^{-1}\)</span>. The gain factor is applied to the
+first signal (vertex) to obtain the second signal (vertex) of the
+edge. For example, the edge <span class="math notranslate nohighlight">\((w_1,w_2)\)</span>  with a gain factor
+<span class="math notranslate nohighlight">\(z^{-1}\)</span> means <span class="math notranslate nohighlight">\(W_2(z) = z^{-1} W_1(z)\)</span> in the <span class="math notranslate nohighlight">\(z\)</span>-domain, or
+equivalently <span class="math notranslate nohighlight">\(w_2[n] = w_1[n-1]\)</span> in the time domain.</p></li>
+<li><p>The signal associated with a vertex is the “output” signal in the
+sense that it is the sum of the incident signals to the vertex.</p></li>
+</ul>
+</li>
+</ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -510,6 +554,21 @@ component is often expressed in the form of a block diagram.</p>
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#block-diagram">7.1.1. Block Diagram</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#signal-flow-graph">7.1.2. Signal Flow Graph</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
