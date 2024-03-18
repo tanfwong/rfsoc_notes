@@ -406,7 +406,7 @@ basic components:</p>
 <div class="amsmath math notranslate nohighlight">
 \[\begin{align*}
     &amp; x_2[n] \\
-    &amp;\downarrow \\
+    &amp;\,\big\downarrow \\
     x_1[n] \longrightarrow &amp; \!\bigoplus \!\!\longrightarrow  x_1[n] + x_2[n]
     \end{align*}\]</div>
 <ol class="arabic simple" start="2">
@@ -415,7 +415,7 @@ basic components:</p>
 <div class="amsmath math notranslate nohighlight">
 \[\begin{align*}
     &amp; \,a \\
-    &amp;\downarrow \\
+    &amp;\,\big\downarrow \\
     x[n] \longrightarrow &amp; \!\bigotimes \!\!\longrightarrow  ax[n]
     \end{align*}\]</div>
 <ol class="arabic simple" start="3">
@@ -425,6 +425,20 @@ basic components:</p>
 \[\begin{align*}
     x[n] \longrightarrow &amp; \!\boxed{z^{-1}_{}} \!\!\longrightarrow  x[n-1]
     \end{align*}\]</div>
+</li>
+<li><p>The construction of an FIR/IIR filter using these three basic
+component is often expressed in the form of a block diagram.</p>
+<ul>
+<li><p><em>Example 1</em>:</p>
+<figure class="align-center" id="fir-ex-bd">
+<a class="reference internal image-reference" href="../_images/fir_ex_bd.jpg"><img alt="Block diagram of FIR filter" src="../_images/fir_ex_bd.jpg" style="width: 800px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 7.1 </span><span class="caption-text">Block diagram of the FIR filter
+<span class="math notranslate nohighlight">\(y[n] = 2x[n] - 0.5x[n-1] + 0.2x[n-2]\)</span></span><a class="headerlink" href="#fir-ex-bd" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+</li>
+</ul>
 </li>
 </ul>
 </section>

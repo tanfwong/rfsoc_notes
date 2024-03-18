@@ -5,14 +5,14 @@
   1. **Two-input adder**:
     \begin{align*}
     & x_2[n] \\
-    &\downarrow \\
+    &\,\big\downarrow \\
     x_1[n] \longrightarrow & \!\bigoplus \!\!\longrightarrow  x_1[n] + x_2[n]
     \end{align*}
 
   2. **Scalar multiplier**:
     \begin{align*}
     & \,a \\
-    &\downarrow \\
+    &\,\big\downarrow \\
     x[n] \longrightarrow & \!\bigotimes \!\!\longrightarrow  ax[n]
     \end{align*}
 
@@ -20,4 +20,22 @@
     \begin{align*}
     x[n] \longrightarrow & \!\boxed{z^{-1}_{}} \!\!\longrightarrow  x[n-1]
     \end{align*}
+
+* The construction of an FIR/IIR filter using these three basic
+  component is often expressed in the form of a block diagram.
+  - *Example 1*:
+    ```{figure} ../figs/fir_ex_bd.jpg
+    ---
+    name: fir_ex_bd
+    alt: Block diagram of FIR filter
+    width: 800px
+    align: center
+    ---
+    Block diagram of the FIR filter
+    $y[n] = 2x[n] - 0.5x[n-1] + 0.2x[n-2]$
+    ```
+
+    
+
+ 
 
