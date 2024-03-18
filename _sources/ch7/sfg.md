@@ -34,6 +34,17 @@
     Block diagram of FIR filter
     $y[n] = 2x[n] - 0.5x[n-1] + 0.2x[n-2]$
     ```
+  - *Example 2*:
+    ```{figure} ../figs/iir_ex_bd.jpg
+    ---
+    name: iir_ex_bd
+    alt: Block diagram of IIR filter
+    width: 600px
+    align: center
+    ---
+    Block diagram of IIR filter
+    $y[n] = 0.9y[n-1] - 0.5y[n-2] + x[n]$
+    ```
 
     
 
