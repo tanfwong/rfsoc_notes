@@ -28,10 +28,10 @@
     ---
     name: fir_ex_bd
     alt: Block diagram of FIR filter
-    width: 800px
+    width: 600px
     align: center
     ---
-    Block diagram of the FIR filter
+    Block diagram of FIR filter
     $y[n] = 2x[n] - 0.5x[n-1] + 0.2x[n-2]$
     ```
 
