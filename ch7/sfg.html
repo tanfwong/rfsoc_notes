@@ -419,7 +419,7 @@ basic components:</p>
 <div class="amsmath math notranslate nohighlight">
 \[\begin{align*}
     &amp; x_2[n] \\
-    &amp;\,\big\downarrow \\
+    &amp;\,\big\downarrow \\[-5pt]
     x_1[n] \longrightarrow &amp; \!\bigoplus \!\!\longrightarrow  x_1[n] + x_2[n]
     \end{align*}\]</div>
 <ol class="arabic simple" start="2">
@@ -428,7 +428,7 @@ basic components:</p>
 <div class="amsmath math notranslate nohighlight">
 \[\begin{align*}
     &amp; \,a \\
-    &amp;\,\big\downarrow \\
+    &amp;\,\big\downarrow \\[-5pt]
     x[n] \longrightarrow &amp; \!\bigotimes \!\!\longrightarrow  ax[n]
     \end{align*}\]</div>
 <ol class="arabic simple" start="3">
@@ -471,7 +471,7 @@ component is often expressed in the form of a block diagram.</p>
 <em>signal flow graph (SFG)</em>. It is often more convenient to draw the SFG
 of a higher-order FIR/IIR filter than the block diagram
 representation.</p></li>
-<li><p>The SFG of a filter is a <em>directed graph</em> <span class="math notranslate nohighlight">\(G=(V,E)\)</span> consisting of:</p>
+<li><p>The SFG of a filter is a <em>(edge-)weighted directed graph</em> <span class="math notranslate nohighlight">\(G=(V,E)\)</span> consisting of:</p>
 <ul class="simple">
 <li><p>a set <span class="math notranslate nohighlight">\(V\)</span> of vertices that are signals generated in the block
 diagram of the filter,</p></li>
@@ -480,21 +480,36 @@ showing the direction of the signal flow,</p></li>
 <li><p>at least one <em>source</em> vertex in <span class="math notranslate nohighlight">\(V\)</span> with no incident edges, and</p></li>
 <li><p>at least one <em>sink</em> vertex in <span class="math notranslate nohighlight">\(V\)</span> with no emanating edges.</p></li>
 </ul>
-<p>In addition, the vertices and the edges must satisfy the following conditions:</p>
-<ul class="simple">
-<li><p>Each edge is associated with a <em>gain factor</em> that is either a
-scalar constant or <span class="math notranslate nohighlight">\(z^{-1}\)</span>. The gain factor is applied to the
-first signal (vertex) to obtain the second signal (vertex) of the
-edge. For example, the edge <span class="math notranslate nohighlight">\((w_1,w_2)\)</span>  with a gain factor
+<p>In addition, the vertices and the edges must satisfy the following
+conditions:</p>
+<ul>
+<li><p>Each edge is associated with a <em>gain factor (weight)</em> that is
+either a scalar constant or <span class="math notranslate nohighlight">\(z^{-1}\)</span>. The gain factor is applied
+to the first signal (vertex) to obtain the second signal (vertex)
+of the edge. If no gain factor is specified, the default value of
+<span class="math notranslate nohighlight">\(1\)</span> applies.  For example, the edge <span class="math notranslate nohighlight">\((w_1,w_2)\)</span> with a gain factor
 <span class="math notranslate nohighlight">\(z^{-1}\)</span> means <span class="math notranslate nohighlight">\(W_2(z) = z^{-1} W_1(z)\)</span> in the <span class="math notranslate nohighlight">\(z\)</span>-domain, or
-equivalently <span class="math notranslate nohighlight">\(w_2[n] = w_1[n-1]\)</span> in the time domain.</p></li>
+equivalently <span class="math notranslate nohighlight">\(w_2[n] = w_1[n-1]\)</span> in the time domain. For
+convenience, we may write the edge as <span class="math notranslate nohighlight">\((w_1, w_2; {z^{-1})}\)</span> and
+draw it as <span class="math notranslate nohighlight">\(\bigcirc\kern-7.5pt\vcenter{\tiny w_1}
+\!\xrightarrow{~z^{-1}~}\!\!\bigcirc\kern-7.5pt\vcenter{\tiny
+w_2}~\)</span>.</p></li>
 <li><p>The signal associated with a vertex is the “output” signal in the
 sense that it is the sum of the incident signals to the
-vertex. For example, consider that the two unit-scaled edges
+vertex. For example, consider that the two unit-weighted edges
 <span class="math notranslate nohighlight">\((w_1,w_3)\)</span> and <span class="math notranslate nohighlight">\((w_2,w_3)\)</span>, and that the signal <span class="math notranslate nohighlight">\(w_3\)</span> has only
-<span class="math notranslate nohighlight">\(w_1\)</span> and <span class="math notranslate nohighlight">\(w_2\)</span> as its incident signals. This means <span class="math notranslate nohighlight">\(w_3[n] =
+<span class="math notranslate nohighlight">\(w_1\)</span> and <span class="math notranslate nohighlight">\(w_2\)</span> as its incident signals. Pictorially,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+&amp; \!\bigcirc\kern-7.5pt\vcenter{\tiny w_1}\\[-5pt]
+&amp; \big\downarrow \\[-5pt]
+\bigcirc\kern-7.5pt\vcenter{\tiny w_2}\!\!\longrightarrow &amp;
+\!\bigcirc\kern-7.5pt\vcenter{\tiny w_3}\!\!\longrightarrow 
+\end{align*}\end{split}\]</div>
+<p>This means <span class="math notranslate nohighlight">\(w_3[n] =
 w_1[n]+w_2[n]\)</span> in the time domain, or equivalently <span class="math notranslate nohighlight">\(W_3(z) =
-W_1(z)+W_2(z)\)</span> in the <span class="math notranslate nohighlight">\(z\)</span>-domain.</p></li>
+W_1(z)+W_2(z)\)</span> in the <span class="math notranslate nohighlight">\(z\)</span>-domain.</p>
+</li>
 </ul>
 </li>
 </ul>
