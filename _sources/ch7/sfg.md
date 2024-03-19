@@ -80,18 +80,36 @@
     vertex. For example, consider that the two unit-weighted edges
     $(w_1,w_3)$ and $(w_2,w_3)$, and that the signal $w_3$ has only
     $w_1$ and $w_2$ as its incident signals. Pictorially, 
-    ```{math}
     \begin{align*}
     & \!\bigcirc\kern-7.5pt\vcenter{\tiny w_1}\\[-5pt]
     & \big\downarrow \\[-5pt]
     \bigcirc\kern-7.5pt\vcenter{\tiny w_2}\!\!\longrightarrow &
     \!\bigcirc\kern-7.5pt\vcenter{\tiny w_3}\!\!\longrightarrow 
     \end{align*}
-    ```
     This means $w_3[n] =
     w_1[n]+w_2[n]$ in the time domain, or equivalently $W_3(z) =
     W_1(z)+W_2(z)$ in the $z$-domain.
 
+* The SFG of the FIR filter depicted in {numref}`fir_ex_bd` is:
+    \begin{align*}
+    \!\bigcirc\kern-6.5pt\vcenter{\tiny x} \longrightarrow
+    &
+    \!\bigcirc\!\!\xrightarrow{\hspace{10pt}{\scriptsize
+    2}\hspace{10pt}}\!\!\bigcirc
+    \!\!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+    \\[-0pt]
+    {\scriptsize z^{-1}} & \Big\downarrow  \hspace{25pt}
+    \Big\uparrow
+    \\[-10pt]
+     &\!\bigcirc\!\!\xrightarrow{\hspace{5pt}{\scriptsize
+    -0.5}\hspace{5pt}}\!\!\bigcirc
+    \\[-0pt]
+     {\scriptsize z^{-1}} & \Big\downarrow  \hspace{25pt}
+    \Big\uparrow
+    \\[-10pt]
+    &\!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    0.2}\hspace{8pt}}\!\!\bigcirc
+    \end{align*}
 
  
 
