@@ -13,7 +13,7 @@
   3. Create one or more command queues to execute commands on
      each device.
   4. Create and build a program by loading the PL bit-stream
-     (`.xclbin` file) into each device.
+     (`.xclbin` file).
   5. Select kernels to execute from the program and set up the
      selected kernels.
   6. Create memory objects for the selected kernels to operate on.
@@ -120,7 +120,7 @@
       // Creat Command Queue for selected Device
       OCL_CHECK(err, q = cl::CommandQueue(context, device, CL_QUEUE_PROFILING_ENABLE, &err));
       // Step 4:
-      // Creat Program and load PL bit-stream to selected Device
+      // Creat Program and load PL bit-stream into program
       std::cout << "Trying to program device[" << i << "]: " << device.getInfo<CL_DEVICE_NAME>() << std::endl;
       cl::Program program(context, {device}, bins, nullptr, &err);
       if (err != CL_SUCCESS) {

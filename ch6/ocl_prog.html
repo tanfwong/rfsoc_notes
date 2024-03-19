@@ -193,7 +193,10 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="ocl_opt.html">6.3. OpenCL Optimization</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../ch7/filter.html">7. Filter Implementation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../ch7/filter.html">7. Filter Implementation</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ch7/sfg.html">7.1. Block Diagram &amp; Signal Flow Graph</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">8. References</a></li>
 </ul>
 
@@ -406,7 +409,7 @@ it.</p></li>
 <li><p>Create one or more command queues to execute commands on
 each device.</p></li>
 <li><p>Create and build a program by loading the PL bit-stream
-(<code class="docutils literal notranslate"><span class="pre">.xclbin</span></code> file) into each device.</p></li>
+(<code class="docutils literal notranslate"><span class="pre">.xclbin</span></code> file).</p></li>
 <li><p>Select kernels to execute from the program and set up the
 selected kernels.</p></li>
 <li><p>Create memory objects for the selected kernels to operate on.</p></li>
@@ -512,7 +515,7 @@ used in Lab 1:</p>
 <span class="w">    </span><span class="c1">// Creat Command Queue for selected Device</span>
 <span class="w">    </span><span class="n">OCL_CHECK</span><span class="p">(</span><span class="n">err</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cl</span><span class="o">::</span><span class="n">CommandQueue</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">device</span><span class="p">,</span><span class="w"> </span><span class="n">CL_QUEUE_PROFILING_ENABLE</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">));</span>
 <span class="w">    </span><span class="c1">// Step 4:</span>
-<span class="w">    </span><span class="c1">// Creat Program and load PL bit-stream to selected Device</span>
+<span class="w">    </span><span class="c1">// Creat Program and load PL bit-stream into program</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Trying to program device[&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;]: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">device</span><span class="p">.</span><span class="n">getInfo</span><span class="o">&lt;</span><span class="n">CL_DEVICE_NAME</span><span class="o">&gt;</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 <span class="w">    </span><span class="n">cl</span><span class="o">::</span><span class="n">Program</span><span class="w"> </span><span class="n">program</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">device</span><span class="p">},</span><span class="w"> </span><span class="n">bins</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">);</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">CL_SUCCESS</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
