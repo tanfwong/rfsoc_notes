@@ -111,5 +111,24 @@
     0.2}\hspace{8pt}}\!\!\bigcirc
     \end{align*}
 
+* The SFG of the FIR filter depicted in {numref}`iir_ex_bd` is:
+    \begin{align*}
+    \!\bigcirc\kern-6.5pt\vcenter{\tiny x} \longrightarrow
+    &
+    \!\bigcirc\!\!\xrightarrow{\hspace{12pt} \hspace{12pt}}\!\!\bigcirc
+    \!\!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+    \\[-0pt]
+   & \Big\uparrow  \hspace{25pt}
+    \Big\downarrow  {\scriptsize z^{-1}} 
+    \\[-10pt]
+     &\!\bigcirc\!\!\xleftarrow{\hspace{8pt}{\scriptsize
+    0.9}\hspace{8pt}}\!\!\bigcirc
+    \\[-0pt]
+   & \Big\uparrow  \hspace{25pt}
+    \Big\downarrow  {\scriptsize z^{-1}} 
+    \\[-10pt]
+    &\!\bigcirc\!\!\xleftarrow{\hspace{5pt}{\scriptsize
+    -0.5}\hspace{5pt}}\!\!\bigcirc
+    \end{align*}
  
 
