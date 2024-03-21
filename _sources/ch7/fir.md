@@ -34,3 +34,31 @@ domain or {eq}`firz` in the $z$-domain:
   Y(z) & = U_0(z).
   \end{align}
   ```
+* Combining {eq}`fir_direct_w` and {eq}`fir_direct_u` gives the
+  following direct-form SFG:
+  \begin{align*}
+    \!\bigcirc\kern-6.5pt\vcenter{\tiny x} \longrightarrow
+    &
+    \!\bigcirc\kern-7.5pt\vcenter{\tiny w_0}\!\xrightarrow{\hspace{9pt}{\scriptsize
+    b_0}\hspace{9pt}}\!\!\bigcirc\kern-7.5pt\vcenter{\tiny u_0}
+    \!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+    \\[-0pt]
+    {\scriptsize z^{-1}} & \Big\downarrow  \hspace{25pt}
+    \Big\uparrow
+    \\[-10pt]
+     &\!\bigcirc\kern-7.5pt\vcenter{\tiny
+  w_1}\!\xrightarrow{\hspace{9pt}{\scriptsize
+    b_1}\hspace{9pt}}\!\!\bigcirc\kern-7.5pt\vcenter{\tiny u_1}
+    \\[-0pt]
+     {\scriptsize z^{-1}} & \Big\downarrow  \hspace{25pt}
+    \Big\uparrow
+    \\[-0pt]
+    & \,\vdots \hspace{29pt} \vdots 
+    \\[-0pt]
+    {\scriptsize z^{-1}} & \Big\downarrow  \hspace{25pt}
+    \Big\uparrow
+    \\[-10pt]
+     &\!\bigcirc\kern-8.5pt\vcenter{\tiny
+  w_M}\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_M}\hspace{8pt}}\!\!\bigcirc\kern-8.5pt\vcenter{\tiny u_M}
+   \end{align*}

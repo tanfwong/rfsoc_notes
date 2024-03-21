@@ -66,7 +66,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="7.2. FIR Filter Implementation" href="fir.html" />
+    <link rel="next" title="7.2. FIR Filter" href="fir.html" />
     <link rel="prev" title="7. Filter Implementation" href="filter.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
@@ -197,7 +197,7 @@ const thebe_selector_output = ".output, .cell_output"
 </li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="filter.html">7. Filter Implementation</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">7.1. Block Diagram &amp; Signal Flow Graph</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fir.html">7.2. FIR Filter Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fir.html">7.2. FIR Filter</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">8. References</a></li>
@@ -505,7 +505,7 @@ vertex. For example, consider that the two unit-weighted edges
     &amp; \!\bigcirc\kern-7.5pt\vcenter{\tiny w_1}\\[-5pt]
     &amp; \big\downarrow \\[-5pt]
     \bigcirc\kern-7.5pt\vcenter{\tiny w_2}\!\!\longrightarrow &amp;
-    \!\bigcirc\kern-7.5pt\vcenter{\tiny w_3}\!\!\longrightarrow 
+    \!\bigcirc\kern-7.5pt\vcenter{\tiny w_3}\!\longrightarrow 
     \end{align*}\]</div>
 <p>This means <span class="math notranslate nohighlight">\(w_3[n] =
 w_1[n]+w_2[n]\)</span> in the time domain, or equivalently <span class="math notranslate nohighlight">\(W_3(z) =
@@ -520,7 +520,7 @@ W_1(z)+W_2(z)\)</span> in the <span class="math notranslate nohighlight">\(z\)</
     &amp;
     \!\bigcirc\!\!\xrightarrow{\hspace{10pt}{\scriptsize
     2}\hspace{10pt}}\!\!\bigcirc
-    \!\!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+    \!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
     \\[-0pt]
     {\scriptsize z^{-1}} &amp; \Big\downarrow  \hspace{25pt}
     \Big\uparrow
@@ -541,7 +541,7 @@ W_1(z)+W_2(z)\)</span> in the <span class="math notranslate nohighlight">\(z\)</
     \!\bigcirc\kern-6.5pt\vcenter{\tiny x} \longrightarrow
     &amp;
     \!\bigcirc\!\!\xrightarrow{\hspace{12pt} \hspace{12pt}}\!\!\bigcirc
-    \!\!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+    \!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
     \\[-0pt]
    &amp; \Big\uparrow  \hspace{25pt}
     \Big\downarrow  {\scriptsize z^{-1}} 
@@ -605,7 +605,7 @@ W_1(z)+W_2(z)\)</span> in the <span class="math notranslate nohighlight">\(z\)</
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">7.2. </span>FIR Filter Implementation</p>
+        <p class="prev-next-title"><span class="section-number">7.2. </span>FIR Filter</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

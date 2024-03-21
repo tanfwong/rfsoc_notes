@@ -84,7 +84,7 @@
     & \!\bigcirc\kern-7.5pt\vcenter{\tiny w_1}\\[-5pt]
     & \big\downarrow \\[-5pt]
     \bigcirc\kern-7.5pt\vcenter{\tiny w_2}\!\!\longrightarrow &
-    \!\bigcirc\kern-7.5pt\vcenter{\tiny w_3}\!\!\longrightarrow 
+    \!\bigcirc\kern-7.5pt\vcenter{\tiny w_3}\!\longrightarrow 
     \end{align*}
     This means $w_3[n] =
     w_1[n]+w_2[n]$ in the time domain, or equivalently $W_3(z) =
@@ -96,7 +96,7 @@
     &
     \!\bigcirc\!\!\xrightarrow{\hspace{10pt}{\scriptsize
     2}\hspace{10pt}}\!\!\bigcirc
-    \!\!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+    \!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
     \\[-0pt]
     {\scriptsize z^{-1}} & \Big\downarrow  \hspace{25pt}
     \Big\uparrow
@@ -116,7 +116,7 @@
     \!\bigcirc\kern-6.5pt\vcenter{\tiny x} \longrightarrow
     &
     \!\bigcirc\!\!\xrightarrow{\hspace{12pt} \hspace{12pt}}\!\!\bigcirc
-    \!\!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+    \!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
     \\[-0pt]
    & \Big\uparrow  \hspace{25pt}
     \Big\downarrow  {\scriptsize z^{-1}} 
