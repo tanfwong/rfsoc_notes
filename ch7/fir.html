@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>2. Introduction to HLS &#8212; Real-time DSP Notes</title>
+    <title>7.2. FIR Filter &#8212; Real-time DSP Notes</title>
   
   
   
@@ -60,12 +60,14 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'ch2/hls';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ch7/fir';</script>
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="2.1. HLS Tasks" href="hls_tasks.html" />
-    <link rel="prev" title="1.3. Vitis Application Acceleration Development" href="../ch1/workflow.html" />
+    <link rel="next" title="8. References" href="../refs.html" />
+    <link rel="prev" title="7.1. Block Diagram &amp; Signal Flow Graph" href="sfg.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
   </head>
@@ -163,9 +165,9 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="../ch1/workflow.html">1.3. Vitis Application Acceleration Development</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">2. Introduction to HLS</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="hls_tasks.html">2.1. HLS Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hls_flow.html">2.2. Vitis HLS Development Flow</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../ch2/hls.html">2. Introduction to HLS</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ch2/hls_tasks.html">2.1. HLS Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ch2/hls_flow.html">2.2. Vitis HLS Development Flow</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../ch3/hls_design.html">3. HLS Design Basics</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -193,9 +195,9 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="../ch6/ocl_opt.html">6.3. OpenCL Optimization</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../ch7/filter.html">7. Filter Implementation</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../ch7/sfg.html">7.1. Block Diagram &amp; Signal Flow Graph</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../ch7/fir.html">7.2. FIR Filter Implementation</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="filter.html">7. Filter Implementation</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="sfg.html">7.1. Block Diagram &amp; Signal Flow Graph</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">7.2. FIR Filter</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">8. References</a></li>
@@ -270,7 +272,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Fch2/hls.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Fch7/fir.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -300,7 +302,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../_sources/ch2/hls.md" target="_blank"
+      <li><a href="../_sources/ch7/fir.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -369,7 +371,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -380,11 +384,19 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Introduction to HLS</h1>
+    <h1>FIR Filter</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-form-implementation">7.2.1. Direct-form Implementation</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -394,32 +406,41 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="introduction-to-hls">
-<span id="sec-hls"></span><h1><span class="section-number">2. </span>Introduction to HLS<a class="headerlink" href="#introduction-to-hls" title="Permalink to this headline">#</a></h1>
-<ul class="simple">
-<li><p>As discussed in <a class="reference internal" href="../ch1/workflow.html#sec-vaad"><span class="std std-numref">Section 1.3</span></a>, we will employ <em>high-level
-synthesis (HLS)</em> to develop DSP kernels in the PL.</p></li>
-<li><p>In the HLS design process of a DSP kernel <span id="id1">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>, we specify
-the <em><strong>macro-architecture</strong></em> of the kernel, including:</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="fir-filter">
+<h1><span class="section-number">7.2. </span>FIR Filter<a class="headerlink" href="#fir-filter" title="Permalink to this headline">#</a></h1>
+<p>Consider an <span class="math notranslate nohighlight">\(M\)</span>-order FIR filter specified by <a class="reference internal" href="filter.html#equation-fir">(7.1)</a> in the time
+domain or <a class="reference internal" href="filter.html#equation-firz">(7.3)</a> in the <span class="math notranslate nohighlight">\(z\)</span>-domain:</p>
+<section id="direct-form-implementation">
+<h2><span class="section-number">7.2.1. </span>Direct-form Implementation<a class="headerlink" href="#direct-form-implementation" title="Permalink to this headline">#</a></h2>
 <ul>
-<li><p>the behavioral description of the DSP kernel in a high-level
-language, such as C/C++,</p></li>
-<li><p>the ways that the DSP kernel interfaces with other components
-in the system, and</p></li>
-<li><p>design constraints such as clock period, latency, throughput, etc.</p></li>
-</ul>
+<li><p>Rewrite <a class="reference internal" href="filter.html#equation-firz">(7.3)</a> as follows:</p>
+<div class="math notranslate nohighlight" id="equation-fir-direct1">
+<span class="eqno">(7.5)<a class="headerlink" href="#equation-fir-direct1" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{align}
+Y(z) 
+&amp;= 
+\sum_{k=0}^M b_k z^k X(Z) \\
+&amp; =
+b_0 W_0(z) + (b_1 W_1(z) + (b_2 W_2(z) + \cdots + (b_{M=1}
+W_{M-1}(z)+ b_M W_M(z)) \cdots )
+\end{align}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(W_k (z) = z^k X(z)\)</span> for <span class="math notranslate nohighlight">\(k=0, 1, \ldots, M\)</span>. Clearly,</p>
+<div class="math notranslate nohighlight" id="equation-fir-direct-w">
+<span class="eqno">(7.6)<a class="headerlink" href="#equation-fir-direct-w" title="Permalink to this equation">#</a></span>\[\begin{align}
+W_k(z) &amp;= z^{-1} W_{k-1}(z), &amp; k=1,2,\ldots, M.
+\end{align}\]</div>
 </li>
-<li><p>The Vitis HLS tool then automates the <em><strong>micro-architecture</strong></em>
-design of the DSP kernel, including state machine generation,
-operation scheduling, creating data path and register pipeline,
-generating control logic and interfaces for the kernel, etc, from
-the high-level C/C++ description of the DSP kernel, interface, and
-constraint specifications. The tool translates the
-micro-architecture design into a RTL realization of the DSP kernel
-that can be further processed by Vitis and Vivado.</p></li>
+<li><p>From the form of <a class="reference internal" href="#equation-fir-direct1">(7.5)</a>, we may also get <span class="math notranslate nohighlight">\(Y(z)\)</span>
+iteratively by defining:</p>
+<div class="math notranslate nohighlight" id="equation-fir-direct-u">
+<span class="eqno">(7.7)<a class="headerlink" href="#equation-fir-direct-u" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{align}
+U_M(z) &amp;= b_M W_M(z), \\
+U_k(z) &amp;= b_k W_{k}(z) + U_{k+1}(z), &amp; k=M-1,M-2,\ldots,0 
+\\
+Y(z) &amp; = U_0(z).
+\end{align}\end{split}\]</div>
+</li>
 </ul>
-<div class="toctree-wrapper compound">
-</div>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -435,7 +456,7 @@ that can be further processed by Vitis and Vivado.</p></li>
         },
         kernelOptions: {
             name: "python3",
-            path: "./ch2"
+            path: "./ch7"
         },
         predefinedOutput: true
     }
@@ -454,20 +475,20 @@ that can be further processed by Vitis and Vivado.</p></li>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../ch1/workflow.html"
+       href="sfg.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title"><span class="section-number">1.3. </span>Vitis Application Acceleration Development</p>
+        <p class="prev-next-title"><span class="section-number">7.1. </span>Block Diagram &amp; Signal Flow Graph</p>
       </div>
     </a>
     <a class="right-next"
-       href="hls_tasks.html"
+       href="../refs.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">2.1. </span>HLS Tasks</p>
+        <p class="prev-next-title"><span class="section-number">8. </span>References</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -480,6 +501,20 @@ that can be further processed by Vitis and Vivado.</p></li>
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-form-implementation">7.2.1. Direct-form Implementation</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

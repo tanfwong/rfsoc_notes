@@ -111,7 +111,7 @@
     0.2}\hspace{8pt}}\!\!\bigcirc
     \end{align*}
 
-* The SFG of the FIR filter depicted in {numref}`iir_ex_bd` is:
+* The SFG of the IIR filter depicted in {numref}`iir_ex_bd` is:
     \begin{align*}
     \!\bigcirc\kern-6.5pt\vcenter{\tiny x} \longrightarrow
     &
