@@ -62,3 +62,43 @@ domain or {eq}`firz` in the $z$-domain:
   w_M}\!\!\xrightarrow{\hspace{8pt}{\scriptsize
     b_M}\hspace{8pt}}\!\!\bigcirc\kern-8.5pt\vcenter{\tiny u_M}
    \end{align*}
+
+* Example HLS function that implements the direct-form SFG above:
+  ```c++
+  #define L 10
+  const din_t b[L]={0.5, -0.4, 0.3, -0.2, 0.05, 0.3, -0.3, 0.2, 0.1, -0.1};
+
+  void fir(hls::stream<din_t> &in, hls::stream<dout_t> &out, int N) {
+
+    static din_t w[L] = {};
+  #pragma HLS array_partition variable=w type=complete
+    
+    sample_loop: for (int n=0; n<N; n++) {
+  #pragma HLS loop_tripcount max=MAX_N
+      
+      delay_loop: for (int k=L-1; k>0; k--) {
+        w[k] = w[k-1];
+      }
+      // Read in new sample from in
+      w[0] = in.read();
+
+      dout_t y = 0.0;
+      acc_loop: for (int k=0; k<L; k++) {
+        y += b[k]*w[k];
+      }
+    }
+
+    // Write to out
+    out.write(y);
+  }
+  ```
+  Vitis HLS pipelines `fir_loop` to achieve II=1 for the function `fir()`.
+  ```{tip}
+  The `static` qualifier in the declaration of the array `w[L]`
+  prevents Vitis HLS from synthesizing hardware to reinitialize
+  the contents of the array every time the
+  function is called. This allows filtering contiguous blocks of
+  samples of length `N`.
+  ```
+
+  
