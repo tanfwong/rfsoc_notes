@@ -9,7 +9,7 @@ domain or {eq}`firz` in the $z$-domain:
   \begin{align}
   Y(z) 
   &= 
-  \sum_{k=0}^M b_k z^k X(Z) \\
+  \sum_{k=0}^M b_k z^{-k} X(Z) \\
   & =
   b_0 W_0(z) + (b_1 W_1(z) + (b_2 W_2(z) + \cdots + (b_{M=1}
   W_{M-1}(z)+ b_M W_M(z)) \cdots )
@@ -101,4 +101,16 @@ domain or {eq}`firz` in the $z$-domain:
   samples of length `N`.
   ```
 
-  
+## Transposed-form Implementation
+* Rewrite {eq}`firz` as follows:
+  ```{math}
+  :label: fir_transp
+  \begin{align}
+  Y(z) 
+  &= 
+  \sum_{k=0}^M b_k z^{-k} X(Z) \\
+  & =
+  b_0 X(z) + z^{-1} (b_1 X(z) + z^{-1} (b_2 X(z) + \cdots +
+  z^{-1} (b_{M-1} X(z)+ z^{-1} b_M X(z)) \cdots ).
+  \end{align}
+  ```

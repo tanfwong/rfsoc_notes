@@ -395,6 +395,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-form-implementation">7.2.1. Direct-form Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transposed-form-implementation">7.2.2. Transposed-form Implementation</a></li>
 </ul>
             </nav>
         </div>
@@ -418,7 +419,7 @@ domain or <a class="reference internal" href="filter.html#equation-firz">(7.3)</
 <span class="eqno">(7.5)<a class="headerlink" href="#equation-fir-direct1" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{align}
 Y(z) 
 &amp;= 
-\sum_{k=0}^M b_k z^k X(Z) \\
+\sum_{k=0}^M b_k z^{-k} X(Z) \\
 &amp; =
 b_0 W_0(z) + (b_1 W_1(z) + (b_2 W_2(z) + \cdots + (b_{M=1}
 W_{M-1}(z)+ b_M W_M(z)) \cdots )
@@ -510,6 +511,22 @@ samples of length <code class="docutils literal notranslate"><span class="pre">N
 </li>
 </ul>
 </section>
+<section id="transposed-form-implementation">
+<h2><span class="section-number">7.2.2. </span>Transposed-form Implementation<a class="headerlink" href="#transposed-form-implementation" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>Rewrite <a class="reference internal" href="filter.html#equation-firz">(7.3)</a> as follows:</p>
+<div class="math notranslate nohighlight" id="equation-fir-transp">
+<span class="eqno">(7.8)<a class="headerlink" href="#equation-fir-transp" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{align}
+Y(z) 
+&amp;= 
+\sum_{k=0}^M b_k z^{-k} X(Z) \\
+&amp; =
+b_0 X(z) + z^{-1} (b_1 X(z) + z^{-1} (b_2 X(z) + \cdots +
+z^{-1} (b_{M-1} X(z)+ z^{-1} b_M X(z)) \cdots ).
+\end{align}\end{split}\]</div>
+</li>
+</ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -580,6 +597,7 @@ samples of length <code class="docutils literal notranslate"><span class="pre">N
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-form-implementation">7.2.1. Direct-form Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transposed-form-implementation">7.2.2. Transposed-form Implementation</a></li>
 </ul>
   </nav></div>
 
