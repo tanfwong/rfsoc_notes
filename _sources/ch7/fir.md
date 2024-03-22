@@ -63,7 +63,7 @@ domain or {eq}`firz` in the $z$-domain:
     b_M}\hspace{8pt}}\!\!\bigcirc\kern-8.5pt\vcenter{\tiny u_M}
    \end{align*}
 
-* Example HLS function that implements the direct-form SFG above:
+* Below is an example HLS function that implements the direct-form SFG above:
   ```c++
   #define L 10
   const din_t b[L]={0.5, -0.4, 0.3, -0.2, 0.05, 0.3, -0.3, 0.2, 0.1, -0.1};
@@ -150,3 +150,32 @@ domain or {eq}`firz` in the $z$-domain:
      &\!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
     b_M}\hspace{8pt}}\!\!\bigcirc\kern-8.5pt\vcenter{\tiny u_M}
    \end{align*}
+
+* Below is an example HLS function that implements the transposed-form SFG:
+  ```c++
+  const din_t b[L]={0.5, -0.4, 0.3, -0.2, 0.05, 0.3, -0.3, 0.2, 0.1, -0.1};
+
+  void fir(hls::stream<din_t> &in, hls::stream<dout_t> &out, int N) {
+
+    static dout_t u[L-1] = {};
+  #pragma HLS array_partition variable=w type=complete
+
+    sample_loop: for (int n=0; n<N; n++) {
+  #pragma HLS loop_tripcount max=MAX_N
+      // Read in new sample from in
+      din_t x = in.read();
+      dout_t bx = b[0]*x;
+      // Write to out
+      out.write(bx+u[0]);
+      
+      delay_add_loop: for (int k=1; k<L-1; k++) {
+        bx = b[k]*x;
+        u[k-1] = bx+u[k];
+      }
+      bx = b[L-1]*x;
+      u[L-2] = bx;
+    }
+  }
+  ```
+  VItis HLS a RTL implementation with II=1 and a slightly smaller
+  latency for the transposed-form SFG.
