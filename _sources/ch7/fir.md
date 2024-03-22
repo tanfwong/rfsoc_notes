@@ -114,3 +114,39 @@ domain or {eq}`firz` in the $z$-domain:
   z^{-1} (b_{M-1} X(z)+ z^{-1} b_M X(z)) \cdots ).
   \end{align}
   ```
+* From the form of {eq}`fir_transp`, we may also get $Y(z)$
+  iteratively by defining:
+  ```{math}
+  :label: fir_transp_u
+  \begin{align}
+  U_M(z) &= b_M X(z), \\
+  U_k(z) &= b_k X(z) + z^{-1} U_{k+1}(z), & k=M-1,M-2,\ldots,0 
+  \\
+  Y(z) & = U_0(z),
+  \end{align}
+  ```
+  which leads to the following transposed-form SFG:
+  \begin{align*}
+    \!\bigcirc\kern-6.5pt\vcenter{\tiny x} \longrightarrow
+    &
+    \!\bigcirc\!\!\xrightarrow{\hspace{9pt}{\scriptsize
+    b_0}\hspace{9pt}}\!\!\bigcirc\kern-7.5pt\vcenter{\tiny u_0}
+    \!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+    \\[-0pt]
+   & \Big\downarrow  \hspace{25pt}
+    \Big\uparrow  {\scriptsize z^{-1}}
+    \\[-10pt]
+     &\!\bigcirc\!\!\xrightarrow{\hspace{9pt}{\scriptsize
+    b_1}\hspace{9pt}}\!\!\bigcirc\kern-7.5pt\vcenter{\tiny u_1}
+    \\[-0pt]
+    & \Big\downarrow  \hspace{25pt}
+    \Big\uparrow  {\scriptsize z^{-1}} 
+    \\[-0pt]
+    & \,\vdots \hspace{29pt} \vdots 
+    \\[-0pt]
+    & \Big\downarrow  \hspace{25pt}
+    \Big\uparrow {\scriptsize z^{-1}}
+    \\[-10pt]
+     &\!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_M}\hspace{8pt}}\!\!\bigcirc\kern-8.5pt\vcenter{\tiny u_M}
+   \end{align*}

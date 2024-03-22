@@ -525,6 +525,42 @@ b_0 X(z) + z^{-1} (b_1 X(z) + z^{-1} (b_2 X(z) + \cdots +
 z^{-1} (b_{M-1} X(z)+ z^{-1} b_M X(z)) \cdots ).
 \end{align}\end{split}\]</div>
 </li>
+<li><p>From the form of <a class="reference internal" href="#equation-fir-transp">(7.8)</a>, we may also get <span class="math notranslate nohighlight">\(Y(z)\)</span>
+iteratively by defining:</p>
+<div class="math notranslate nohighlight" id="equation-fir-transp-u">
+<span class="eqno">(7.9)<a class="headerlink" href="#equation-fir-transp-u" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{align}
+U_M(z) &amp;= b_M X(z), \\
+U_k(z) &amp;= b_k X(z) + z^{-1} U_{k+1}(z), &amp; k=M-1,M-2,\ldots,0 
+\\
+Y(z) &amp; = U_0(z),
+\end{align}\end{split}\]</div>
+<p>which leads to the following transposed-form SFG:</p>
+<div class="amsmath math notranslate nohighlight">
+\[\begin{align*}
+    \!\bigcirc\kern-6.5pt\vcenter{\tiny x} \longrightarrow
+    &amp;
+    \!\bigcirc\!\!\xrightarrow{\hspace{9pt}{\scriptsize
+    b_0}\hspace{9pt}}\!\!\bigcirc\kern-7.5pt\vcenter{\tiny u_0}
+    \!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+    \\[-0pt]
+   &amp; \Big\downarrow  \hspace{25pt}
+    \Big\uparrow  {\scriptsize z^{-1}}
+    \\[-10pt]
+     &amp;\!\bigcirc\!\!\xrightarrow{\hspace{9pt}{\scriptsize
+    b_1}\hspace{9pt}}\!\!\bigcirc\kern-7.5pt\vcenter{\tiny u_1}
+    \\[-0pt]
+    &amp; \Big\downarrow  \hspace{25pt}
+    \Big\uparrow  {\scriptsize z^{-1}} 
+    \\[-0pt]
+    &amp; \,\vdots \hspace{29pt} \vdots 
+    \\[-0pt]
+    &amp; \Big\downarrow  \hspace{25pt}
+    \Big\uparrow {\scriptsize z^{-1}}
+    \\[-10pt]
+     &amp;\!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_M}\hspace{8pt}}\!\!\bigcirc\kern-8.5pt\vcenter{\tiny u_M}
+   \end{align*}\]</div>
+</li>
 </ul>
 </section>
 </section>
