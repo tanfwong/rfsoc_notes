@@ -9,7 +9,7 @@ domain or {eq}`firz` in the $z$-domain:
   \begin{align}
   Y(z) 
   &= 
-  \sum_{k=0}^M b_k z^{-k} X(Z) \\
+  \sum_{k=0}^M b_k z^{-k} X(z) \\
   & =
   b_0 W_0(z) + (b_1 W_1(z) + (b_2 W_2(z) + \cdots + (b_{M=1}
   W_{M-1}(z)+ b_M W_M(z)) \cdots )
@@ -108,7 +108,7 @@ domain or {eq}`firz` in the $z$-domain:
   \begin{align}
   Y(z) 
   &= 
-  \sum_{k=0}^M b_k z^{-k} X(Z) \\
+  \sum_{k=0}^M b_k z^{-k} X(z) \\
   & =
   b_0 X(z) + z^{-1} (b_1 X(z) + z^{-1} (b_2 X(z) + \cdots +
   z^{-1} (b_{M-1} X(z)+ z^{-1} b_M X(z)) \cdots ).
@@ -179,3 +179,124 @@ domain or {eq}`firz` in the $z$-domain:
   ```
   VItis HLS a RTL implementation with II=1 and a slightly smaller
   latency for the transposed-form SFG.
+
+
+## Cascade-form Implementation
+* Rewrite {eq}`fir` in the cascade form as follows:
+  ```{math}
+  :label: fir_cascade
+  \begin{align}
+  Y(z) 
+  &= 
+  \sum_{k=0}^M b_k z^{-k} X(z) \\
+  & =
+  b_0 \prod_{k=1}^{M} \left( 1 - z_k z^{-1} \right) X(z)
+  \end{align}
+  ```
+  where $z_1, z_2, \ldots, z_M$ are the zeros of the transfer function
+  $H(z) = \sum_{k=0}^M b_k z^{-k}$ of the FIR filter.
+
+* For real-valued filter taps, i.e., all the $b_k$s are real numbers,
+  the zeros either are real-valued or come in conjugate pairs. Hence,
+  we may rewrite {eq}`fir_cascade` further in the following form:
+  ```{math}
+  :label: fir_cascade_sos
+  \begin{align}
+  Y(z) 
+  &=
+  b_0 \prod_{k=1}^{K} \left( 1 + b_{k,1} z^{-1} + b_{k,2} \right) X(z)
+  \end{align}
+  ```
+  
+  where the FIR filter is decomposed into a cascade of $K$ components
+  (sections), each is (at most) a second-order FIR filter with
+  real-valued taps ($b_{k,1} and $b_{k,2}$).
+
+* Each second-order section (SoS) may be implemented in the direct form
+  or in the transposed form. For example:
+  - Cascade-form SFG with direct-form SoSs:
+  \begin{align*}
+    \!\bigcirc\kern-6.5pt\vcenter{\tiny x}
+  \xrightarrow{\hspace{8pt}{\scriptsize b_0}\hspace{7pt}}
+    &
+    \!\bigcirc\!\!\xrightarrow{\hspace{26pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc
+    \!\!\xrightarrow{\hspace{26pt}}\!\!\bigcirc
+    \!\!\longrightarrow \cdots \longrightarrow
+     \!\bigcirc\!\!\xrightarrow{\hspace{26pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+    \\[-0pt]
+    {\scriptsize z^{-1}} & \Big\downarrow  \hspace{26pt}
+    \Big\uparrow \hspace{9pt}
+    {\scriptsize z^{-1}} \Big\downarrow  \hspace{26pt}
+    \Big\uparrow \hspace{44pt}
+     {\scriptsize z^{-1}} \Big\downarrow  \hspace{26pt}
+    \Big\uparrow 
+    \\[-10pt]
+     &\!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{1,1}}\hspace{7pt}}\!\!\bigcirc \hspace{18pt}
+    \!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{2,1}}\hspace{7pt}}\!\!\bigcirc 
+    \hspace{17pt} \cdots \hspace{19pt}
+    \bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{K,1}}\hspace{6pt}}\!\!\bigcirc
+    \\[-0pt]
+     {\scriptsize z^{-1}} & \Big\downarrow  \hspace{26pt}
+    \Big\uparrow \hspace{9pt}
+    {\scriptsize z^{-1}} \Big\downarrow  \hspace{26pt}
+    \Big\uparrow  \hspace{44pt}
+     {\scriptsize z^{-1}} \Big\downarrow  \hspace{26pt}
+    \Big\uparrow 
+    \\[-10pt]
+     &\!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{1,2}}\hspace{7pt}}\!\!\bigcirc \hspace{18pt}
+    \!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{2,2}}\hspace{7pt}}\!\!\bigcirc 
+     \hspace{17pt} \cdots \hspace{19pt}
+     \bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{K,2}}\hspace{6pt}}\!\!\bigcirc
+   \end{align*}
+
+  - Cascade-form SFG with transposed-form SoSs:
+  \begin{align*}
+    \!\bigcirc\kern-6.5pt\vcenter{\tiny x}
+  \xrightarrow{\hspace{8pt}{\scriptsize b_0}\hspace{7pt}}
+    &
+    \!\bigcirc\!\!\xrightarrow{\hspace{26pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc
+    \!\!\xrightarrow{\hspace{26pt}}\!\!\bigcirc
+    \!\!\longrightarrow \cdots \longrightarrow
+     \!\bigcirc\!\!\xrightarrow{\hspace{26pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+    \\[-0pt]
+   & \Big\downarrow  \hspace{26pt}
+    \Big\uparrow  {\scriptsize z^{-1}} \hspace{9pt}
+   \Big\downarrow  \hspace{26pt}
+    \Big\uparrow  {\scriptsize z^{-1}}
+    \hspace{44pt}
+   \Big\downarrow  \hspace{26pt}
+    \Big\uparrow   {\scriptsize z^{-1}} 
+    \\[-10pt]
+     &\!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{1,1}}\hspace{7pt}}\!\!\bigcirc \hspace{18pt}
+    \!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{2,1}}\hspace{7pt}}\!\!\bigcirc 
+    \hspace{17pt} \cdots \hspace{19pt}
+    \bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{K,1}}\hspace{6pt}}\!\!\bigcirc
+    \\[-0pt]
+     & \Big\downarrow  \hspace{26pt}
+    \Big\uparrow {\scriptsize z^{-1}} \hspace{9pt}
+   \Big\downarrow  \hspace{26pt}
+    \Big\uparrow   {\scriptsize z^{-1}} \hspace{44pt}
+     \Big\downarrow  \hspace{26pt}
+    \Big\uparrow {\scriptsize z^{-1}} 
+    \\[-10pt]
+     &\!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{1,2}}\hspace{7pt}}\!\!\bigcirc \hspace{18pt}
+    \!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{2,2}}\hspace{7pt}}\!\!\bigcirc 
+     \hspace{17pt} \cdots \hspace{19pt}
+     \bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{K,2}}\hspace{6pt}}\!\!\bigcirc
+   \end{align*}
