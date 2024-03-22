@@ -15,7 +15,7 @@ domain or {eq}`firz` in the $z$-domain:
   W_{M-1}(z)+ b_M W_M(z)) \cdots )
   \end{align}
   ```
-  where $W_k (z) = z^k X(z)$ for $k=0, 1, \ldots, M$. Clearly,
+  where $W_k (z) = z^{-k} X(z)$ for $k=0, 1, \ldots, M$. Clearly,
    ```{math}
   :label: fir_direct_w
   \begin{align}
@@ -212,7 +212,7 @@ domain or {eq}`firz` in the $z$-domain:
   
   where the FIR filter is decomposed into a cascade of $K$ components
   (sections), each is (at most) a second-order FIR filter with
-  real-valued taps ($b_{k,1} and $b_{k,2}$).
+  real-valued taps ($b_{k,1}$ and $b_{k,2}$).
 
 * Each second-order section (SoS) may be implemented in the direct form
   or in the transposed form. For example:
