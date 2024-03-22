@@ -84,6 +84,7 @@ domain or {eq}`firz` in the $z$-domain:
 
       dout_t y = 0.0;
       acc_loop: for (int k=0; k<L; k++) {
+  #pragma HLS bind_op variable=y op=mul impl=fabric latency=1
         y += b[k]*w[k];
       }
     }
@@ -164,6 +165,7 @@ domain or {eq}`firz` in the $z$-domain:
   #pragma HLS loop_tripcount max=MAX_N
       // Read in new sample from in
       din_t x = in.read();
+  #pragma HLS bind_op variable=bx op=mul impl=fabric 
       dout_t bx = b[0]*x;
       // Write to out
       out.write(bx+u[0]);
@@ -177,7 +179,7 @@ domain or {eq}`firz` in the $z$-domain:
     }
   }
   ```
-  VItis HLS a RTL implementation with II=1 and a slightly smaller
+  VItis HLS gives a RTL implementation with II=1 and a slightly smaller
   latency for the transposed-form SFG.
 
 
@@ -300,3 +302,47 @@ domain or {eq}`firz` in the $z$-domain:
      \bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
     b_{K,2}}\hspace{6pt}}\!\!\bigcirc
    \end{align*}
+
+* Below is an example HLS function that implements the cascade-form
+  SFG with transposed-form SoSs:
+  ```c++
+  const din_t b[K][2]={
+    { 0.730052030952496,                  0},
+    { 0.092026730665386, -0.382681081883717},
+    { 0.675184280532296,  1.091802879870597},
+    {-1.634523480450109,  0.879258346962745},
+    {-0.662739561700072,  0.745724572309314}
+  };
+  const din_t b0 = 0.5;
+
+  void fir2nd(dout_t &in, dout_t &out, dout_t &w1, dout_t &w2, const din_t b[2]) {
+  #pragma HLS inline
+
+    // Write to out
+    out = in+w1;
+    // Update register
+  #pragma HLS bind_op variable=bx op=mul impl=fabric 
+    dout_t bx = b[0]*in;
+    w1 = bx+w2;
+    bx = b[1]*in;
+    w2 = bx;
+  }
+
+  void fir(hls::stream<din_t> &in, hls::stream<dout_t> &out, int N) {
+
+    dout_t u[K+1];
+    static dout_t w[K][2] = {};
+
+    sample_loop: for (int n=0; n<N; n++) {
+  #pragma HLS loop_tripcount max=MAX_N
+      u[0] = b0*in.read();
+      cascade_loop: for (int k=0; k<K; k++) {
+        fir2nd(u[k], u[k+1], w[k][0], w[k][1], &b[k][0]);
+      }
+      out.write(u[K]);
+    }
+  }
+  ```
+   VItis HLS gives a RTL implementation with II=1 and a higher
+  latency that both the direct-form and transposed-form SFGs. In
+  addition, significantly more LUT resource is needed.

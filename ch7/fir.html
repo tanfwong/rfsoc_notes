@@ -491,6 +491,7 @@ following direct-form SFG:</p>
 
 <span class="w">    </span><span class="n">dout_t</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
 <span class="w">    </span><span class="nl">acc_loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">&lt;</span><span class="n">L</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS bind_op variable=y op=mul impl=fabric latency=1</span>
 <span class="w">      </span><span class="n">y</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="n">w</span><span class="p">[</span><span class="n">k</span><span class="p">];</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
@@ -574,6 +575,7 @@ Y(z) &amp; = U_0(z),
 <span class="cp">#pragma HLS loop_tripcount max=MAX_N</span>
 <span class="w">    </span><span class="c1">// Read in new sample from in</span>
 <span class="w">    </span><span class="n">din_t</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
+<span class="cp">#pragma HLS bind_op variable=bx op=mul impl=fabric </span>
 <span class="w">    </span><span class="n">dout_t</span><span class="w"> </span><span class="n">bx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">;</span>
 <span class="w">    </span><span class="c1">// Write to out</span>
 <span class="w">    </span><span class="n">out</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">bx</span><span class="o">+</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
@@ -588,7 +590,7 @@ Y(z) &amp; = U_0(z),
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>VItis HLS a RTL implementation with II=1 and a slightly smaller
+<p>VItis HLS gives a RTL implementation with II=1 and a slightly smaller
 latency for the transposed-form SFG.</p>
 </li>
 </ul>
@@ -714,6 +716,50 @@ or in the transposed form. For example:</p>
      \bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
     b_{K,2}}\hspace{6pt}}\!\!\bigcirc
    \end{align*}\]</div>
+</li>
+<li><p>Below is an example HLS function that implements the cascade-form
+SFG with transposed-form SoSs:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="n">din_t</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">K</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="p">{</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="mf">0.730052030952496</span><span class="p">,</span><span class="w">                  </span><span class="mi">0</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="mf">0.092026730665386</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.382681081883717</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="mf">0.675184280532296</span><span class="p">,</span><span class="w">  </span><span class="mf">1.091802879870597</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="mf">-1.634523480450109</span><span class="p">,</span><span class="w">  </span><span class="mf">0.879258346962745</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="mf">-0.662739561700072</span><span class="p">,</span><span class="w">  </span><span class="mf">0.745724572309314</span><span class="p">}</span>
+<span class="p">};</span>
+<span class="k">const</span><span class="w"> </span><span class="n">din_t</span><span class="w"> </span><span class="n">b0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">fir2nd</span><span class="p">(</span><span class="n">dout_t</span><span class="w"> </span><span class="o">&amp;</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">dout_t</span><span class="w"> </span><span class="o">&amp;</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">dout_t</span><span class="w"> </span><span class="o">&amp;</span><span class="n">w1</span><span class="p">,</span><span class="w"> </span><span class="n">dout_t</span><span class="w"> </span><span class="o">&amp;</span><span class="n">w2</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">din_t</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS inline</span>
+
+<span class="w">  </span><span class="c1">// Write to out</span>
+<span class="w">  </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="o">+</span><span class="n">w1</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// Update register</span>
+<span class="cp">#pragma HLS bind_op variable=bx op=mul impl=fabric </span>
+<span class="w">  </span><span class="n">dout_t</span><span class="w"> </span><span class="n">bx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">in</span><span class="p">;</span>
+<span class="w">  </span><span class="n">w1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bx</span><span class="o">+</span><span class="n">w2</span><span class="p">;</span>
+<span class="w">  </span><span class="n">bx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">in</span><span class="p">;</span>
+<span class="w">  </span><span class="n">w2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bx</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">fir</span><span class="p">(</span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="n">din_t</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="n">dout_t</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="n">dout_t</span><span class="w"> </span><span class="n">u</span><span class="p">[</span><span class="n">K</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">dout_t</span><span class="w"> </span><span class="n">w</span><span class="p">[</span><span class="n">K</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+
+<span class="w">  </span><span class="nl">sample_loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS loop_tripcount max=MAX_N</span>
+<span class="w">    </span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b0</span><span class="o">*</span><span class="n">in</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
+<span class="w">    </span><span class="nl">cascade_loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">&lt;</span><span class="n">K</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">fir2nd</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="w"> </span><span class="n">u</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="n">w</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">w</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="o">&amp;</span><span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">]);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">out</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="n">K</span><span class="p">]);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>VItis HLS gives a RTL implementation with II=1 and a higher
+latency that both the direct-form and transposed-form SFGs. In
+addition, significantly more LUT resource is needed.</p>
 </li>
 </ul>
 </section>
