@@ -2,6 +2,7 @@
 Consider an $M$-order FIR filter specified by {eq}`fir` in the time
 domain or {eq}`firz` in the $z$-domain:
 
+(sec:fir_direct)=
 ## Direct-form Implementation
 * Rewrite {eq}`firz` as follows:
   ```{math}

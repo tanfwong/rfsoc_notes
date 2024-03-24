@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>7. Filter Implementation &#8212; Real-time DSP Notes</title>
+    <title>7.3. IIR Filter &#8212; Real-time DSP Notes</title>
   
   
   
@@ -62,12 +62,12 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'ch7/filter';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ch7/iir';</script>
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="7.1. Block Diagram &amp; Signal Flow Graph" href="sfg.html" />
-    <link rel="prev" title="6.3. OpenCL Optimization" href="../ch6/ocl_opt.html" />
+    <link rel="next" title="8. References" href="../refs.html" />
+    <link rel="prev" title="7.2. FIR Filter" href="fir.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
   </head>
@@ -195,10 +195,10 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="../ch6/ocl_opt.html">6.3. OpenCL Optimization</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">7. Filter Implementation</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="filter.html">7. Filter Implementation</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="sfg.html">7.1. Block Diagram &amp; Signal Flow Graph</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fir.html">7.2. FIR Filter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iir.html">7.3. IIR Filter</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">7.3. IIR Filter</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">8. References</a></li>
@@ -273,7 +273,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Fch7/filter.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Fch7/iir.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -303,7 +303,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../_sources/ch7/filter.md" target="_blank"
+      <li><a href="../_sources/ch7/iir.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -372,7 +372,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -383,11 +385,19 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Filter Implementation</h1>
+    <h1>IIR Filter</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-form-implementation">7.3.1. Direct-form Implementation</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -397,56 +407,80 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="filter-implementation">
-<h1><span class="section-number">7. </span>Filter Implementation<a class="headerlink" href="#filter-implementation" title="Permalink to this headline">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="iir-filter">
+<h1><span class="section-number">7.3. </span>IIR Filter<a class="headerlink" href="#iir-filter" title="Permalink to this headline">#</a></h1>
 <ul>
-<li><p>We will discuss in this section implementation of finite impulse
-response (FIR) and infinite impulse response (IIR) filters in HLS.</p></li>
-<li><p>Recall that both FIR and IIR filters can be defined by linear
-I/O difference equations in the time domain:</p>
-<ul>
-<li><p><strong>FIR</strong> filter of order <span class="math notranslate nohighlight">\(M\)</span>:</p>
-<div class="math notranslate nohighlight" id="equation-fir">
-<span class="eqno">(7.1)<a class="headerlink" href="#equation-fir" title="Permalink to this equation">#</a></span>\[\begin{align} 
-y[n] = \sum_{k=0}^M b_k x[n-k] &amp; \hspace{90pt} &amp; (b_0 \neq 0) 
-\end{align}\]</div>
-</li>
-<li><p><strong>IIR</strong> filter of <em>feedforward</em> order <span class="math notranslate nohighlight">\(M\)</span> and <em>feedback</em> order <span class="math notranslate nohighlight">\(N\)</span>
-(or simply of order <span class="math notranslate nohighlight">\(N\)</span>):</p>
-<div class="math notranslate nohighlight" id="equation-iir">
-<span class="eqno">(7.2)<a class="headerlink" href="#equation-iir" title="Permalink to this equation">#</a></span>\[\begin{align} 
-\sum_{k=0}^N a_k y[n-k] = \sum_{k=0}^M b_k x[n-k] &amp; \hspace{50pt} &amp;
-(a_0 =1) 
-\end{align}\]</div>
-<p>where <span class="math notranslate nohighlight">\(x[n]\)</span> and <span class="math notranslate nohighlight">\(y[n]\)</span> denote the input and output signals,
-respectively.</p>
+<li><p>Consider an <span class="math notranslate nohighlight">\(N\)</span>-order IIR filter specified by <a class="reference internal" href="filter.html#equation-iir">(7.2)</a> in the time
+domain or <a class="reference internal" href="filter.html#equation-iirz">(7.4)</a> in the <span class="math notranslate nohighlight">\(z\)</span>-domain. For the sake of drawing
+simpler SFGs, we assume below that the feedback order <span class="math notranslate nohighlight">\(N\)</span> is at least
+as large as the feedforward order <span class="math notranslate nohighlight">\(M\)</span>.</p></li>
+<li><p>The transfer function <span class="math notranslate nohighlight">\(H(z)\)</span> of the IIR filter is given by</p>
+<div class="math notranslate nohighlight" id="equation-iir-tf">
+<span class="eqno">(7.12)<a class="headerlink" href="#equation-iir-tf" title="Permalink to this equation">#</a></span>\[\begin{align} H(z) 
+&amp;= \frac{\sum_{k=0}^M b_k z^{-k}}{\sum_{k=0}^N a_k z^{-k}}
+&amp; ~~~(a_0=1).
+\end{align} \]</div>
+<p>Thus, the IIR filter can be interpreted as a cascade of a
+<em>feedforward component</em>, i.e., an <span class="math notranslate nohighlight">\(M\)</span>-order FIR filter with transfer
+function <span class="math notranslate nohighlight">\(\sum_{k=0}^M b_k z^{-k}\)</span>, and a <em>feedback component</em>,
+i.e., an <span class="math notranslate nohighlight">\(N\)</span>-order IIR filter with transfer function
+<span class="math notranslate nohighlight">\(\frac{1}{\sum_{k=0}^N a_k z^{-k}}\)</span> and a trivial feedforward tap.</p>
 </li>
 </ul>
-</li>
-<li><p>Equivalently, in the <span class="math notranslate nohighlight">\(z\)</span>-domain, the above difference equations are
-transformed to the following algebraic equations:</p>
+<section id="direct-form-implementation">
+<h2><span class="section-number">7.3.1. </span>Direct-form Implementation<a class="headerlink" href="#direct-form-implementation" title="Permalink to this headline">#</a></h2>
 <ul>
-<li><p><strong>FIR</strong> filter of order <span class="math notranslate nohighlight">\(M\)</span>:</p>
-<div class="math notranslate nohighlight" id="equation-firz">
-<span class="eqno">(7.3)<a class="headerlink" href="#equation-firz" title="Permalink to this equation">#</a></span>\[\begin{align} 
-Y(z) = \sum_{k=0}^M b_k z^k X(Z) &amp; \hspace{80pt} &amp; (b_0 \neq 0) 
-\end{align}\]</div>
+<li><p>The feedback component, i.e.,</p>
+<div class="amsmath math notranslate nohighlight">
+\[\begin{equation*} 
+  Y(z) = - \sum_{k=1}^N a_k z^{-k} Y(z), 
+  \end{equation*}\]</div>
+<p>can be implemented in the direct form similar to the development in
+<a class="reference internal" href="fir.html#sec-fir-direct"><span class="std std-numref">Section 7.2.1</span></a>.</p>
 </li>
-<li><p><strong>IIR</strong> filter of <em>feedforward</em> order <span class="math notranslate nohighlight">\(M\)</span> and <em>feedback</em> order <span class="math notranslate nohighlight">\(N\)</span>
-(or simply of order <span class="math notranslate nohighlight">\(N\)</span>):</p>
-<div class="math notranslate nohighlight" id="equation-iirz">
-<span class="eqno">(7.4)<a class="headerlink" href="#equation-iirz" title="Permalink to this equation">#</a></span>\[\begin{align} 
-\sum_{k=0}^N a_k z^k Y(z) = \sum_{k=0}^M b_k z^k X(z) &amp; \hspace{50pt} &amp;
-(a_0 =1) 
-\end{align}\]</div>
-<p>where <span class="math notranslate nohighlight">\(x[n] \stackrel{z}{\longleftrightarrow} X(z)\)</span> and <span class="math notranslate nohighlight">\(y[n]
-\stackrel{z}{\longleftrightarrow} Y(z)\)</span>.</p>
+<li><p>When the feedforward FIR component is also implemented in the direct
+form, we obtain the following SSFG of direct-form I for the IIR
+filter:</p>
+<div class="amsmath math notranslate nohighlight">
+\[\begin{align*}
+    \!\bigcirc\kern-6.5pt\vcenter{\tiny x} \longrightarrow
+    &amp;
+    \!\bigcirc\!\!\xrightarrow{\hspace{9pt}{\scriptsize
+    b_0}\hspace{9pt}}\!\!\bigcirc\!\!\xrightarrow{\hspace{26pt}}
+    \!\!\bigcirc\!\!\xrightarrow{\hspace{26pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+    \\[-0pt]
+    {\scriptsize z^{-1}} &amp; \Big\downarrow  \hspace{25pt}
+    \Big\uparrow \hspace{27pt}
+    \Big\uparrow  \hspace{26pt}
+    \Big\downarrow  {\scriptsize z^{-1}}
+    \\[-10pt]
+     &amp;\!\bigcirc\!\!\xrightarrow{\hspace{9pt}{\scriptsize
+    b_1}\hspace{9pt}}\!\!\bigcirc \hspace{25.5pt}
+    \!\bigcirc\!\!\xleftarrow{\hspace{9pt}{\scriptsize
+    a_1}\hspace{9pt}}\!\!\bigcirc
+    \\[-0pt]
+     {\scriptsize z^{-1}} &amp; \Big\downarrow  \hspace{25pt}
+    \Big\uparrow \hspace{27pt}
+    \Big\uparrow  \hspace{26pt}
+    \Big\downarrow  {\scriptsize z^{-1}}
+    \\[-0pt]
+    &amp; \,\vdots \hspace{29pt} \vdots  \hspace{29pt}
+    \,\vdots \hspace{30pt} \vdots 
+    \\[-0pt]
+    {\scriptsize z^{-1}} &amp; \Big\downarrow  \hspace{25pt}
+    \Big\uparrow \hspace{27pt}
+    \Big\uparrow  \hspace{26pt}
+    \Big\downarrow  {\scriptsize z^{-1}}
+    \\[-10pt]
+     &amp;\!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_M}\hspace{8pt}}\!\!\bigcirc \hspace{25pt}
+    \!\bigcirc\!\!\xleftarrow{\hspace{8pt}{\scriptsize
+    a_N}\hspace{9pt}}\!\!\bigcirc
+   \end{align*}\]</div>
 </li>
 </ul>
-</li>
-</ul>
-<div class="toctree-wrapper compound">
-</div>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -481,20 +515,20 @@ Y(z) = \sum_{k=0}^M b_k z^k X(Z) &amp; \hspace{80pt} &amp; (b_0 \neq 0)
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../ch6/ocl_opt.html"
+       href="fir.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title"><span class="section-number">6.3. </span>OpenCL Optimization</p>
+        <p class="prev-next-title"><span class="section-number">7.2. </span>FIR Filter</p>
       </div>
     </a>
     <a class="right-next"
-       href="sfg.html"
+       href="../refs.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">7.1. </span>Block Diagram &amp; Signal Flow Graph</p>
+        <p class="prev-next-title"><span class="section-number">8. </span>References</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -507,6 +541,20 @@ Y(z) = \sum_{k=0}^M b_k z^k X(Z) &amp; \hspace{80pt} &amp; (b_0 \neq 0)
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-form-implementation">7.3.1. Direct-form Implementation</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
