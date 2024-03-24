@@ -2,7 +2,7 @@
 * Consider an $N$-order IIR filter specified by {eq}`iir` in the time
 domain or {eq}`iirz` in the $z$-domain. For the sake of drawing
 simpler SFGs, we assume below that the feedback order $N$ is at least
-as large as the feedforward order $M$.
+as large as the feedforward order $M$, i.e., $N \geq M$.
 
 * The transfer function $H(z)$ of the IIR filter is given by 
   ```{math}
@@ -27,7 +27,7 @@ as large as the feedforward order $M$.
   {numref}`sec:fir_direct`.
   
 * When the feedforward FIR component is also implemented in the direct
-  form, we obtain the following SSFG of direct-form I for the IIR
+  form, we obtain the following SFG of direct form I for the IIR
   filter:
    \begin{align*}
     \!\bigcirc\kern-6.5pt\vcenter{\tiny x} \longrightarrow
@@ -66,5 +66,51 @@ as large as the feedforward order $M$.
     a_N}\hspace{9pt}}\!\!\bigcirc
    \end{align*}
  
-  
+* Flipping the order of the feedforward and feedback components in the
+  cascade above, we obtain following SFG of direct form II for the IIR
+  filter:
+   \begin{align*}
+    \!\bigcirc\kern-6.5pt\vcenter{\tiny x} \longrightarrow
+    &
+    \!\bigcirc\!\!\xrightarrow{\hspace{25pt}}\!\!\bigcirc
+    \!\!\xrightarrow{\hspace{9pt}{\scriptsize
+    b_0}\hspace{9pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+    \\[-0pt]
+    & \Big\uparrow  \hspace{26pt}
+   \Big\downarrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\uparrow 
+    \\[-10pt]
+     &  \!\bigcirc\!\!\xleftarrow{\hspace{6.5pt}{\scriptsize
+    -a_1}\hspace{7pt}}
+    \!\!\bigcirc\!\!\xrightarrow{\hspace{9pt}{\scriptsize
+    b_1}\hspace{9pt}}\!\!\bigcirc 
+    \\[-0pt]
+     & \Big\uparrow  \hspace{26pt}
+   \Big\downarrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\uparrow 
+    \\[-0pt]
+    & \,\vdots \hspace{30pt} \vdots  \hspace{27.5pt}
+    \,\vdots 
+    \\[-0pt]
+     & \Big\uparrow  \hspace{26pt}
+   \Big\downarrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\uparrow 
+    \\[-10pt]
+     &\!\bigcirc\!\!\xleftarrow{\hspace{5.5pt}{\scriptsize
+    -a_M}\hspace{5pt}}
+     \!\!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_M}\hspace{8pt}}\!\!\bigcirc 
+    \\[-0pt]
+     & \Big\uparrow  \hspace{26pt}
+   \Big\downarrow   {\scriptsize z^{-1}} 
+    \\[-0pt]
+    & \,\vdots \hspace{30pt} \vdots 
+    \\[-0pt]
+     & \Big\uparrow  \hspace{26pt}
+   \Big\downarrow   {\scriptsize z^{-1}} 
+    \\[-10pt]
+     &\!\bigcirc\!\!\xleftarrow{\hspace{5.5pt}{\scriptsize
+    -a_N}\hspace{5.5pt}}\!\!\bigcirc
+   \end{align*} 
 
