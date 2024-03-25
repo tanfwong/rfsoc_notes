@@ -102,7 +102,7 @@ domain or {eq}`firz` in the $z$-domain:
   function is called. This allows filtering contiguous blocks of
   samples of length `N`.
   ```
-
+(sec:fir_transp)=
 ## Transposed-form Implementation
 * Rewrite {eq}`firz` as follows:
   ```{math}
@@ -207,7 +207,7 @@ domain or {eq}`firz` in the $z$-domain:
   \begin{align}
   Y(z) 
   &=
-  b_0 \prod_{k=1}^{K} \left( 1 + b_{k,1} z^{-1} + b_{k,2} \right) X(z)
+  b_0 \prod_{k=1}^{K} \left( 1 + b_{k,1} z^{-1} + b_{k,2} z^{-2}\right) X(z)
   \end{align}
   ```
   

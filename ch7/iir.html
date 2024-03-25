@@ -396,6 +396,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-form-implementation">7.3.1. Direct-form Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transposed-form-implementation">7.3.2. Transposed-form Implementation</a></li>
 </ul>
             </nav>
         </div>
@@ -457,8 +458,8 @@ filter:</p>
     \\[-10pt]
      &amp;\!\bigcirc\!\!\xrightarrow{\hspace{9pt}{\scriptsize
     b_1}\hspace{9pt}}\!\!\bigcirc \hspace{25.5pt}
-    \!\bigcirc\!\!\xleftarrow{\hspace{9pt}{\scriptsize
-    a_1}\hspace{9pt}}\!\!\bigcirc
+    \!\bigcirc\!\!\xleftarrow{\hspace{7pt}{\scriptsize
+    -a_1}\hspace{6pt}}\!\!\bigcirc
     \\[-0pt]
      {\scriptsize z^{-1}} &amp; \Big\downarrow  \hspace{25pt}
     \Big\uparrow \hspace{27pt}
@@ -475,8 +476,8 @@ filter:</p>
     \\[-10pt]
      &amp;\!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
     b_M}\hspace{8pt}}\!\!\bigcirc \hspace{25pt}
-    \!\bigcirc\!\!\xleftarrow{\hspace{8pt}{\scriptsize
-    a_N}\hspace{9pt}}\!\!\bigcirc
+    \!\bigcirc\!\!\xleftarrow{\hspace{6pt}{\scriptsize
+    -a_N}\hspace{5pt}}\!\!\bigcirc
    \end{align*}\]</div>
 </li>
 <li><p>Flipping the order of the feedforward and feedback components in the
@@ -525,6 +526,103 @@ filter:</p>
    \Big\downarrow   {\scriptsize z^{-1}} 
     \\[-10pt]
      &amp;\!\bigcirc\!\!\xleftarrow{\hspace{5.5pt}{\scriptsize
+    -a_N}\hspace{5.5pt}}\!\!\bigcirc
+   \end{align*}\]</div>
+</li>
+</ul>
+</section>
+<section id="transposed-form-implementation">
+<h2><span class="section-number">7.3.2. </span>Transposed-form Implementation<a class="headerlink" href="#transposed-form-implementation" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>When both the feedforward and feedback components in the cascade are
+implemented in the transposed form similar to the development in
+<a class="reference internal" href="fir.html#sec-fir-transp"><span class="std std-numref">Section 7.2.2</span></a>, we obtain the following SFG of transposed
+from I:</p>
+<div class="amsmath math notranslate nohighlight">
+\[\begin{align*}
+    \!\bigcirc\kern-6.5pt\vcenter{\tiny x} \longrightarrow
+    &amp;
+    \!\bigcirc\!\!\xrightarrow{\hspace{25pt}}\!\!\bigcirc
+    \!\!\xrightarrow{\hspace{26pt}}
+    \!\!\bigcirc\!\!\xrightarrow{\hspace{9pt}{\scriptsize
+    b_0}\hspace{9pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+    \\[-0pt]
+    {\scriptsize z^{-1}} &amp; \Big\uparrow  \hspace{25pt}
+    \Big\downarrow \hspace{27pt}
+    \Big\downarrow  \hspace{26pt}
+    \Big\uparrow  {\scriptsize z^{-1}}
+    \\[-10pt]
+     &amp;\!\bigcirc\!\!\xleftarrow{\hspace{6pt}{\scriptsize
+    -a_1}\hspace{6pt}}\!\!\bigcirc \hspace{25.5pt}
+    \!\bigcirc\!\!\xrightarrow{\hspace{9pt}{\scriptsize
+    b_1}\hspace{9pt}}\!\!\bigcirc
+    \\[-0pt]
+     {\scriptsize z^{-1}} &amp; \Big\uparrow  \hspace{25pt}
+    \Big\downarrow \hspace{27pt}
+    \Big\downarrow  \hspace{26pt}
+    \Big\uparrow  {\scriptsize z^{-1}}
+    \\[-0pt]
+    &amp; \,\vdots \hspace{29pt} \vdots  \hspace{29pt}
+    \,\vdots \hspace{30pt} \vdots 
+    \\[-0pt]
+    {\scriptsize z^{-1}} &amp; \Big\downarrow  \hspace{25pt}
+    \Big\uparrow \hspace{27pt}
+    \Big\uparrow  \hspace{26pt}
+    \Big\downarrow  {\scriptsize z^{-1}}
+    \\[-10pt]
+     &amp;\!\bigcirc\!\!\xleftarrow{\hspace{5.5pt}{\scriptsize
+    -a_N}\hspace{4.5pt}}\!\!\bigcirc \hspace{25pt}
+    \!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_M}\hspace{9pt}}\!\!\bigcirc
+   \end{align*}\]</div>
+</li>
+<li><p>Flipping the order of the feedforward and feedback components in the
+cascade above, we obtain following SFG of transposed form II for the IIR
+filter:</p>
+<div class="amsmath math notranslate nohighlight">
+\[\begin{align*}
+    \!\bigcirc\kern-6.5pt\vcenter{\tiny x} \longrightarrow
+    &amp;
+    \!\bigcirc\!\!\xrightarrow{\hspace{10pt}{\scriptsize
+    b_0}\hspace{9pt}}\!\!\bigcirc
+    \!\!\xrightarrow{\hspace{24pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+    \\[-0pt]
+    &amp; \Big\downarrow  \hspace{26pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\downarrow 
+    \\[-10pt]
+     &amp;  \!\bigcirc\!\!\xrightarrow{\hspace{10pt}{\scriptsize
+    b_1}\hspace{9pt}}
+    \!\!\bigcirc\!\!\xleftarrow{\hspace{6.5pt}{\scriptsize
+    -a_1}\hspace{6pt}}\!\!\bigcirc 
+    \\[-0pt]
+     &amp; \Big\downarrow  \hspace{26pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\downarrow 
+    \\[-0pt]
+    &amp; \,\vdots \hspace{30pt} \vdots  \hspace{27.5pt}
+    \,\vdots 
+    \\[-0pt]
+     &amp; \Big\downarrow  \hspace{26pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\downarrow 
+    \\[-10pt]
+     &amp;\!\bigcirc\!\!\xrightarrow{\hspace{8.5pt}{\scriptsize
+    b_M}\hspace{8pt}}
+     \!\!\bigcirc\!\!\xleftarrow{\hspace{5pt}{\scriptsize
+    -a_M}\hspace{5pt}}\!\!\bigcirc 
+    \\[-0pt]
+    &amp; \hspace{33pt} \Big\uparrow   {\scriptsize z^{-1}} 
+    \hspace{15pt} \Big\downarrow
+    \\[-0pt]
+    &amp; \hspace{33pt} \,\vdots \hspace{29.5pt} \vdots 
+    \\[-0pt]
+    &amp; \hspace{33pt} \Big\uparrow   {\scriptsize z^{-1}} 
+    \hspace{15pt} \Big\downarrow
+    \\[-10pt]
+     &amp; \hspace{33pt} \!\bigcirc\!\!\xleftarrow{\hspace{5.5pt}{\scriptsize
     -a_N}\hspace{5.5pt}}\!\!\bigcirc
    \end{align*}\]</div>
 </li>
@@ -600,6 +698,7 @@ filter:</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-form-implementation">7.3.1. Direct-form Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transposed-form-implementation">7.3.2. Transposed-form Implementation</a></li>
 </ul>
   </nav></div>
 

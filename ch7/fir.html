@@ -515,7 +515,7 @@ samples of length <code class="docutils literal notranslate"><span class="pre">N
 </ul>
 </section>
 <section id="transposed-form-implementation">
-<h2><span class="section-number">7.2.2. </span>Transposed-form Implementation<a class="headerlink" href="#transposed-form-implementation" title="Permalink to this headline">#</a></h2>
+<span id="sec-fir-transp"></span><h2><span class="section-number">7.2.2. </span>Transposed-form Implementation<a class="headerlink" href="#transposed-form-implementation" title="Permalink to this headline">#</a></h2>
 <ul>
 <li><p>Rewrite <a class="reference internal" href="filter.html#equation-firz">(7.3)</a> as follows:</p>
 <div class="math notranslate nohighlight" id="equation-fir-transp">
@@ -618,7 +618,7 @@ we may rewrite <a class="reference internal" href="#equation-fir-cascade">(7.10)
 <span class="eqno">(7.11)<a class="headerlink" href="#equation-fir-cascade-sos" title="Permalink to this equation">#</a></span>\[\begin{align}
 Y(z) 
 &amp;=
-b_0 \prod_{k=1}^{K} \left( 1 + b_{k,1} z^{-1} + b_{k,2} \right) X(z)
+b_0 \prod_{k=1}^{K} \left( 1 + b_{k,1} z^{-1} + b_{k,2} z^{-2}\right) X(z)
 \end{align}\]</div>
 <p>where the FIR filter is decomposed into a cascade of <span class="math notranslate nohighlight">\(K\)</span> components
 (sections), each is (at most) a second-order FIR filter with
