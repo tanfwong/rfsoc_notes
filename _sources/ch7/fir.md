@@ -183,7 +183,7 @@ domain or {eq}`firz` in the $z$-domain:
   VItis HLS gives a RTL implementation with II=1 and a slightly smaller
   latency for the transposed-form SFG.
 
-
+(sec:fir_cascade)=
 ## Cascade-form Implementation
 * Rewrite {eq}`fir` in the cascade form as follows:
   ```{math}
@@ -347,3 +347,4 @@ domain or {eq}`firz` in the $z$-domain:
    VItis HLS gives a RTL implementation with II=1 and a higher
   latency that both the direct-form and transposed-form SFGs. In
   addition, significantly more LUT resource is needed.
+

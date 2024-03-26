@@ -397,6 +397,7 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-form-implementation">7.3.1. Direct-form Implementation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transposed-form-implementation">7.3.2. Transposed-form Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cascade-form-implementation">7.3.3. Cascade-form Implementation</a></li>
 </ul>
             </nav>
         </div>
@@ -417,7 +418,8 @@ simpler SFGs, we assume below that the feedback order <span class="math notransl
 as large as the feedforward order <span class="math notranslate nohighlight">\(M\)</span>, i.e., <span class="math notranslate nohighlight">\(N \geq M\)</span>.</p></li>
 <li><p>The transfer function <span class="math notranslate nohighlight">\(H(z)\)</span> of the IIR filter is given by</p>
 <div class="math notranslate nohighlight" id="equation-iir-tf">
-<span class="eqno">(7.12)<a class="headerlink" href="#equation-iir-tf" title="Permalink to this equation">#</a></span>\[\begin{align} H(z) 
+<span class="eqno">(7.12)<a class="headerlink" href="#equation-iir-tf" title="Permalink to this equation">#</a></span>\[\begin{align} 
+H(z) 
 &amp;= \frac{\sum_{k=0}^M b_k z^{-k}}{\sum_{k=0}^N a_k z^{-k}}
 &amp; ~~~(a_0=1).
 \end{align} \]</div>
@@ -756,6 +758,96 @@ products.</p></li>
 </li>
 </ul>
 </section>
+<section id="cascade-form-implementation">
+<h2><span class="section-number">7.3.3. </span>Cascade-form Implementation<a class="headerlink" href="#cascade-form-implementation" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>As in <a class="reference internal" href="fir.html#sec-fir-cascade"><span class="std std-numref">Section 7.2.3</span></a>, if the IIR filter taps in
+<a class="reference internal" href="#equation-iir-tf">(7.12)</a> are all real-valued, then the transfer function in
+<a class="reference internal" href="#equation-iir-tf">(7.12)</a> of the IIR filter can be factored into a product of the
+transfer functions of SoSs with real-valued taps in the form below:</p>
+<div class="math notranslate nohighlight" id="equation-iir-sos">
+<span class="eqno">(7.13)<a class="headerlink" href="#equation-iir-sos" title="Permalink to this equation">#</a></span>\[\begin{align} 
+H(z) 
+&amp;= b_0 \prod_{k=1}^K 
+\frac{1+b_{k,1} z^{-1} + b_{k,2} z^{-2}}{1+ a_{k,1} z^{-1} + a_{k,2} z^{-2}}
+\end{align} \]</div>
+<p>Hence, the IIR filter may be implemented as a cascade of all the
+SoSs.</p>
+</li>
+<li><p>Each SoS may be implemented in the direct form II or in the
+transposed form II. For example:</p>
+<ul class="simple">
+<li><p>Cascade-form SFG with direct-form II SoSs:</p></li>
+</ul>
+<div class="amsmath math notranslate nohighlight">
+\[\begin{align*}
+    \!\bigcirc\kern-6.5pt\vcenter{\tiny x}
+  \xrightarrow{\hspace{8pt}{\scriptsize b_0}\hspace{7pt}}
+    &amp;
+    \!\bigcirc\!\!\xrightarrow{\hspace{25pt}}\!\!
+    \bigcirc\!\!\xrightarrow{\hspace{24.5pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc
+    \!\!\xrightarrow{\hspace{25pt}}\!\!\bigcirc
+    \!\!\xrightarrow{\hspace{24.5pt}}\!\!\bigcirc
+    \!\!\longrightarrow \cdots \longrightarrow
+    \!\bigcirc\!\!\xrightarrow{\hspace{25pt}}\!\!
+    \bigcirc\!\!\xrightarrow{\hspace{25pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+    \\[-0pt]
+    &amp; \Big\uparrow  \hspace{26pt}
+   \Big\downarrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\uparrow \hspace{19pt}
+    \Big\uparrow  \hspace{26pt}
+   \Big\downarrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\uparrow \hspace{54pt}
+    \Big\uparrow \hspace{26pt}
+   \Big\downarrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\uparrow 
+    \\[-10pt]
+    &amp; \!\bigcirc\!\!\xleftarrow{\hspace{5.5pt}{\scriptsize
+    -a_{1,1}}\hspace{4pt}}
+    \!\!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{1,1}}\hspace{7pt}}\!\!\bigcirc \hspace{15pt}
+    \bigcirc\!\!\xleftarrow{\hspace{5.5pt}{\scriptsize
+    -a_{2,1}}\hspace{4pt}}
+    \!\!\bigcirc\!\!\xrightarrow{\hspace{7pt}{\scriptsize
+    b_{2,1}}\hspace{7pt}}\!\!\bigcirc 
+    \hspace{17pt} \cdots \hspace{19pt}
+    \bigcirc\!\!\xleftarrow{\hspace{4.5pt}{\scriptsize
+    -a_{K,1}}\hspace{3pt}}
+    \!\!\bigcirc\!\!\xrightarrow{\hspace{6.5pt}{\scriptsize
+    b_{K,1}}\hspace{6pt}}\!\!\bigcirc
+    \\[-0pt]
+    &amp; \Big\uparrow  \hspace{26pt}
+   \Big\downarrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\uparrow \hspace{19pt}
+    \Big\uparrow  \hspace{26pt}
+   \Big\downarrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\uparrow \hspace{54.5pt}
+    \Big\uparrow \hspace{26pt}
+   \Big\downarrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\uparrow 
+    \\[-10pt]
+     &amp; \!\bigcirc\!\!\xleftarrow{\hspace{5.5pt}{\scriptsize
+    -a_{1,2}}\hspace{4pt}}
+    \!\!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{1,2}}\hspace{7pt}}\!\!\bigcirc \hspace{15.5pt}
+    \bigcirc\!\!\xleftarrow{\hspace{5.5pt}{\scriptsize
+    -a_{2,2}}\hspace{4pt}}
+    \!\!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{2,2}}\hspace{7pt}}\!\!\bigcirc 
+     \hspace{17pt} \cdots \hspace{18pt}
+    \bigcirc\!\!\xleftarrow{\hspace{4.5pt}{\scriptsize
+    -a_{K,2}}\hspace{3pt}}
+    \!\!\bigcirc\!\!\xrightarrow{\hspace{6.5pt}{\scriptsize
+    b_{K,2}}\hspace{6pt}}\!\!\bigcirc
+   \end{align*}\]</div>
+<ul class="simple">
+<li><p>Cascade-form SFG with transposed-form SoSs:</p></li>
+</ul>
+</li>
+</ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -827,6 +919,7 @@ products.</p></li>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-form-implementation">7.3.1. Direct-form Implementation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transposed-form-implementation">7.3.2. Transposed-form Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cascade-form-implementation">7.3.3. Cascade-form Implementation</a></li>
 </ul>
   </nav></div>
 

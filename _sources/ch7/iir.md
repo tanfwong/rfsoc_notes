@@ -7,7 +7,8 @@ as large as the feedforward order $M$, i.e., $N \geq M$.
 * The transfer function $H(z)$ of the IIR filter is given by 
   ```{math}
   :label: iir_tf 
-  \begin{align} H(z) 
+  \begin{align} 
+  H(z) 
   &= \frac{\sum_{k=0}^M b_k z^{-k}}{\sum_{k=0}^N a_k z^{-k}}
   & ~~~(a_0=1).
   \end{align} 
@@ -331,3 +332,87 @@ as large as the feedforward order $M$, i.e., $N \geq M$.
      a single multiplication rather than the accumulation of many
      products.
 
+## Cascade-form Implementation
+* As in {numref}`sec:fir_cascade`, if the IIR filter taps in
+  {eq}`iir_tf` are all real-valued, then the transfer function in
+  {eq}`iir_tf` of the IIR filter can be factored into a product of the
+  transfer functions of SoSs with real-valued taps in the form below:
+    ```{math}
+  :label: iir_sos
+  \begin{align} 
+  H(z) 
+  &= b_0 \prod_{k=1}^K 
+  \frac{1+b_{k,1} z^{-1} + b_{k,2} z^{-2}}{1+ a_{k,1} z^{-1} + a_{k,2} z^{-2}}
+  \end{align} 
+  ```
+  Hence, the IIR filter may be implemented as a cascade of all the
+  SoSs. 
+
+* Each SoS may be implemented in the direct form II or in the
+  transposed form II. For example:
+  - Cascade-form SFG with direct-form II SoSs:
+  \begin{align*}
+    \!\bigcirc\kern-6.5pt\vcenter{\tiny x}
+  \xrightarrow{\hspace{8pt}{\scriptsize b_0}\hspace{7pt}}
+    &
+    \!\bigcirc\!\!\xrightarrow{\hspace{25pt}}\!\!
+    \bigcirc\!\!\xrightarrow{\hspace{24.5pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc
+    \!\!\xrightarrow{\hspace{25pt}}\!\!\bigcirc
+    \!\!\xrightarrow{\hspace{24.5pt}}\!\!\bigcirc
+    \!\!\longrightarrow \cdots \longrightarrow
+    \!\bigcirc\!\!\xrightarrow{\hspace{25pt}}\!\!
+    \bigcirc\!\!\xrightarrow{\hspace{25pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+    \\[-0pt]
+    & \Big\uparrow  \hspace{26pt}
+   \Big\downarrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\uparrow \hspace{19pt}
+    \Big\uparrow  \hspace{26pt}
+   \Big\downarrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\uparrow \hspace{54pt}
+    \Big\uparrow \hspace{26pt}
+   \Big\downarrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\uparrow 
+    \\[-10pt]
+    & \!\bigcirc\!\!\xleftarrow{\hspace{5.5pt}{\scriptsize
+    -a_{1,1}}\hspace{4pt}}
+    \!\!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{1,1}}\hspace{7pt}}\!\!\bigcirc \hspace{15pt}
+    \bigcirc\!\!\xleftarrow{\hspace{5.5pt}{\scriptsize
+    -a_{2,1}}\hspace{4pt}}
+    \!\!\bigcirc\!\!\xrightarrow{\hspace{7pt}{\scriptsize
+    b_{2,1}}\hspace{7pt}}\!\!\bigcirc 
+    \hspace{17pt} \cdots \hspace{19pt}
+    \bigcirc\!\!\xleftarrow{\hspace{4.5pt}{\scriptsize
+    -a_{K,1}}\hspace{3pt}}
+    \!\!\bigcirc\!\!\xrightarrow{\hspace{6.5pt}{\scriptsize
+    b_{K,1}}\hspace{6pt}}\!\!\bigcirc
+    \\[-0pt]
+    & \Big\uparrow  \hspace{26pt}
+   \Big\downarrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\uparrow \hspace{19pt}
+    \Big\uparrow  \hspace{26pt}
+   \Big\downarrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\uparrow \hspace{54.5pt}
+    \Big\uparrow \hspace{26pt}
+   \Big\downarrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\uparrow 
+    \\[-10pt]
+     & \!\bigcirc\!\!\xleftarrow{\hspace{5.5pt}{\scriptsize
+    -a_{1,2}}\hspace{4pt}}
+    \!\!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{1,2}}\hspace{7pt}}\!\!\bigcirc \hspace{15.5pt}
+    \bigcirc\!\!\xleftarrow{\hspace{5.5pt}{\scriptsize
+    -a_{2,2}}\hspace{4pt}}
+    \!\!\bigcirc\!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{2,2}}\hspace{7pt}}\!\!\bigcirc 
+     \hspace{17pt} \cdots \hspace{18pt}
+    \bigcirc\!\!\xleftarrow{\hspace{4.5pt}{\scriptsize
+    -a_{K,2}}\hspace{3pt}}
+    \!\!\bigcirc\!\!\xrightarrow{\hspace{6.5pt}{\scriptsize
+    b_{K,2}}\hspace{6pt}}\!\!\bigcirc
+   \end{align*}
+
+  - Cascade-form SFG with transposed-form SoSs:
+  
