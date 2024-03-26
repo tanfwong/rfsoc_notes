@@ -414,5 +414,73 @@ as large as the feedforward order $M$, i.e., $N \geq M$.
     b_{K,2}}\hspace{6pt}}\!\!\bigcirc
    \end{align*}
 
-  - Cascade-form SFG with transposed-form SoSs:
-  
+  - Cascade-form SFG with transposed-form II SoSs:
+  \begin{align*}
+  \!\bigcirc\kern-6.5pt\vcenter{\tiny x}
+    \xrightarrow{\hspace{8pt}{\scriptsize b_0}\hspace{7pt}}
+    &
+    \!\bigcirc\!\!\xrightarrow{\hspace{25pt}}\!\!
+    \bigcirc\!\!\xrightarrow{\hspace{24.5pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc
+    \!\!\xrightarrow{\hspace{25pt}}\!\!\bigcirc
+    \!\!\xrightarrow{\hspace{24.5pt}}\!\!\bigcirc
+    \!\!\longrightarrow \cdots \longrightarrow
+    \!\bigcirc\!\!\xrightarrow{\hspace{25pt}}\!\!
+    \bigcirc\!\!\xrightarrow{\hspace{25pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+    \\[-0pt]
+    & \Big\downarrow  \hspace{26pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\downarrow \hspace{19pt}
+    \Big\downarrow  \hspace{26pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\downarrow \hspace{54pt}
+    \Big\downarrow \hspace{26pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\downarrow 
+    \\[-10pt]
+    & \!\bigcirc
+    \!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{1,1}}\hspace{7.5pt}}\!\!\bigcirc 
+    \!\!\xleftarrow{\hspace{4pt}{\scriptsize
+    -a_{1,1}}\hspace{4pt}}\!\!\bigcirc
+    \hspace{16pt}
+    \bigcirc
+    \!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{2,1}}\hspace{7pt}}\!\!\bigcirc 
+    \!\!\xleftarrow{\hspace{4.5pt}{\scriptsize
+    -a_{2,1}}\hspace{4pt}}\!\!\bigcirc
+    \hspace{17pt} \cdots \hspace{19pt}
+    \bigcirc
+    \!\!\xrightarrow{\hspace{7pt}{\scriptsize
+    b_{K,1}}\hspace{6pt}}\!\!\bigcirc
+    \!\!\xleftarrow{\hspace{3.5pt}{\scriptsize
+    -a_{K,1}}\hspace{3pt}}\!\!\bigcirc
+    \\[-0pt]
+    & \Big\downarrow  \hspace{26pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\downarrow \hspace{19pt}
+    \Big\downarrow  \hspace{26pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\downarrow \hspace{54.5pt}
+    \Big\downarrow \hspace{26pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{15pt}
+    \Big\downarrow 
+    \\[-10pt]
+     & \!\bigcirc
+    \!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{1,2}}\hspace{7.5pt}}\!\!\bigcirc
+    \!\!\xleftarrow{\hspace{4.5pt}{\scriptsize
+    -a_{1,2}}\hspace{4pt}}\!\!\bigcirc
+    \hspace{15.5pt}\bigcirc
+    \!\!\xrightarrow{\hspace{8pt}{\scriptsize
+    b_{2,2}}\hspace{7pt}}\!\!\bigcirc 
+    \!\!\xleftarrow{\hspace{4.5pt}{\scriptsize
+    -a_{2,2}}\hspace{4pt}}\!\!\bigcirc
+     \hspace{17pt} \cdots \hspace{19.5pt}
+    \bigcirc
+    \!\!\xrightarrow{\hspace{7pt}{\scriptsize
+    b_{K,2}}\hspace{6.5pt}}\!\!\bigcirc
+    \!\!\xleftarrow{\hspace{3.5pt}{\scriptsize
+    -a_{K,2}}\hspace{2.5pt}}\!\!\bigcirc
+  \end{align*}
