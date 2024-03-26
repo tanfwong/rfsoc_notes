@@ -7,6 +7,7 @@ unrolling on loops are simply the instruction-level counterparts of
 task-level pipelining and parallelization discussed in
 {numref}`sec:pro-con`.
 
+(sec:loop_pipe)=
 ## Loop Pipelining
 * By default, Vitis HLS automatically pipelines a loop. We may also
   invoke loop pipelining by using [`#pragma HLS
