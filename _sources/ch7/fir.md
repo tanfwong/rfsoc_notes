@@ -331,7 +331,7 @@ domain or {eq}`firz` in the $z$-domain:
 
   void fir(hls::stream<din_t> &in, hls::stream<dout_t> &out, int N) {
 
-    dout_t u[K+1];
+    static dout_t u[K+1];
     static dout_t w[K][2] = {};
   #pragma HLS array_partition variable=u type=complete
   #pragma HLS array_partition variable=w type=complete

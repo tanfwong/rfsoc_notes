@@ -281,7 +281,7 @@ as large as the feedforward order $M$, i.e., $N \geq M$.
 
   void iir(hls::stream<din_t> &in, hls::stream<dout_t> &out, int N) {
 
-    dout_t u[fbL-1] = {};
+    static dout_t u[fbL-1] = {};
   #pragma HLS array_partition variable=u type=complete
   
     sample_loop: for (int n=0; n<N; n++) {
@@ -522,8 +522,8 @@ as large as the feedforward order $M$, i.e., $N \geq M$.
 
   void iir(hls::stream<din_t> &in, hls::stream<dout_t> &out, int N) {
 
-    dout_t u[K+1];
-    dout_t w[K][2] = {};
+    static dout_t u[K+1];
+    static dout_t w[K][2] = {};
   #pragma HLS array_partition variable=u type=complete
   #pragma HLS array_partition variable=w type=complete
 
