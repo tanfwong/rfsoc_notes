@@ -503,7 +503,8 @@ as large as the feedforward order $M$, i.e., $N \geq M$.
   };
   const din_t b0=0.168814352044553;
 
-  void iir2nd(dout_t &in, dout_t &out, dout_t &w1, dout_t &w2, const din_t b[2], const din_t a[2]) {
+  void iir2nd(dout_t &in, dout_t &out, dout_t &w1, dout_t &w2, 
+              const din_t b[2], const din_t a[2]) {
   #pragma HLS inline
 
     // Write to out
