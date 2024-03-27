@@ -1102,6 +1102,60 @@ second-order IIR components in the following SFG:</p>
 <p>where each second-order component IIR filter is implemented in the
 transposed form II.</p>
 </li>
+<li><p>Below is an example HLS function that implements the parallel-form
+SFG with transposed-form II second-order components</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// This is a Chebyshev type-II lowpass filter with M=N=6 (L=7)</span>
+<span class="c1">// expressed as a parella sum of second-order components. </span>
+<span class="cp">#define K 3</span>
+<span class="k">const</span><span class="w"> </span><span class="n">din_t</span><span class="w"> </span><span class="n">B</span><span class="p">[</span><span class="n">K</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="p">{</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="mf">0.182834372101273</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.306910458916128</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="mf">-1.151247645072097</span><span class="p">,</span><span class="w"> </span><span class="mf">-1.125034655836861</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="mf">-4.777765413376408</span><span class="p">,</span><span class="w"> </span><span class="mf">-1.682130810244864</span><span class="p">}</span>
+<span class="p">};</span>
+<span class="k">const</span><span class="w"> </span><span class="n">din_t</span><span class="w"> </span><span class="n">A</span><span class="p">[</span><span class="n">K</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="p">{</span>
+<span class="w">  </span><span class="p">{</span><span class="mf">0.562309267750655</span><span class="p">,</span><span class="w"> </span><span class="mf">0.700839985387954</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="mf">0.576772441445408</span><span class="p">,</span><span class="w"> </span><span class="mf">0.316322235552652</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="mf">0.637344246881063</span><span class="p">,</span><span class="w"> </span><span class="mf">0.128737933973358</span><span class="p">},</span>
+<span class="p">};</span>
+<span class="k">const</span><span class="w"> </span><span class="n">din_t</span><span class="w"> </span><span class="n">B0</span><span class="o">=</span><span class="mf">5.914993038391787</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">piir2nd</span><span class="p">(</span><span class="n">din_t</span><span class="w"> </span><span class="o">&amp;</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">dout_t</span><span class="w"> </span><span class="o">&amp;</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">dout_t</span><span class="w"> </span><span class="o">&amp;</span><span class="n">w1</span><span class="p">,</span><span class="w"> </span><span class="n">dout_t</span><span class="w"> </span><span class="o">&amp;</span><span class="n">w2</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">din_t</span><span class="w"> </span><span class="n">B</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">din_t</span><span class="w"> </span><span class="n">A</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS inline</span>
+
+<span class="w">  </span><span class="n">dout_t</span><span class="w"> </span><span class="n">bx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">in</span><span class="p">;</span>
+<span class="cp">#pragma HLS bind_op variable=bx op=mul impl=dsp</span>
+<span class="w">  </span><span class="c1">// Write to out</span>
+<span class="w">  </span><span class="n">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bx</span><span class="o">+</span><span class="n">w1</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// Update register</span>
+<span class="w">  </span><span class="n">dout_t</span><span class="w"> </span><span class="n">ay</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">out</span><span class="p">;</span>
+<span class="cp">#pragma HLS bind_op variable=ay op=mul impl=dsp</span>
+<span class="w">  </span><span class="n">bx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">in</span><span class="p">;</span>
+<span class="w">  </span><span class="n">w1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">w2</span><span class="o">+</span><span class="n">bx</span><span class="o">-</span><span class="n">ay</span><span class="p">;</span>
+<span class="w">  </span><span class="n">ay</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">out</span><span class="p">;</span>
+<span class="w">  </span><span class="n">w2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">ay</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">iir</span><span class="p">(</span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="n">din_t</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="n">dout_t</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">dout_t</span><span class="w"> </span><span class="n">w</span><span class="p">[</span><span class="n">K</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="cp">#pragma HLS array_partition variable=w type=complete</span>
+
+<span class="w">  </span><span class="nl">sample_loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS loop_tripcount max=MAX_N</span>
+<span class="w">    </span><span class="n">din_t</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
+<span class="w">    </span><span class="n">dout_t</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">B0</span><span class="o">*</span><span class="n">x</span><span class="p">;</span>
+<span class="w">    </span><span class="nl">parallel_loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">&lt;</span><span class="n">K</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">dout_t</span><span class="w"> </span><span class="n">yy</span><span class="p">;</span>
+<span class="w">      </span><span class="n">piir2nd</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">yy</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">w</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="o">&amp;</span><span class="n">B</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="o">&amp;</span><span class="n">A</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">]);</span>
+<span class="w">      </span><span class="n">y</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">yy</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">out</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">y</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Vitis HLS gives a RTL implementation of <code class="docutils literal notranslate"><span class="pre">sample_loop</span></code> with II=1.</p>
+</li>
 </ul>
 </section>
 </section>

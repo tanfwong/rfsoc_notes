@@ -666,3 +666,58 @@ as large as the feedforward order $M$, i.e., $N \geq M$.
   \end{align*} 
   where each second-order component IIR filter is implemented in the
   transposed form II.
+
+* Below is an example HLS function that implements the parallel-form
+  SFG with transposed-form II second-order components
+  ```c++
+  // This is a Chebyshev type-II lowpass filter with M=N=6 (L=7)
+  // expressed as a parella sum of second-order components. 
+  #define K 3
+  const din_t B[K][2]={
+    { 0.182834372101273, -0.306910458916128},
+    {-1.151247645072097, -1.125034655836861},
+    {-4.777765413376408, -1.682130810244864}
+  };
+  const din_t A[K][2]={
+    {0.562309267750655, 0.700839985387954},
+    {0.576772441445408, 0.316322235552652},
+    {0.637344246881063, 0.128737933973358},
+  };
+  const din_t B0=5.914993038391787;
+
+  void piir2nd(din_t &in, dout_t &out, dout_t &w1, dout_t &w2, const din_t B[2], const din_t A[2]) {
+  #pragma HLS inline
+
+    dout_t bx = B[0]*in;
+  #pragma HLS bind_op variable=bx op=mul impl=dsp
+    // Write to out
+    out = bx+w1;
+  
+    // Update register
+    dout_t ay = A[0]*out;
+  #pragma HLS bind_op variable=ay op=mul impl=dsp
+    bx = B[1]*in;
+    w1 = w2+bx-ay;
+    ay = A[1]*out;
+    w2 = -ay;
+  }
+
+  void iir(hls::stream<din_t> &in, hls::stream<dout_t> &out, int N) {
+    dout_t w[K][2] = {};
+  #pragma HLS array_partition variable=w type=complete
+
+    sample_loop: for (int n=0; n<N; n++) {
+  #pragma HLS loop_tripcount max=MAX_N
+      din_t x = in.read();
+      dout_t y = B0*x;
+      parallel_loop: for (int k=0; k<K; k++) {
+        dout_t yy;
+        piir2nd(x, yy, w[k][0], w[k][1], &B[k][0], &A[k][0]);
+        y += yy;
+      }
+      out.write(y);
+    }
+  }
+
+  ```
+     Vitis HLS gives a RTL implementation of `sample_loop` with II=1. 
