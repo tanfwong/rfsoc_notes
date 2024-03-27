@@ -540,3 +540,127 @@ as large as the feedforward order $M$, i.e., $N \geq M$.
   Vitis HLS gives a RTL implementation of `sample_loop` with
   II=1. The latency of `sample_loop` is higher than that achieved
   using the transposed-form implementation.
+
+## Parallel-form Implementation
+* For an IIR filter ($N \geq M$) with real-valued taps and
+  single-order poles, the transfer function $H(z)$ in {eq}`iir_tf` can
+  be expanded into a sum of *partial fractions* :
+  ```{math} 
+  :label: iir_pf 
+  \begin{align} 
+  H(z) 
+  &=
+  B_0 + \sum_{k=1}^K 
+  \frac{B_{k,0} + B_{k,1} z^{-1}}{1 + A_{k,1}
+  z^{-1} + A_{k,2} z^{-2}} 
+  \end{align} 
+  ``` 
+  where all the $A$ and $B$ coefficients are real-valued.
+
+* Based on {eq}`iir_pf`, we may implement the IIR filter as parallel
+  second-order IIR components in the following SFG:
+  \begin{align*}
+    & \!\bigcirc\!\!\xrightarrow{\hspace{32pt}{\scriptsize
+    B_{0}}\hspace{31.5pt}}\!\!\bigcirc
+  \\[-10pt]
+     \nearrow \hspace{3pt}
+     & \hspace{72pt}  \searrow
+  \\[-10pt]
+  \!\bigcirc\kern-6.5pt\vcenter{\tiny x}\longrightarrow
+    \!\!\bigcirc\!\!\longrightarrow
+    & \!\bigcirc\!\!\xrightarrow{\hspace{7pt}{\scriptsize
+    B_{1,0}}\hspace{6pt}}\!\!
+    \bigcirc\!\!\xrightarrow{\hspace{25.5pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+  \\[-0pt]
+    \Big| \hspace{19pt}
+    & \Big\downarrow  \hspace{26pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{16pt}
+    \Big\downarrow 
+    \hspace{18.5pt} \Big\uparrow
+  \\[-10pt]
+    \big| \hspace{19.0pt}
+    & \!\bigcirc
+    \!\!\xrightarrow{\hspace{7pt}{\scriptsize
+    B_{1,1}}\hspace{6.5pt}}\!\!\bigcirc 
+    \!\!\xleftarrow{\hspace{4pt}{\scriptsize
+    -A_{1,1}}\hspace{4pt}}\!\!\bigcirc
+    \hspace{18.2pt} \big|
+  \\[-0pt]
+    \Big| \hspace{19pt}
+    & \hspace{33pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{16pt}
+    \Big\downarrow 
+    \hspace{19.8pt} \Big|
+  \\[-10pt]
+     \Big\downarrow \hspace{17.5pt}
+     & \hspace{31.5pt}\bigcirc
+    \!\!\xleftarrow{\hspace{4.5pt}{\scriptsize
+    -A_{1,2}}\hspace{4pt}}\!\!\bigcirc
+    \hspace{17.8pt} \Big|
+   \\[-0pt]
+    \!\!\bigcirc\!\!\longrightarrow
+    &
+    \!\bigcirc\!\!\xrightarrow{\hspace{7pt}{\scriptsize
+    B_{2,0}}\hspace{6pt}}\!\!
+    \bigcirc\!\!\xrightarrow{\hspace{25.5pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc
+  \\[-0pt]
+    \Big| \hspace{19pt}
+    & \Big\downarrow  \hspace{26pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{16pt}
+    \Big\downarrow 
+    \hspace{18.5pt} \Big\uparrow
+  \\[-10pt]
+    \big| \hspace{19.0pt}
+    & \!\bigcirc
+    \!\!\xrightarrow{\hspace{7pt}{\scriptsize
+    B_{2,1}}\hspace{6.5pt}}\!\!\bigcirc 
+    \!\!\xleftarrow{\hspace{4pt}{\scriptsize
+    -A_{2,1}}\hspace{4pt}}\!\!\bigcirc
+    \hspace{18.2pt} \big|
+  \\[-0pt]
+    \Big| \hspace{19pt}
+    & \hspace{33pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{16pt}
+    \Big\downarrow 
+    \hspace{19.8pt} \Big|
+  \\[-10pt]
+     \Big\downarrow \hspace{17.5pt}
+     & \hspace{31.5pt}\bigcirc
+    \!\!\xleftarrow{\hspace{4.5pt}{\scriptsize
+    -A_{2,2}}\hspace{4pt}}\!\!\bigcirc
+    \hspace{17.8pt} \Big|
+  \\[-0pt]
+    \vdots  \hspace{19.5pt}
+    & \hspace{35pt} \vdots \hspace{54.8pt} \vdots 
+  \\[-0pt]
+     \Big\downarrow \hspace{17.5pt}
+     & \hspace{90.5pt}  \Big\uparrow
+  \\[-10pt]
+    \!\!\bigcirc\!\!\longrightarrow
+    &
+    \!\bigcirc\!\!\xrightarrow{\hspace{5pt}{\scriptsize
+    B_{K,0}}\hspace{6pt}}\!\!
+    \bigcirc\!\!\xrightarrow{\hspace{25.5pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc
+  \\[-0pt]
+    & \Big\downarrow  \hspace{26pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{16pt}
+    \Big\downarrow 
+  \\[-10pt]
+    & \!\bigcirc
+    \!\!\xrightarrow{\hspace{5pt}{\scriptsize
+    B_{K,1}}\hspace{6.5pt}}\!\!\bigcirc 
+    \!\!\xleftarrow{\hspace{4pt}{\scriptsize
+    -A_{K,1}}\hspace{2pt}}\!\!\bigcirc
+  \\[-0pt]
+    & \hspace{33pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{16pt}
+    \Big\downarrow 
+  \\[-10pt]
+     & \hspace{31.5pt}\bigcirc
+    \!\!\xleftarrow{\hspace{4pt}{\scriptsize
+    -A_{K,2}}\hspace{2.5pt}}\!\!\bigcirc
+  \end{align*} 

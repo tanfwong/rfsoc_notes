@@ -199,9 +199,10 @@ domain or {eq}`firz` in the $z$-domain:
   where $z_1, z_2, \ldots, z_M$ are the zeros of the transfer function
   $H(z) = \sum_{k=0}^M b_k z^{-k}$ of the FIR filter.
 
-* For real-valued filter taps, i.e., all the $b_k$s are real numbers,
-  the zeros either are real-valued or come in conjugate pairs. Hence,
-  we may rewrite {eq}`fir_cascade` further in the following form:
+* For an FIR filter with real-valued filter taps, i.e., all the $b_k$s
+  are real numbers, the zeros either are real-valued or come in
+  conjugate pairs. Hence, we may rewrite {eq}`fir_cascade` further in
+  the following form:
   ```{math}
   :label: fir_cascade_sos
   \begin{align}

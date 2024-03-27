@@ -398,6 +398,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-form-implementation">7.3.1. Direct-form Implementation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transposed-form-implementation">7.3.2. Transposed-form Implementation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cascade-form-implementation">7.3.3. Cascade-form Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parallel-form-implementation">7.3.4. Parallel-form Implementation</a></li>
 </ul>
             </nav>
         </div>
@@ -974,6 +975,133 @@ using the transposed-form implementation.</p>
 </li>
 </ul>
 </section>
+<section id="parallel-form-implementation">
+<h2><span class="section-number">7.3.4. </span>Parallel-form Implementation<a class="headerlink" href="#parallel-form-implementation" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>For an IIR filter (<span class="math notranslate nohighlight">\(N \geq M\)</span>) with real-valued taps and
+single-order poles, the transfer function <span class="math notranslate nohighlight">\(H(z)\)</span> in <a class="reference internal" href="#equation-iir-tf">(7.12)</a> can
+be expanded into a sum of <em>partial fractions</em> :</p>
+<div class="math notranslate nohighlight" id="equation-iir-pf">
+<span class="eqno">(7.14)<a class="headerlink" href="#equation-iir-pf" title="Permalink to this equation">#</a></span>\[\begin{align} 
+H(z) 
+&amp;=
+B_0 + \sum_{k=1}^K 
+\frac{B_{k,0} + B_{k,1} z^{-1}}{1 + A_{k,1}
+z^{-1} + A_{k,2} z^{-2}} 
+\end{align} \]</div>
+<p>where all the <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> coefficients are real-valued.</p>
+</li>
+<li><p>Based on <a class="reference internal" href="#equation-iir-pf">(7.14)</a>, we may implement the IIR filter as parallel
+second-order IIR components in the following SFG:</p>
+<div class="amsmath math notranslate nohighlight">
+\[\begin{align*}
+    &amp; \!\bigcirc\!\!\xrightarrow{\hspace{32pt}{\scriptsize
+    B_{0}}\hspace{31.5pt}}\!\!\bigcirc
+  \\[-10pt]
+     \nearrow \hspace{3pt}
+     &amp; \hspace{72pt}  \searrow
+  \\[-10pt]
+  \!\bigcirc\kern-6.5pt\vcenter{\tiny x}\longrightarrow
+    \!\!\bigcirc\!\!\longrightarrow
+    &amp; \!\bigcirc\!\!\xrightarrow{\hspace{7pt}{\scriptsize
+    B_{1,0}}\hspace{6pt}}\!\!
+    \bigcirc\!\!\xrightarrow{\hspace{25.5pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc\kern-6.5pt\vcenter{\tiny y}
+  \\[-0pt]
+    \Big| \hspace{19pt}
+    &amp; \Big\downarrow  \hspace{26pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{16pt}
+    \Big\downarrow 
+    \hspace{18.5pt} \Big\uparrow
+  \\[-10pt]
+    \big| \hspace{19.0pt}
+    &amp; \!\bigcirc
+    \!\!\xrightarrow{\hspace{7pt}{\scriptsize
+    B_{1,1}}\hspace{6.5pt}}\!\!\bigcirc 
+    \!\!\xleftarrow{\hspace{4pt}{\scriptsize
+    -A_{1,1}}\hspace{4pt}}\!\!\bigcirc
+    \hspace{18.2pt} \big|
+  \\[-0pt]
+    \Big| \hspace{19pt}
+    &amp; \hspace{33pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{16pt}
+    \Big\downarrow 
+    \hspace{19.8pt} \Big|
+  \\[-10pt]
+     \Big\downarrow \hspace{17.5pt}
+     &amp; \hspace{31.5pt}\bigcirc
+    \!\!\xleftarrow{\hspace{4.5pt}{\scriptsize
+    -A_{1,2}}\hspace{4pt}}\!\!\bigcirc
+    \hspace{17.8pt} \Big|
+   \\[-0pt]
+    \!\!\bigcirc\!\!\longrightarrow
+    &amp;
+    \!\bigcirc\!\!\xrightarrow{\hspace{7pt}{\scriptsize
+    B_{2,0}}\hspace{6pt}}\!\!
+    \bigcirc\!\!\xrightarrow{\hspace{25.5pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc
+  \\[-0pt]
+    \Big| \hspace{19pt}
+    &amp; \Big\downarrow  \hspace{26pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{16pt}
+    \Big\downarrow 
+    \hspace{18.5pt} \Big\uparrow
+  \\[-10pt]
+    \big| \hspace{19.0pt}
+    &amp; \!\bigcirc
+    \!\!\xrightarrow{\hspace{7pt}{\scriptsize
+    B_{2,1}}\hspace{6.5pt}}\!\!\bigcirc 
+    \!\!\xleftarrow{\hspace{4pt}{\scriptsize
+    -A_{2,1}}\hspace{4pt}}\!\!\bigcirc
+    \hspace{18.2pt} \big|
+  \\[-0pt]
+    \Big| \hspace{19pt}
+    &amp; \hspace{33pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{16pt}
+    \Big\downarrow 
+    \hspace{19.8pt} \Big|
+  \\[-10pt]
+     \Big\downarrow \hspace{17.5pt}
+     &amp; \hspace{31.5pt}\bigcirc
+    \!\!\xleftarrow{\hspace{4.5pt}{\scriptsize
+    -A_{2,2}}\hspace{4pt}}\!\!\bigcirc
+    \hspace{17.8pt} \Big|
+  \\[-0pt]
+    \vdots  \hspace{19.5pt}
+    &amp; \hspace{35pt} \vdots \hspace{54.8pt} \vdots 
+  \\[-0pt]
+     \Big\downarrow \hspace{17.5pt}
+     &amp; \hspace{90.5pt}  \Big\uparrow
+  \\[-10pt]
+    \!\!\bigcirc\!\!\longrightarrow
+    &amp;
+    \!\bigcirc\!\!\xrightarrow{\hspace{5pt}{\scriptsize
+    B_{K,0}}\hspace{6pt}}\!\!
+    \bigcirc\!\!\xrightarrow{\hspace{25.5pt}}\!\!\bigcirc
+    \!\!\longrightarrow\!\!\bigcirc
+  \\[-0pt]
+    &amp; \Big\downarrow  \hspace{26pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{16pt}
+    \Big\downarrow 
+  \\[-10pt]
+    &amp; \!\bigcirc
+    \!\!\xrightarrow{\hspace{5pt}{\scriptsize
+    B_{K,1}}\hspace{6.5pt}}\!\!\bigcirc 
+    \!\!\xleftarrow{\hspace{4pt}{\scriptsize
+    -A_{K,1}}\hspace{2pt}}\!\!\bigcirc
+  \\[-0pt]
+    &amp; \hspace{33pt}
+   \Big\uparrow   {\scriptsize z^{-1}} \hspace{16pt}
+    \Big\downarrow 
+  \\[-10pt]
+     &amp; \hspace{31.5pt}\bigcirc
+    \!\!\xleftarrow{\hspace{4pt}{\scriptsize
+    -A_{K,2}}\hspace{2.5pt}}\!\!\bigcirc
+  \end{align*}\]</div>
+</li>
+</ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -1046,6 +1174,7 @@ using the transposed-form implementation.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-form-implementation">7.3.1. Direct-form Implementation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transposed-form-implementation">7.3.2. Transposed-form Implementation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cascade-form-implementation">7.3.3. Cascade-form Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parallel-form-implementation">7.3.4. Parallel-form Implementation</a></li>
 </ul>
   </nav></div>
 
