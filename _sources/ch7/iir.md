@@ -664,3 +664,5 @@ as large as the feedforward order $M$, i.e., $N \geq M$.
     \!\!\xleftarrow{\hspace{4pt}{\scriptsize
     -A_{K,2}}\hspace{2.5pt}}\!\!\bigcirc
   \end{align*} 
+  where each second-order component IIR filter is implemented in the
+  transposed form II.
