@@ -333,6 +333,8 @@ domain or {eq}`firz` in the $z$-domain:
 
     dout_t u[K+1];
     static dout_t w[K][2] = {};
+  #pragma HLS array_partition variable=u type=complete
+  #pragma HLS array_partition variable=w type=complete
 
     sample_loop: for (int n=0; n<N; n++) {
   #pragma HLS loop_tripcount max=MAX_N

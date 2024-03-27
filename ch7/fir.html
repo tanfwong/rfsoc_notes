@@ -746,6 +746,8 @@ SFG with transposed-form SoSs:</p>
 
 <span class="w">  </span><span class="n">dout_t</span><span class="w"> </span><span class="n">u</span><span class="p">[</span><span class="n">K</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">dout_t</span><span class="w"> </span><span class="n">w</span><span class="p">[</span><span class="n">K</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="cp">#pragma HLS array_partition variable=u type=complete</span>
+<span class="cp">#pragma HLS array_partition variable=w type=complete</span>
 
 <span class="w">  </span><span class="nl">sample_loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="cp">#pragma HLS loop_tripcount max=MAX_N</span>

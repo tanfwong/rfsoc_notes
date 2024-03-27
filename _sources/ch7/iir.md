@@ -484,3 +484,58 @@ as large as the feedforward order $M$, i.e., $N \geq M$.
     \!\!\xleftarrow{\hspace{3.5pt}{\scriptsize
     -a_{K,2}}\hspace{2.5pt}}\!\!\bigcirc
   \end{align*}
+
+* Below is an example HLS function that implements the cascade-form
+  SFG with transposed-form II SoSs:
+  ```c++
+  // This is a Chebyshev type-II lowpass filter with M=N=6 (L=7)
+  // expressed as SoSs. 
+  #define K 3
+  const din_t b[K][2]={
+    {1.931625159186722, 0.999999999999988},
+    {1.540424279915726, 1.000000000000037},
+    {1.220028067120242, 0.999999999999978}
+  };
+  const din_t a[K][2]={
+    {0.637344246881063, 0.128737933973358},
+    {0.576772441445408, 0.316322235552652},
+    {0.562309267750655, 0.700839985387954},
+  };
+  const din_t b0=0.168814352044553;
+
+  void iir2nd(dout_t &in, dout_t &out, dout_t &w1, dout_t &w2, const din_t b[2], const din_t a[2]) {
+  #pragma HLS inline
+
+    // Write to out
+    out = in+w1;
+    // Update register
+    dout_t bx = b[0]*in;
+    dout_t ay = a[0]*out;
+  #pragma HLS bind_op variable=bx op=mul impl=dsp
+  #pragma HLS bind_op variable=ay op=mul impl=dsp
+    w1 = w2+bx-ay;
+    bx = b[1]*in;
+    ay = a[1]*out;
+    w2 = bx-ay;
+  }
+
+  void iir(hls::stream<din_t> &in, hls::stream<dout_t> &out, int N) {
+
+    dout_t u[K+1];
+    dout_t w[K][2] = {};
+  #pragma HLS array_partition variable=u type=complete
+  #pragma HLS array_partition variable=w type=complete
+
+    sample_loop: for (int n=0; n<N; n++) {
+  #pragma HLS loop_tripcount max=MAX_N
+      u[0] = b0*in.read();
+      cascade_loop: for (int k=0; k<K; k++) {
+        iir2nd(u[k], u[k+1], w[k][0], w[k][1], &b[k][0], &a[k][0]);
+      }
+      out.write(u[K]);
+    }
+  }
+  ```
+  Vitis HLS gives a RTL implementation of `sample_loop` with
+  II=1. The latency of `sample_loop` is higher than that achieved
+  using the transposed-form implementation.
