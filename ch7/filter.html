@@ -199,6 +199,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="sfg.html">7.1. Block Diagram &amp; Signal Flow Graph</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fir.html">7.2. FIR Filter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="iir.html">7.3. IIR Filter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quant.html">7.4. Effects of Quantization</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">8. References</a></li>
@@ -429,14 +430,14 @@ transformed to the following algebraic equations:</p>
 <li><p><strong>FIR</strong> filter of order <span class="math notranslate nohighlight">\(M\)</span>:</p>
 <div class="math notranslate nohighlight" id="equation-firz">
 <span class="eqno">(7.3)<a class="headerlink" href="#equation-firz" title="Permalink to this equation">#</a></span>\[\begin{align} 
-Y(z) = \sum_{k=0}^M b_k z^k X(Z) &amp; \hspace{80pt} &amp; (b_0 \neq 0) 
+Y(z) = \sum_{k=0}^M b_k z^{-k} X(Z) &amp; \hspace{80pt} &amp; (b_0 \neq 0) 
 \end{align}\]</div>
 </li>
 <li><p><strong>IIR</strong> filter of <em>feedforward</em> order <span class="math notranslate nohighlight">\(M\)</span> and <em>feedback</em> order <span class="math notranslate nohighlight">\(N\)</span>
 (or simply of order <span class="math notranslate nohighlight">\(N\)</span>):</p>
 <div class="math notranslate nohighlight" id="equation-iirz">
 <span class="eqno">(7.4)<a class="headerlink" href="#equation-iirz" title="Permalink to this equation">#</a></span>\[\begin{align} 
-\sum_{k=0}^N a_k z^k Y(z) = \sum_{k=0}^M b_k z^k X(z) &amp; \hspace{50pt} &amp;
+\sum_{k=0}^N a_k z^{-k} Y(z) = \sum_{k=0}^M b_k z^{-k} X(z) &amp; \hspace{50pt} &amp;
 (a_0 =1) 
 \end{align}\]</div>
 <p>where <span class="math notranslate nohighlight">\(x[n] \stackrel{z}{\longleftrightarrow} X(z)\)</span> and <span class="math notranslate nohighlight">\(y[n]

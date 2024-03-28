@@ -30,7 +30,7 @@
     ```{math}
     :label: firz
     \begin{align} 
-    Y(z) = \sum_{k=0}^M b_k z^k X(Z) & \hspace{80pt} & (b_0 \neq 0) 
+    Y(z) = \sum_{k=0}^M b_k z^{-k} X(Z) & \hspace{80pt} & (b_0 \neq 0) 
     \end{align}
     ```
   - **IIR** filter of *feedforward* order $M$ and *feedback* order $N$
@@ -38,7 +38,7 @@
     ```{math}
     :label: iirz
     \begin{align} 
-    \sum_{k=0}^N a_k z^k Y(z) = \sum_{k=0}^M b_k z^k X(z) & \hspace{50pt} &
+    \sum_{k=0}^N a_k z^{-k} Y(z) = \sum_{k=0}^M b_k z^{-k} X(z) & \hspace{50pt} &
     (a_0 =1) 
     \end{align}
     ```
