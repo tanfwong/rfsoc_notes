@@ -685,7 +685,8 @@ as large as the feedforward order $M$, i.e., $N \geq M$.
   };
   const din_t B0=5.914993038391787;
 
-  void piir2nd(din_t &in, dout_t &out, dout_t &w1, dout_t &w2, const din_t B[2], const din_t A[2]) {
+  void piir2nd(din_t &in, dout_t &out, dout_t &w1, dout_t &w2,
+               const din_t B[2], const din_t A[2]) {
   #pragma HLS inline
 
     dout_t bx = B[0]*in;
