@@ -671,7 +671,7 @@ as large as the feedforward order $M$, i.e., $N \geq M$.
   SFG with transposed-form II second-order components
   ```c++
   // This is a Chebyshev type-II lowpass filter with M=N=6 (L=7)
-  // expressed as a parella sum of second-order components. 
+  // expressed as a parallel sum of second-order components. 
   #define K 3
   const din_t B[K][2]={
     { 0.182834372101273, -0.306910458916128},
