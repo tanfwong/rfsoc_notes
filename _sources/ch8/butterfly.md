@@ -8,10 +8,14 @@
 
 * For example, the figure below shows the decimation-in-time butterfly
   SFG for the case of $M=2^3 = 8$ ($\nu = 3$): 
-  ```{image} ../figs/fft_dit_bfly.jpg 
-  :alt: 8-point decimation-in-time FFT butterfly 
-  :width: 800px 
-  :align: center 
+  ```{figure} ../figs/fft_dit_bfly.jpg 
+  ---
+  name: butterfly1
+  alt: 8-point decimation-in-time FFT butterfly 
+  width: 800px
+  align: center
+  ---
+  Eight-point radix-2 decimation-in-time FFT butterfly SFG
   ``` 
   The figure also shows calculation of the $8$-point FFT is decomposed
   into that of two $4$-point FFTs, each of which is further decomposed
