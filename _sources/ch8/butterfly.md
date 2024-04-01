@@ -1,5 +1,6 @@
 # Butterfly Structures
 
+## Radix-2 Decimation-in-Time Butterfly
 * The radix-2 decimation-in-time FFT algorithm in
   {eq}`e:fft_dit2`-{eq}`e:fft_dit4` is perhaps more commonly described
   by the *butterfly-structured* SFG showing how to obtain the
@@ -10,7 +11,7 @@
   SFG for the case of $M=2^3 = 8$ ($\nu = 3$): 
   ```{figure} ../figs/fft_dit_bfly.jpg 
   ---
-  name: butterfly1
+  name: butterfly8
   alt: 8-point decimation-in-time FFT butterfly 
   width: 800px
   align: center
@@ -37,3 +38,54 @@
      with $X_k$,
   2. the butterfly output with $Mx[n]$, and
   3. all gain factors with their respective complex conjugates.
+
+## Modified Butterfly for Implementation
+* The butterfly SFG in {numref}`butterfly8` can be further modified to
+  make it more conducive to implementation in the PL. To see how, let
+  us get back to {eq}`e:fft_dit3` which gives the following SFG for
+  the basic butterfly element in {numref}`butterfly8`:
+  ```{figure} ../figs/butterfly2.jpg 
+  ---
+  name: butterfly2
+  alt: Basic 2-point butterfly element 
+  width: 400px
+  align: center
+  ---
+  Basic 2-point butterfly element SFG in {eq}`e:fft_dit3`
+  ```
+  The SFG implies that 2 complex-valued multiplications and 2
+  complex-valued additions are needed to implement this basic element.
+
+* However, it is easy to see that the computational requirement can
+  actually be lowered by rewriting {eq}`e:fft_dit3` using the
+  "fraction-like" arithmetic of $w^k_M$ as follows:
+  ```{math}
+  :label: btfly2mod
+  \begin{align}
+  X^{(i)}_{b,k} 
+  & =
+  X^{(i-1)}_{0b,k} +  w^{k2^{\nu-i}}_{M} X^{(i-1)}_{1b,k}
+  \\
+  X^{(i)}_{b,k+2^{i-1}} 
+  &= 
+  X^{(i-1)}_{0b,k} - w^{k2^{\nu-i}}_{M} X^{(i-1)}_{1b,k}
+  \end{align}
+  ```
+  for each $i=\nu, \nu-1, \ldots, 1$, $k=0,1,\ldots,2^{i-1} -1$, and
+    each binary sequence $b$ of length $\nu-i$.
+
+* Expressing {eq}`btfly2mod` as a SFG, we obtain the modified basic
+  butterfly element as shown below:
+  ```{figure} ../figs/butterfly2_mod.jpg 
+  ---
+  name: butterfly2_mod
+  alt: Modified basic 2-point butterfly element 
+  width: 500px
+  align: center
+  ---
+  Modified basic 2-point butterfly element SFG in {eq}`btfly2mod`
+  ```
+  We see that implementation of the modified SFG requires only a
+  single complex-valued multiplication, addition, and subtraction
+  each.
+  

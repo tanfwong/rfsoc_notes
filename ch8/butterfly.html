@@ -378,7 +378,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -394,6 +396,15 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#radix-2-decimation-in-time-butterfly">8.2.1. Radix-2 Decimation-in-Time Butterfly</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modified-butterfly-for-implementation">8.2.2. Modified Butterfly for Implementation</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -405,6 +416,8 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="butterfly-structures">
 <h1><span class="section-number">8.2. </span>Butterfly Structures<a class="headerlink" href="#butterfly-structures" title="Permalink to this headline">#</a></h1>
+<section id="radix-2-decimation-in-time-butterfly">
+<h2><span class="section-number">8.2.1. </span>Radix-2 Decimation-in-Time Butterfly<a class="headerlink" href="#radix-2-decimation-in-time-butterfly" title="Permalink to this headline">#</a></h2>
 <ul>
 <li><p>The radix-2 decimation-in-time FFT algorithm in
 <a class="reference internal" href="dit.html#equation-e-fft-dit2">(8.4)</a>-<a class="reference internal" href="dit.html#equation-e-fft-dit4">(8.6)</a> is perhaps more commonly described
@@ -413,10 +426,10 @@ by the <em>butterfly-structured</em> SFG showing how to obtain the
 signal samples <span class="math notranslate nohighlight">\(x[n]\)</span> for <span class="math notranslate nohighlight">\(n=0,1,\ldots, M-1\)</span>.</p></li>
 <li><p>For example, the figure below shows the decimation-in-time butterfly
 SFG for the case of <span class="math notranslate nohighlight">\(M=2^3 = 8\)</span> (<span class="math notranslate nohighlight">\(\nu = 3\)</span>):</p>
-<figure class="align-center" id="butterfly1">
+<figure class="align-center" id="butterfly8">
 <a class="reference internal image-reference" href="../_images/fft_dit_bfly.jpg"><img alt="8-point decimation-in-time FFT butterfly" src="../_images/fft_dit_bfly.jpg" style="width: 800px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 8.1 </span><span class="caption-text">Eight-point radix-2 decimation-in-time FFT butterfly SFG</span><a class="headerlink" href="#butterfly1" title="Permalink to this image">#</a></p>
+<p><span class="caption-number">Fig. 8.1 </span><span class="caption-text">Eight-point radix-2 decimation-in-time FFT butterfly SFG</span><a class="headerlink" href="#butterfly8" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 <p>The figure also shows calculation of the <span class="math notranslate nohighlight">\(8\)</span>-point FFT is decomposed
@@ -443,6 +456,53 @@ with <span class="math notranslate nohighlight">\(X_k\)</span>,</p></li>
 </ol>
 </li>
 </ul>
+</section>
+<section id="modified-butterfly-for-implementation">
+<h2><span class="section-number">8.2.2. </span>Modified Butterfly for Implementation<a class="headerlink" href="#modified-butterfly-for-implementation" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>The butterfly SFG in <a class="reference internal" href="#butterfly8"><span class="std std-numref">Fig. 8.1</span></a> can be further modified to
+make it more conducive to implementation in the PL. To see how, let
+us get back to <a class="reference internal" href="dit.html#equation-e-fft-dit3">(8.5)</a> which gives the following SFG for
+the basic butterfly element in <a class="reference internal" href="#butterfly8"><span class="std std-numref">Fig. 8.1</span></a>:</p>
+<figure class="align-center" id="butterfly2">
+<a class="reference internal image-reference" href="../_images/butterfly2.jpg"><img alt="Basic 2-point butterfly element" src="../_images/butterfly2.jpg" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 8.2 </span><span class="caption-text">Basic 2-point butterfly element SFG in <a class="reference internal" href="dit.html#equation-e-fft-dit3">(8.5)</a></span><a class="headerlink" href="#butterfly2" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<p>The SFG implies that 2 complex-valued multiplications and 2
+complex-valued additions are needed to implement this basic element.</p>
+</li>
+<li><p>However, it is easy to see that the computational requirement can
+actually be lowered by rewriting <a class="reference internal" href="dit.html#equation-e-fft-dit3">(8.5)</a> using the
+“fraction-like” arithmetic of <span class="math notranslate nohighlight">\(w^k_M\)</span> as follows:</p>
+<div class="math notranslate nohighlight" id="equation-btfly2mod">
+<span class="eqno">(8.7)<a class="headerlink" href="#equation-btfly2mod" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{align}
+X^{(i)}_{b,k} 
+&amp; =
+X^{(i-1)}_{0b,k} +  w^{k2^{\nu-i}}_{M} X^{(i-1)}_{1b,k}
+\\
+X^{(i)}_{b,k+2^{i-1}} 
+&amp;= 
+X^{(i-1)}_{0b,k} - w^{k2^{\nu-i}}_{M} X^{(i-1)}_{1b,k}
+\end{align}\end{split}\]</div>
+<p>for each <span class="math notranslate nohighlight">\(i=\nu, \nu-1, \ldots, 1\)</span>, <span class="math notranslate nohighlight">\(k=0,1,\ldots,2^{i-1} -1\)</span>, and
+each binary sequence <span class="math notranslate nohighlight">\(b\)</span> of length <span class="math notranslate nohighlight">\(\nu-i\)</span>.</p>
+</li>
+<li><p>Expressing <a class="reference internal" href="#equation-btfly2mod">(8.7)</a> as a SFG, we obtain the modified basic
+butterfly element as shown below:</p>
+<figure class="align-center" id="butterfly2-mod">
+<a class="reference internal image-reference" href="../_images/butterfly2_mod.jpg"><img alt="Modified basic 2-point butterfly element" src="../_images/butterfly2_mod.jpg" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 8.3 </span><span class="caption-text">Modified basic 2-point butterfly element SFG in <a class="reference internal" href="#equation-btfly2mod">(8.7)</a></span><a class="headerlink" href="#butterfly2-mod" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<p>We see that implementation of the modified SFG requires only a
+single complex-valued multiplication, addition, and subtraction
+each.</p>
+</li>
+</ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -503,6 +563,21 @@ with <span class="math notranslate nohighlight">\(X_k\)</span>,</p></li>
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#radix-2-decimation-in-time-butterfly">8.2.1. Radix-2 Decimation-in-Time Butterfly</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modified-butterfly-for-implementation">8.2.2. Modified Butterfly for Implementation</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
