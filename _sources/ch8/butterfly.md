@@ -89,3 +89,19 @@
   single complex-valued multiplication, addition, and subtraction
   each.
   
+* Replacing each basic element in the 8-point butterfly SFG in
+  {numref}`butterfly8` with the modified element in
+  {numref}`butterfly2_mod`, we obtain the following modified 8-point
+  butterfly SFG:
+  ```{figure} ../figs/butterfly8_mod.jpg 
+  ---
+  name: butterfly8_mod
+  alt: modified 8-point decimation-in-time FFT butterfly 
+  width: 1000px
+  align: center
+  ---
+  Modified 8-point radix-2 decimation-in-time FFT butterfly SFG
+  ``` 
+  which is more conducive to PL implementation. Note that the first
+  stage ($i=0$) does not require a gain layer because $w^0_M = 1$ (or
+  see {eq}`e:fft_dit4`). 

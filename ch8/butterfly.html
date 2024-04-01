@@ -501,6 +501,20 @@ butterfly element as shown below:</p>
 single complex-valued multiplication, addition, and subtraction
 each.</p>
 </li>
+<li><p>Replacing each basic element in the 8-point butterfly SFG in
+<a class="reference internal" href="#butterfly8"><span class="std std-numref">Fig. 8.1</span></a> with the modified element in
+<a class="reference internal" href="#butterfly2-mod"><span class="std std-numref">Fig. 8.3</span></a>, we obtain the following modified 8-point
+butterfly SFG:</p>
+<figure class="align-center" id="butterfly8-mod">
+<a class="reference internal image-reference" href="../_images/butterfly8_mod.jpg"><img alt="modified 8-point decimation-in-time FFT butterfly" src="../_images/butterfly8_mod.jpg" style="width: 1000px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 8.4 </span><span class="caption-text">Modified 8-point radix-2 decimation-in-time FFT butterfly SFG</span><a class="headerlink" href="#butterfly8-mod" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<p>which is more conducive to PL implementation. Note that the first
+stage (<span class="math notranslate nohighlight">\(i=0\)</span>) does not require a gain layer because <span class="math notranslate nohighlight">\(w^0_M = 1\)</span> (or
+see <a class="reference internal" href="dit.html#equation-e-fft-dit4">(8.6)</a>).</p>
+</li>
 </ul>
 </section>
 </section>
