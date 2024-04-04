@@ -546,7 +546,7 @@ decimation-in-time butterfly SFG described in
 </div>
 </li>
 </ul>
-<ul class="simple">
+<ul>
 <li><p>The implementation uses complex-valued fixed-point arithmetic
 instantiated by the <code class="docutils literal notranslate"><span class="pre">d_t&lt;S&gt;</span></code> template for the
 <code class="docutils literal notranslate"><span class="pre">std::complex&lt;ap_fixed&lt;S+W,S+I&gt;&gt;</span></code> class. Note that going through
@@ -581,16 +581,61 @@ coefficients shown in the shaded vertices in
 <a class="reference internal" href="butterfly.html#butterfly8-mod"><span class="std std-numref">Fig. 8.4</span></a>. The array is implemented as blockRAM,
 and is partitioned differently in the two dimensions to improve
 access to the block RAM.</p></li>
-<li><p>Since the input and/or output arrays of <code class="docutils literal notranslate"><span class="pre">load()</span></code>,
-<code class="docutils literal notranslate"><span class="pre">store()</span></code>, and different stage instances of  <code class="docutils literal notranslate"><span class="pre">butterfly_stage()</span></code>
-are not sequentially access, we can not implement task-level
-pipelining across these tasks in the above implementation. That
-means the load task, FFT operations across the stages, and store
-task have to run in sequence.</p></li>
 <li><p>We may use more PL resources to parallelize the processing the
 butterfly elements in each stage by partially unrolling
 <code class="docutils literal notranslate"><span class="pre">Butterfly_Loop</span></code>. To gain speedup advantage, the array <code class="docutils literal notranslate"><span class="pre">X</span></code> needs
-to be partitioned with a higher factor.</p></li>
+to be partitioned with a higher factor.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Since the input and/or output arrays of <code class="docutils literal notranslate"><span class="pre">load()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">store()</span></code>, and different stage instances of  <code class="docutils literal notranslate"><span class="pre">butterfly_stage()</span></code>
+are not sequentially access, we can not implement, using the
+dataflow pragma, task-level
+pipelining across these tasks in the above implementation. That
+means the load task, FFT operations across the stages, and store
+task have to run in sequence.</p>
+</div>
+</li>
+</ul>
+</li>
+<li><p>The redrawn modified butterfly SFG discussed in
+<a class="reference internal" href="butterfly.html#sec-butterfly-uniform"><span class="std std-numref">Section 8.2.3</span></a> and <a class="reference internal" href="butterfly.html#butterfly8-unif"><span class="std std-numref">Fig. 8.5</span></a> with
+uniform stages can be implemented by replacing the function
+<code class="docutils literal notranslate"><span class="pre">butterfly_stage()</span></code> in the kernel code above with the following
+version</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">butterfly_stage_uniform</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">d_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">d_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS inline off</span>
+<span class="c1">//#pragma HLS function_instantiate variable=i</span>
+<span class="w">  </span><span class="c1">// Going over the M/2 basic butterflies</span>
+<span class="w">  </span><span class="nl">Butterfly_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">&lt;</span><span class="n">M2</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS unroll factor=BTFY_PARA</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">idx0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">k</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">idx1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">idx0</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">km</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">idx1</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">nu</span><span class="o">-</span><span class="n">i</span><span class="p">))</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">nu</span><span class="o">-</span><span class="n">i</span><span class="mi">-1</span><span class="p">);</span>
+<span class="w">    </span><span class="n">d_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="o">&gt;</span><span class="w"> </span><span class="n">in0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">idx0</span><span class="p">];</span>
+<span class="w">    </span><span class="n">d_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="o">&gt;</span><span class="w"> </span><span class="n">in1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">idx1</span><span class="p">];</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">i</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="p">(</span><span class="n">km</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="n">in1</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">w</span><span class="p">[</span><span class="n">km</span><span class="p">];</span>
+<span class="w">    </span><span class="n">out</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">in1</span><span class="p">;</span>
+<span class="w">    </span><span class="n">out</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="n">M2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">in1</span><span class="p">;</span><span class="w"> </span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>One advantage of this implementation of uniform butterfly stages
+is that only two instances of the function
+<code class="docutils literal notranslate"><span class="pre">butterfly_stage_uniform()</span></code> are synthesized by Vitis HLS (one
+for the first <span class="math notranslate nohighlight">\(\nu-1\)</span> stages and one for the last stage. This
+significantly reduces the amount of PL resources consumed
+without sacrificing any meaningful latency and throughput
+performance.</p></li>
+<li><p>The uniform stage structure avoids the need of synthesizing
+<span class="math notranslate nohighlight">\(\nu\)</span> differently optimized instances of non-uniform stages as
+in the previous implementation. One could force synthesis of <span class="math notranslate nohighlight">\(\nu\)</span>
+instances of <code class="docutils literal notranslate"><span class="pre">butterfly_stage_uniform()</span></code> by uncommenting the
+line with the function-instantiate pragma. However, doing so
+would not achieve any meaningful latency and throughput
+performance gain.</p></li>
 </ul>
 </li>
 </ul>

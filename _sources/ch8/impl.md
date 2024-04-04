@@ -159,13 +159,55 @@
     {numref}`butterfly8_mod`. The array is implemented as blockRAM,
     and is partitioned differently in the two dimensions to improve
     access to the block RAM.
-  - Since the input and/or output arrays of `load()`,
-    `store()`, and different stage instances of  `butterfly_stage()`
-    are not sequentially access, we can not implement task-level
-    pipelining across these tasks in the above implementation. That
-    means the load task, FFT operations across the stages, and store
-    task have to run in sequence. 
   - We may use more PL resources to parallelize the processing the
     butterfly elements in each stage by partially unrolling
     `Butterfly_Loop`. To gain speedup advantage, the array `X` needs
     to be partitioned with a higher factor.
+
+    ```{warning}
+    Since the input and/or output arrays of `load()`,
+    `store()`, and different stage instances of  `butterfly_stage()`
+    are not sequentially access, we can not implement, using the
+    dataflow pragma, task-level
+    pipelining across these tasks in the above implementation. That
+    means the load task, FFT operations across the stages, and store
+    task have to run in sequence.
+    ```
+
+* The redrawn modified butterfly SFG discussed in
+    {numref}`sec:butterfly_uniform` and {numref}`butterfly8_unif` with
+    uniform stages can be implemented by replacing the function
+    `butterfly_stage()` in the kernel code above with the following
+    version
+  ```c++
+  void butterfly_stage_uniform(int i, d_t<nu> *in, d_t<nu> *out) {
+  #pragma HLS inline off
+  //#pragma HLS function_instantiate variable=i
+    // Going over the M/2 basic butterflies
+    Butterfly_Loop: for (int k=0; k<M2; k++) {
+  #pragma HLS unroll factor=BTFY_PARA
+      int idx0 = k<<1;
+      int idx1 = idx0+1;
+      int km = (idx1 >> (nu-i)) << (nu-i-1);
+      d_t<nu> in0 = in[idx0];
+      d_t<nu> in1 = in[idx1];
+      if ((i>0) and (km>0)) in1 *= w[km];
+      out[k] = in0 + in1;
+      out[k+M2] = in0 - in1; 
+    }
+  }
+  ```
+    - One advantage of this implementation of uniform butterfly stages
+      is that only two instances of the function
+      `butterfly_stage_uniform()` are synthesized by Vitis HLS (one
+      for the first $\nu-1$ stages and one for the last stage. This
+      significantly reduces the amount of PL resources consumed
+      without sacrificing any meaningful latency and throughput
+      performance.
+    - The uniform stage structure avoids the need of synthesizing
+      $\nu$ differently optimized instances of non-uniform stages as
+      in the previous implementation. One could force synthesis of $\nu$
+      instances of `butterfly_stage_uniform()` by uncommenting the
+      line with the function-instantiate pragma. However, doing so
+      would not achieve any meaningful latency and throughput
+      performance gain.
