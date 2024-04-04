@@ -422,8 +422,7 @@ document.write(`
 <li><p>Let us first consider a naive HLS implementation of the modified
 decimation-in-time butterfly SFG described in
 <a class="reference internal" href="butterfly.html#sec-butterfly-mod"><span class="std std-numref">Section 8.2.2</span></a> (see also <a class="reference internal" href="butterfly.html#butterfly8-mod"><span class="std std-numref">Fig. 8.4</span></a>)</p>
-<ul>
-<li><p>Header (<code class="docutils literal notranslate"><span class="pre">fft.h</span></code>):</p>
+<p>Header (<code class="docutils literal notranslate"><span class="pre">fft.h</span></code>):</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;ap_fixed.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;math.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;complex.h&gt;</span>
@@ -441,17 +440,13 @@ decimation-in-time butterfly SFG described in
 <span class="kt">void</span><span class="w"> </span><span class="nf">top</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">);</span>
 </pre></div>
 </div>
-</li>
-</ul>
-<ul>
-<li><p>Kernel Source (<code class="docutils literal notranslate"><span class="pre">fft.cpp</span></code>):</p>
+<p>Kernel Source (<code class="docutils literal notranslate"><span class="pre">fft.cpp</span></code>):</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;fft.h&quot;</span>
 
 <span class="cp">#define BTFY_PARA 1  </span><span class="c1">// Parallelization factor in each butterfly stage</span>
 
 <span class="k">static</span><span class="w"> </span><span class="n">d_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="o">&gt;</span><span class="w"> </span><span class="n">w</span><span class="p">[</span><span class="n">M2</span><span class="p">];</span>
 <span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">br</span><span class="p">[</span><span class="n">M</span><span class="p">];</span>
-
 
 <span class="c1">// Set up LUTs for twiddle factors and bit reversal indices</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">init_twiddle_table</span><span class="p">(</span><span class="n">d_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">tw</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -544,8 +539,6 @@ decimation-in-time butterfly SFG described in
 <span class="p">}</span>
 </pre></div>
 </div>
-</li>
-</ul>
 <ul>
 <li><p>The implementation uses complex-valued fixed-point arithmetic
 instantiated by the <code class="docutils literal notranslate"><span class="pre">d_t&lt;S&gt;</span></code> template for the
