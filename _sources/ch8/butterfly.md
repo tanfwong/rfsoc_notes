@@ -39,7 +39,8 @@
   2. the butterfly output with $Mx[n]$, and
   3. all gain factors with their respective complex conjugates.
 
-## Modified Butterfly for Implementation
+(sec:butterfly_mod)=
+## Modified Butterfly 
 * The butterfly SFG in {numref}`butterfly8` can be further modified to
   make it more conducive to implementation in the PL. To see how, let
   us get back to {eq}`e:fft_dit3` which gives the following SFG for
@@ -85,8 +86,10 @@
   ---
   Modified basic 2-point butterfly element SFG in {eq}`btfly2mod`
   ```
-  We see that implementation of the modified SFG requires only a
-  single complex-valued multiplication, addition, and subtraction
+  The gain $w^{k2^{\nu-i}}_{M}$ in {numref}`butterfly2_mod` is often
+  referred to as the *twiddle factor*.  It is easy to see that
+  implementation of the modified basic butterfly element requires only
+  a single complex-valued multiplication, addition, and subtraction
   each.
   
 * Replacing each basic element in the 8-point butterfly SFG in
@@ -105,3 +108,36 @@
   which is more conducive to PL implementation. Note that the first
   stage ($i=0$) does not require a gain layer because $w^0_M = 1$ (or
   see {eq}`e:fft_dit4`). 
+
+(sec:butterfly_uniform)=
+## Butterfly with Uniform Stages
+* We observe, for example, from {numref}`butterfly8_mod` that the
+  stages in the modified butterfly SFG developed in
+  {numref}`sec:butterfly_mod` have different structures. This may be
+  disadvantageous for implementation (see {numref}`sec:fft_impl` for
+  more discussions).
+
+* By rearranging the order of the vertices in the inner stages, we may
+  redraw the modified butterfly SFG in {numref}`butterfly8_mod` as
+  below {cite}`oppenheim2010`:
+  ```{figure} ../figs/butterfly8_unif.jpg 
+  ---
+  name: butterfly8_unif
+  alt: modified 8-point decimation-in-time FFT butterfly with uniform stages
+  width: 1000px
+  align: center
+  ---
+  Modified 8-point radix-2 decimation-in-time FFT butterfly SFG with
+  uniform stages
+  ``` 
+  The same reordering clearly extends to radix-2 decimation-in-time
+  butterfly SFGs of any sizes. 
+  
+* Note that {numref}`butterfly8_unif` amounts to a different way to
+  draw the **same** modified butterfly SFG in
+  {numref}`butterfly8_mod`. Nevertheless, when drawn as in
+  {numref}`butterfly8_unif`, the stages in the modified butterfly SFG
+  have the same structure. This may help implementing the SFG in HLS
+  as discussed in {numref}`sec:fft_impl` later.
+
+

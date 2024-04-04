@@ -66,7 +66,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="9. References" href="../refs.html" />
+    <link rel="next" title="8.3. HLS Implementations" href="impl.html" />
     <link rel="prev" title="8.1. Decimation-in-Time Algorithm" href="dit.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
@@ -205,6 +205,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="fft.html">8. Fast Fourier Transform</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="dit.html">8.1. Decimation-in-Time Algorithm</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">8.2. Butterfly Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="impl.html">8.3. HLS Implementations</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">9. References</a></li>
@@ -402,7 +403,8 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#radix-2-decimation-in-time-butterfly">8.2.1. Radix-2 Decimation-in-Time Butterfly</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modified-butterfly-for-implementation">8.2.2. Modified Butterfly for Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modified-butterfly">8.2.2. Modified Butterfly</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#butterfly-with-uniform-stages">8.2.3. Butterfly with Uniform Stages</a></li>
 </ul>
             </nav>
         </div>
@@ -457,8 +459,8 @@ with <span class="math notranslate nohighlight">\(X_k\)</span>,</p></li>
 </li>
 </ul>
 </section>
-<section id="modified-butterfly-for-implementation">
-<h2><span class="section-number">8.2.2. </span>Modified Butterfly for Implementation<a class="headerlink" href="#modified-butterfly-for-implementation" title="Permalink to this headline">#</a></h2>
+<section id="modified-butterfly">
+<span id="sec-butterfly-mod"></span><h2><span class="section-number">8.2.2. </span>Modified Butterfly<a class="headerlink" href="#modified-butterfly" title="Permalink to this headline">#</a></h2>
 <ul>
 <li><p>The butterfly SFG in <a class="reference internal" href="#butterfly8"><span class="std std-numref">Fig. 8.1</span></a> can be further modified to
 make it more conducive to implementation in the PL. To see how, let
@@ -497,8 +499,10 @@ butterfly element as shown below:</p>
 <p><span class="caption-number">Fig. 8.3 </span><span class="caption-text">Modified basic 2-point butterfly element SFG in <a class="reference internal" href="#equation-btfly2mod">(8.7)</a></span><a class="headerlink" href="#butterfly2-mod" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-<p>We see that implementation of the modified SFG requires only a
-single complex-valued multiplication, addition, and subtraction
+<p>The gain <span class="math notranslate nohighlight">\(w^{k2^{\nu-i}}_{M}\)</span> in <a class="reference internal" href="#butterfly2-mod"><span class="std std-numref">Fig. 8.3</span></a> is often
+referred to as the <em>twiddle factor</em>.  It is easy to see that
+implementation of the modified basic butterfly element requires only
+a single complex-valued multiplication, addition, and subtraction
 each.</p>
 </li>
 <li><p>Replacing each basic element in the 8-point butterfly SFG in
@@ -515,6 +519,35 @@ butterfly SFG:</p>
 stage (<span class="math notranslate nohighlight">\(i=0\)</span>) does not require a gain layer because <span class="math notranslate nohighlight">\(w^0_M = 1\)</span> (or
 see <a class="reference internal" href="dit.html#equation-e-fft-dit4">(8.6)</a>).</p>
 </li>
+</ul>
+</section>
+<section id="butterfly-with-uniform-stages">
+<span id="sec-butterfly-uniform"></span><h2><span class="section-number">8.2.3. </span>Butterfly with Uniform Stages<a class="headerlink" href="#butterfly-with-uniform-stages" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>We observe, for example, from <a class="reference internal" href="#butterfly8-mod"><span class="std std-numref">Fig. 8.4</span></a> that the
+stages in the modified butterfly SFG developed in
+<a class="reference internal" href="#sec-butterfly-mod"><span class="std std-numref">Section 8.2.2</span></a> have different structures. This may be
+disadvantageous for implementation (see <a class="reference internal" href="impl.html#sec-fft-impl"><span class="std std-numref">Section 8.3</span></a> for
+more discussions).</p></li>
+<li><p>By rearranging the order of the vertices in the inner stages, we may
+redraw the modified butterfly SFG in <a class="reference internal" href="#butterfly8-mod"><span class="std std-numref">Fig. 8.4</span></a> as
+below <span id="id1">[<a class="reference internal" href="../refs.html#id5" title="Alan Oppenheim and Ronald Schafer. Discrete-Time Signal Processing. Prentice Hall, 3rd edition, 2010.">OS10</a>]</span>:</p>
+<figure class="align-center" id="butterfly8-unif">
+<a class="reference internal image-reference" href="../_images/butterfly8_unif.jpg"><img alt="modified 8-point decimation-in-time FFT butterfly with uniform stages" src="../_images/butterfly8_unif.jpg" style="width: 1000px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 8.5 </span><span class="caption-text">Modified 8-point radix-2 decimation-in-time FFT butterfly SFG with
+uniform stages</span><a class="headerlink" href="#butterfly8-unif" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<p>The same reordering clearly extends to radix-2 decimation-in-time
+butterfly SFGs of any sizes.</p>
+</li>
+<li><p>Note that <a class="reference internal" href="#butterfly8-unif"><span class="std std-numref">Fig. 8.5</span></a> amounts to a different way to
+draw the <strong>same</strong> modified butterfly SFG in
+<a class="reference internal" href="#butterfly8-mod"><span class="std std-numref">Fig. 8.4</span></a>. Nevertheless, when drawn as in
+<a class="reference internal" href="#butterfly8-unif"><span class="std std-numref">Fig. 8.5</span></a>, the stages in the modified butterfly SFG
+have the same structure. This may help implementing the SFG in HLS
+as discussed in <a class="reference internal" href="impl.html#sec-fft-impl"><span class="std std-numref">Section 8.3</span></a> later.</p></li>
 </ul>
 </section>
 </section>
@@ -560,11 +593,11 @@ see <a class="reference internal" href="dit.html#equation-e-fft-dit4">(8.6)</a>)
       </div>
     </a>
     <a class="right-next"
-       href="../refs.html"
+       href="impl.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">9. </span>References</p>
+        <p class="prev-next-title"><span class="section-number">8.3. </span>HLS Implementations</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -587,7 +620,8 @@ see <a class="reference internal" href="dit.html#equation-e-fft-dit4">(8.6)</a>)
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#radix-2-decimation-in-time-butterfly">8.2.1. Radix-2 Decimation-in-Time Butterfly</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modified-butterfly-for-implementation">8.2.2. Modified Butterfly for Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modified-butterfly">8.2.2. Modified Butterfly</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#butterfly-with-uniform-stages">8.2.3. Butterfly with Uniform Stages</a></li>
 </ul>
   </nav></div>
 
