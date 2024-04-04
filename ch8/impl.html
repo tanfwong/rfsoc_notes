@@ -581,6 +581,16 @@ coefficients shown in the shaded vertices in
 <a class="reference internal" href="butterfly.html#butterfly8-mod"><span class="std std-numref">Fig. 8.4</span></a>. The array is implemented as blockRAM,
 and is partitioned differently in the two dimensions to improve
 access to the block RAM.</p></li>
+<li><p>Since the input and/or output arrays of <code class="docutils literal notranslate"><span class="pre">load()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">store()</span></code>, and different stage instances of  <code class="docutils literal notranslate"><span class="pre">butterfly_stage()</span></code>
+are not sequentially access, we can not implement task-level
+pipelining across these tasks in the above implementation. That
+means the load task, FFT operations across the stages, and store
+task have to run in sequence.</p></li>
+<li><p>We may use more PL resources to parallelize the processing the
+butterfly elements in each stage by partially unrolling
+<code class="docutils literal notranslate"><span class="pre">Butterfly_Loop</span></code>. To gain speedup advantage, the array <code class="docutils literal notranslate"><span class="pre">X</span></code> needs
+to be partitioned with a higher factor.</p></li>
 </ul>
 </li>
 </ul>

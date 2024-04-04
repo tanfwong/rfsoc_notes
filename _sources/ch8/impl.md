@@ -159,3 +159,13 @@
     {numref}`butterfly8_mod`. The array is implemented as blockRAM,
     and is partitioned differently in the two dimensions to improve
     access to the block RAM.
+  - Since the input and/or output arrays of `load()`,
+    `store()`, and different stage instances of  `butterfly_stage()`
+    are not sequentially access, we can not implement task-level
+    pipelining across these tasks in the above implementation. That
+    means the load task, FFT operations across the stages, and store
+    task have to run in sequence. 
+  - We may use more PL resources to parallelize the processing the
+    butterfly elements in each stage by partially unrolling
+    `Butterfly_Loop`. To gain speedup advantage, the array `X` needs
+    to be partitioned with a higher factor.
