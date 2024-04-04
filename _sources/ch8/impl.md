@@ -211,3 +211,60 @@
       line with the function-instantiate pragma. However, doing so
       would not achieve any meaningful latency and throughput
       performance gain.
+
+* Since access to the input and output arrays of
+  'butterfly_stage_uniform()' is not sequential, we still can not
+  apply task-level pipelining to the stage instances (if $\nu$
+  instances are synthesized) of the function. However, a more careful
+  inspection of the modified butterfly SFG in
+  {numref}`butterfly8_unif` reveals that if we break up the array
+  (`X`) that stores intermediate FFT coefficients in the vertices of
+  the SFG into two halves, then access to the half-arrays would be
+  sequential. As a result, we may apply task-level pipelining to the
+  butterfly stages. The functions `fft_pipelined()` and
+  `butterfly_stage_pipelined()` show an example implementation:
+  ```c++
+  void butterfly_stage_pipelined(int i, d_t<nu> *in0, d_t<nu> *in1, 
+    d_t<nu> *out0, d_t<nu> *out1) {
+  #pragma HLS inline off
+  #pragma HLS function_instantiate variable=i
+    // Going over the M/2 basic butterflies
+    Butterfly_Loop: for (int k=0; k<M2; k++) {
+  #pragma HLS unroll factor=BTFY_PARA
+      int idx0 = k<<1;
+      int idx1 = idx0+1;
+      int km = (idx1 >> (nu-i)) << (nu-i-1);
+      d_t<nu> tin0, tin1;
+      if (idx0<M2) {
+        tin0 = in0[idx0];
+        tin1 = in0[idx1];
+      } else {
+        tin0 = in1[idx0-M2];
+        tin1 = in1[idx1-M2];
+      }
+      if ((i>0) and (km>0)) tin1 *= w[km];
+      out0[k] = tin0 + tin1;
+      out1[k] = tin0 - tin1;  
+    }
+  }
+
+  void fft_pipelined(d_t<nu> *in, d_t<nu> *out) {
+    d_t<nu> X0[nu][M2], X1[nu][M2];
+  #pragma HLS array_partition variable=X0 dim=1 type=complete
+  #pragma HLS array_partition variable=X0 dim=2 type=cyclic factor=2*BTFY_PARA
+  #pragma HLS array_partition variable=X1 dim=1 type=complete
+  #pragma HLS array_partition variable=X1 dim=2 type=cyclic factor=2*BTFY_PARA
+  #pragma HLS dataflow
+    Reversal_Loop: for (int n=0; n<M2; n++) {
+  #pragma HLS unroll factor=BTFY_PARA
+      X0[0][n] = in[br[n]];
+      X1[0][n] = in[br[n+M2]];
+    }
+    Stage_Loop: for (int i=0; i<nu-1; i++) {
+  #pragma HLS unroll
+      butterfly_stage(i, &X0[i][0], &X1[i][0], &X0[i+1][0], &X1[i+1][0]);
+    }
+    butterfly_stage(nu-1, &X0[nu-1][0], &X1[nu-1][0], out, out+M2);
+  }
+  ```
+  
