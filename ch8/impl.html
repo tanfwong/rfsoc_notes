@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>8.3. HLS Implementations &#8212; Real-time DSP Notes</title>
+    <title>8.3. HLS Implementation &#8212; Real-time DSP Notes</title>
   
   
   
@@ -60,6 +60,8 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'ch8/impl';</script>
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -203,7 +205,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="fft.html">8. Fast Fourier Transform</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="dit.html">8.1. Decimation-in-Time Algorithm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="butterfly.html">8.2. Butterfly Structures</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">8.3. HLS Implementations</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">8.3. HLS Implementation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">9. References</a></li>
@@ -390,7 +392,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>HLS Implementations</h1>
+    <h1>HLS Implementation</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -412,8 +414,8 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="hls-implementations">
-<span id="sec-fft-impl"></span><h1><span class="section-number">8.3. </span>HLS Implementations<a class="headerlink" href="#hls-implementations" title="Permalink to this headline">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="hls-implementation">
+<span id="sec-fft-impl"></span><h1><span class="section-number">8.3. </span>HLS Implementation<a class="headerlink" href="#hls-implementation" title="Permalink to this headline">#</a></h1>
 <section id="one-shot-implementation">
 <h2><span class="section-number">8.3.1. </span>One-shot Implementation<a class="headerlink" href="#one-shot-implementation" title="Permalink to this headline">#</a></h2>
 <ul>
@@ -543,6 +545,42 @@ decimation-in-time butterfly SFG described in
 </pre></div>
 </div>
 </li>
+</ul>
+<ul class="simple">
+<li><p>The implementation uses complex-valued fixed-point arithmetic
+instantiated by the <code class="docutils literal notranslate"><span class="pre">d_t&lt;S&gt;</span></code> template for the
+<code class="docutils literal notranslate"><span class="pre">std::complex&lt;ap_fixed&lt;S+W,S+I&gt;&gt;</span></code> class. Note that going through
+each basic butterfly element, we need to add one integer bit in the
+fixed-point representation of the output. The <code class="docutils literal notranslate"><span class="pre">d_t&lt;S&gt;</span></code> template
+helps to account for this requirement as we move through the
+stages of the butterfly SFG.</p></li>
+<li><p>Look-up tables are generated to store the twiddle factors and
+bit-reversal indices in the <code class="docutils literal notranslate"><span class="pre">static</span></code> vectors <code class="docutils literal notranslate"><span class="pre">w</span></code> and <code class="docutils literal notranslate"><span class="pre">br</span></code>,
+respectively. By declaring the vector as <code class="docutils literal notranslate"><span class="pre">static</span></code> and writing to
+them only once, Vitis HLS will infer that they should be
+implemented as ROM, and will not synthesize the initialization
+functions <code class="docutils literal notranslate"><span class="pre">init_twiddle_table()</span></code> and <code class="docutils literal notranslate"><span class="pre">init_bit_reversal_table()</span></code>
+but only use them to calculate the ROM values.</p></li>
+<li><p>The butterfly stages with different structures as shown in
+<a class="reference internal" href="butterfly.html#butterfly8-mod"><span class="std std-numref">Fig. 8.4</span></a> are genrally implemented in the function
+<code class="docutils literal notranslate"><span class="pre">butterfly_stage()</span></code> with logics and masks to specify the
+connection patterns in different stages. The loop <code class="docutils literal notranslate"><span class="pre">Butterfly_Loop</span></code>
+goes over the <span class="math notranslate nohighlight">\(\frac{M}{2}\)</span> basic butterfly elements in each
+stage. In order to achieve an II=1 for the <code class="docutils literal notranslate"><span class="pre">Butterfly_Loop</span></code> for
+each stage, we need to use the function-instantiate pragma to
+optimize the RTL synthesized to implement the each stage instance
+of <code class="docutils literal notranslate"><span class="pre">butterfly_stage()</span></code>. Since the structures of the stages are
+different, <span class="math notranslate nohighlight">\(\nu\)</span> different instances of the function will be
+synthesized.</p></li>
+<li><p>All the stages in the butterfly SFG are instantiated in the loop
+<code class="docutils literal notranslate"><span class="pre">Stage_Loop</span></code> of the function <code class="docutils literal notranslate"><span class="pre">fft()</span></code>. The loop is fully unrolled,
+and <span class="math notranslate nohighlight">\(\nu\)</span> different instances of <code class="docutils literal notranslate"><span class="pre">butterfly_stage()</span></code> will be
+synthesized to implement the butterfly SFG. The two-dimensional
+array <code class="docutils literal notranslate"><span class="pre">X</span></code> is instantiated to hold the intermediate FFT
+coefficients shown in the shaded vertices in
+<a class="reference internal" href="butterfly.html#butterfly8-mod"><span class="std std-numref">Fig. 8.4</span></a>. The array is implemented as blockRAM,
+and is partitioned differently in the two dimensions to improve
+access to the block RAM.</p></li>
 </ul>
 </li>
 </ul>

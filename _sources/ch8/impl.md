@@ -1,5 +1,5 @@
 (sec:fft_impl)=
-# HLS Implementations
+# HLS Implementation
 
 ## One-shot Implementation
 * Let us first consider a naive HLS implementation of the modified
@@ -124,3 +124,38 @@
       store(buf_out, out);
     }
     ```
+
+  - The implementation uses complex-valued fixed-point arithmetic
+    instantiated by the `d_t<S>` template for the
+    `std::complex<ap_fixed<S+W,S+I>>` class. Note that going through
+    each basic butterfly element, we need to add one integer bit in the
+    fixed-point representation of the output. The `d_t<S>` template
+    helps to account for this requirement as we move through the
+    stages of the butterfly SFG.
+  - Look-up tables are generated to store the twiddle factors and
+    bit-reversal indices in the `static` vectors `w` and `br`,
+    respectively. By declaring the vector as `static` and writing to
+    them only once, Vitis HLS will infer that they should be
+    implemented as ROM, and will not synthesize the initialization
+    functions `init_twiddle_table()` and `init_bit_reversal_table()`
+    but only use them to calculate the ROM values.
+  - The butterfly stages with different structures as shown in
+    {numref}`butterfly8_mod` are genrally implemented in the function
+    `butterfly_stage()` with logics and masks to specify the
+    connection patterns in different stages. The loop `Butterfly_Loop`
+    goes over the $\frac{M}{2}$ basic butterfly elements in each
+    stage. In order to achieve an II=1 for the `Butterfly_Loop` for
+    each stage, we need to use the function-instantiate pragma to
+    optimize the RTL synthesized to implement the each stage instance
+    of `butterfly_stage()`. Since the structures of the stages are
+    different, $\nu$ different instances of the function will be
+    synthesized. 
+  - All the stages in the butterfly SFG are instantiated in the loop
+    `Stage_Loop` of the function `fft()`. The loop is fully unrolled,
+    and $\nu$ different instances of `butterfly_stage()` will be
+    synthesized to implement the butterfly SFG. The two-dimensional
+    array `X` is instantiated to hold the intermediate FFT
+    coefficients shown in the shaded vertices in
+    {numref}`butterfly8_mod`. The array is implemented as blockRAM,
+    and is partitioned differently in the two dimensions to improve
+    access to the block RAM.
