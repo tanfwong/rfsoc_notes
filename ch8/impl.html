@@ -416,7 +416,8 @@ document.write(`
 <span id="sec-fft-impl"></span><h1><span class="section-number">8.3. </span>HLS Implementations<a class="headerlink" href="#hls-implementations" title="Permalink to this headline">#</a></h1>
 <section id="one-shot-implementation">
 <h2><span class="section-number">8.3.1. </span>One-shot Implementation<a class="headerlink" href="#one-shot-implementation" title="Permalink to this headline">#</a></h2>
-<p>Let us first consider a naive HLS implementation of the modified
+<ul>
+<li><p>Let us first consider a naive HLS implementation of the modified
 decimation-in-time butterfly SFG described in
 <a class="reference internal" href="butterfly.html#sec-butterfly-mod"><span class="std std-numref">Section 8.2.2</span></a> (see also <a class="reference internal" href="butterfly.html#butterfly8-mod"><span class="std std-numref">Fig. 8.4</span></a>)</p>
 <ul>
@@ -439,6 +440,8 @@ decimation-in-time butterfly SFG described in
 </pre></div>
 </div>
 </li>
+</ul>
+<ul>
 <li><p>Kernel Source (<code class="docutils literal notranslate"><span class="pre">fft.cpp</span></code>):</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;fft.h&quot;</span>
 
@@ -539,6 +542,8 @@ decimation-in-time butterfly SFG described in
 <span class="p">}</span>
 </pre></div>
 </div>
+</li>
+</ul>
 </li>
 </ul>
 </section>
