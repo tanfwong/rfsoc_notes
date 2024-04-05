@@ -421,7 +421,8 @@ document.write(`
 <ul>
 <li><p>Let us first consider a naive HLS implementation of the modified
 decimation-in-time butterfly SFG described in
-<a class="reference internal" href="butterfly.html#sec-butterfly-mod"><span class="std std-numref">Section 8.2.2</span></a> (see also <a class="reference internal" href="butterfly.html#butterfly8-mod"><span class="std std-numref">Fig. 8.4</span></a>)</p>
+<a class="reference internal" href="butterfly.html#sec-butterfly-mod"><span class="std std-numref">Section 8.2.2</span></a> (see also <a class="reference internal" href="butterfly.html#butterfly8-mod"><span class="std std-numref">Fig. 8.4</span></a>) for
+calculation of a single <span class="math notranslate nohighlight">\(2^\nu\)</span>-point FFT:</p>
 <p>Header (<code class="docutils literal notranslate"><span class="pre">fft.h</span></code>):</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;ap_fixed.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;math.h&gt;</span>
@@ -595,7 +596,7 @@ task have to run in sequence.</p>
 <a class="reference internal" href="butterfly.html#sec-butterfly-uniform"><span class="std std-numref">Section 8.2.3</span></a> and <a class="reference internal" href="butterfly.html#butterfly8-unif"><span class="std std-numref">Fig. 8.5</span></a> with
 uniform stages can be implemented by replacing the function
 <code class="docutils literal notranslate"><span class="pre">butterfly_stage()</span></code> in the kernel code above with the following
-version</p>
+version:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">butterfly_stage_uniform</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">d_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">d_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="cp">#pragma HLS inline off</span>
 <span class="c1">//#pragma HLS function_instantiate variable=i</span>

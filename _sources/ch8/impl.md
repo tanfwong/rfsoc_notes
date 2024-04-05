@@ -4,7 +4,8 @@
 ## One-shot Implementation
 * Let us first consider a naive HLS implementation of the modified
   decimation-in-time butterfly SFG described in
-  {numref}`sec:butterfly_mod` (see also {numref}`butterfly8_mod`)
+  {numref}`sec:butterfly_mod` (see also {numref}`butterfly8_mod`) for
+  calculation of a single $2^\nu$-point FFT:
 
   Header (`fft.h`):
   ```c++
@@ -177,7 +178,7 @@
     {numref}`sec:butterfly_uniform` and {numref}`butterfly8_unif` with
     uniform stages can be implemented by replacing the function
     `butterfly_stage()` in the kernel code above with the following
-    version
+    version:
   ```c++
   void butterfly_stage_uniform(int i, d_t<nu> *in, d_t<nu> *out) {
   #pragma HLS inline off
