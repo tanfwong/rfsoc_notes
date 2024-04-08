@@ -1,6 +1,7 @@
 (sec:fft_impl)=
 # HLS Implementation
 
+(sec:1fft)=
 ## One-shot Implementation
 * Let us first consider a naive HLS implementation of the modified
   decimation-in-time butterfly SFG described in
@@ -310,5 +311,208 @@
     performance estimates. 
     ```
    
+## Block-by-Block Pipeline Implementation
+
+* In practice, we often take FFT on, sometimes overlapping, blocks from
+  a continuous stream of samples. Calling the one-shot FFT implementations
+  presented in {numref}`sec:1fft` multiple times is inefficient. 
+
+* A more efficient approach to take blocks of FFT on a continuous
+  stream of samples is to pipeline the FFT butterfly stages, for
+  example in {numref}`butterfly8_unif`, block by block. 
   
+* An example block-by-block pipeline implementation of the
+  modified butterfly SFG with uniform stages discussed in
+  {numref}`sec:butterfly_uniform` is shown below:
   
+  Header:
+  ```c++
+  #include <ap_fixed.h>
+  #include <math.h>
+  #include <complex.h>
+  #include <tuple>
+  #include <hls_stream.h>
+
+  #define nu 10            // FFT size M = 2^nu (nu>=2)
+  #define eta 1            // Chunk szie C = 2^eta (eta>=1)
+  #define COSIM_NUMBLKS 16 // Number of blocks in COSIM
+  #define MAX_NUMBLKS 1000 // Max number of blocks for loop tripcount
+
+  const int M = 1<<nu;  // FFT size
+  const int M2 = M>>1;  // M/2
+  const unsigned long COSIM_MTOTAL=M*COSIM_NUMBLKS;
+
+  const int C = 1<<eta;  // Number of samples per chunk
+  const int C2 = C>>1;   // C/2
+  const int MC = M>>eta; // Number of chunks per FFT block
+  const int MC2 = MC>>1; // MC/2
+
+  #define MAX_MTOTAL MAX_NUMBLKS*M
+
+  // typedef template to increase the number of integer 
+  // bits going through the FFT butterfly stages
+  template <int S>
+  using d_t = std::complex<ap_fixed<S+24, S+2> >;
+  // typedef template for an array of FFT coeffs
+  template <int S, int V>
+  using a_t = std::array<d_t<S>, V>;
+  // typedef template for a stream of arrays of FFT coeffs
+  template <int S, int V>
+  using stream_t = hls::stream<a_t<S, V> >;
+  // typedef template for an complex float arrays of FFT coeffs
+  template <int V>
+  using cf_t = std::array<std::complex<float>, V>;
+
+  void top(cf_t<C> *in, cf_t<C> *out, int numblks);
+  ```
+
+  Kernel source:
+  ```c++
+  void pipeline_butterfly_stage(int i, 
+    stream_t<nu,C> &in, stream_t<nu,C> &out, int numblks) {
+  #pragma HLS inline off
+  #pragma HLS function_instantiate variable=i
+
+    // Create a ping-pong buffer
+    a_t<nu,M> block[2];
+  #pragma HLS array_partition variable=block dim=1 type=complete
+  #pragma HLS array_partition variable=block dim=2 type=cyclic factor=C2
+    int ping_pong;
+    Butterfly_Loop: for (unsigned long k=0; k<numblks*MC; k++) {
+  #pragma HLS loop_tripcount max=MAX_MTOTAL/C
+      a_t<nu,C> in_chunk = in.read();
+      unsigned long kC = k*C;
+      int offset = kC%M;
+      unsigned long blk = kC>>nu;
+      ping_pong = blk%2;
+
+      // Going over C/2 basic butterflies
+      Chunk_Loop: for (int j=0; j<C2; j++) {
+  #pragma HLS unroll
+        int idx0 = j<<1;
+        int idx1 = idx0+1;
+        int fftk = offset+idx0;
+        int km = ((fftk+1) >> (nu-i)) << (nu-i-1);
+        fftk >>= 1; 
+        if ((i>0) and (km>0)) in_chunk[idx1] *= w[km];
+        block[ping_pong][fftk] = in_chunk[idx0] + in_chunk[idx1];
+        block[ping_pong][fftk+M2] = in_chunk[idx0] - in_chunk[idx1];
+      }
+      // Output a chunk from the previous block
+      if (blk>0) {
+        a_t<nu,C> out_chunk;
+        int other_ping_pong = (ping_pong+1)%2; 
+        Out_Chunk: for (int j=0; j<C; j++) {
+  #pragma HLS unroll
+          out_chunk[j] = block[other_ping_pong][offset+j];
+        }
+        out.write(out_chunk);
+      } 
+    }
+    Output_Last_Block: for (int k=0; k<MC; k++) {
+      a_t<nu,C> out_chunk;
+      int offset = k*C;
+      Out_Chunk_Last: for (int j=0; j<C; j++) {
+  #pragma HLS unroll
+        out_chunk[j] = block[ping_pong][offset+j];
+      }
+      out.write(out_chunk);
+    }
+  }
+
+  void pipeline_bit_reversal_stage(stream_t<nu,C> &in, stream_t<nu,C> &out,
+    int numblks) {
+  #pragma HLS inline off
+    // Create a ping-pong buffer
+    a_t<nu,M> block[2];
+  #pragma HLS array_partition variable=block dim=1 type=complete
+    int ping_pong;
+    Bit_Reversal_Loop: for (unsigned long k=0; k<numblks*MC; k++) {
+  #pragma HLS loop_tripcount max=MAX_MTOTAL/C
+      a_t<nu,C> in_chunk = in.read();
+      unsigned long kC = k*C;
+      int offset = kC%M;
+      unsigned long blk = kC>>nu;
+      ping_pong = blk%2;
+      Read_A_Chunk: for (int j=0; j<C; j++) {
+  #pragma HLS unroll
+        block[ping_pong][offset+j] = in_chunk[j];
+      }
+      // Output a chunk from the previous block
+      if (blk>0) {
+        a_t<nu,C> out_chunk;
+        int other_ping_pong = (ping_pong+1)%2; 
+        Reverse_A_Chunk: for (int j=0; j<C; j++) {
+  #pragma HLS unroll
+          out_chunk[j] = block[other_ping_pong][br[offset+j]];
+        }
+        out.write(out_chunk);
+      } 
+    }
+    Output_Last_Block: for (int k=0; k<MC; k++) {
+      a_t<nu,C> out_chunk;
+      int offset = k*C;
+      Reverse_A_Chunk_Last: for (int j=0; j<C; j++) {
+  #pragma HLS unroll
+        out_chunk[j] = block[ping_pong][br[offset+j]];
+      }
+      out.write(out_chunk);
+    }
+  }
+
+  void load(cf_t<C> *in, stream_t<nu,C> &buf, int numblks) {
+    Read_Loop: for (unsigned long n=0; n<numblks*MC; n++) {
+  #pragma HLS loop_tripcount max=MAX_MTOTAL/C
+      a_t<nu,C> chunk;
+      Chunk_Loop: for (int j=0; j<C; j++) {
+  #pragma HLS unroll
+        chunk[j] = in[n][j];
+      }
+      buf.write(chunk);
+    }
+  }
+
+  void store(stream_t<nu,C> &buf, cf_t<C> *out, int numblks) {
+    Write_Loop: for (unsigned long k=0; k<numblks*MC; k++) {
+  #pragma HLS loop_tripcount max=MAX_MTOTAL/C
+      a_t<nu,C> chunk = buf.read();
+      Chunk_Loop: for (int j=0; j<C; j++) {
+  #pragma HLS unroll
+        out[k][j] = chunk[j];
+      }
+    }
+  }
+
+  void top(cf_t<C> *in, cf_t<C> *out, int numblks) {
+  #pragma HLS interface mode=m_axi port=in depth=COSIM_MTOTAL/C
+  #pragma HLS interface mode=m_axi port=out depth=COSIM_MTOTAL/C
+  #pragma HLS dataflow
+
+    // Create twiddle (w^k_M) table
+    init_twiddle_table(w);
+    // Create bit reversal tables
+    init_bit_reversal_table(br);
+  
+    stream_t<nu,C> buf_in, buf_stage[nu+1];
+
+    load(in, buf_in, numblks);
+    pipeline_bit_reversal_stage(buf_in, buf_stage[0], numblks);
+    Stage_Loop: for (int i=0; i<nu; i++) {
+  #pragma HLS unroll
+      pipeline_butterfly_stage(i, buf_stage[i], buf_stage[i+1], numblks);
+    }
+    store(buf_stage[nu], out, numblks);
+  }
+  ```
+  - Pipelining of the butterfly stages, bit-reversal stage, load task,
+    and store task is implemented using the dataflow pragma in the
+    top-level function `top()`. 
+  - Complex-valued data samples (coefficients) are packaged into
+    chucks of size `C` for streaming to and from the host as well as
+    between tasks (stages) for parallelization. 
+  - Block-by-block pipelining is explicitly implemented in the
+    bit-reversal stage and the butterfly stage task functions
+    `pipeline_bit_reversal_stage` and `pipeline_butterfly_stage()`
+    using ping-pong buffers.
+
+

@@ -66,7 +66,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="9. References" href="../refs.html" />
+    <link rel="next" title="8.4. Effects of Quantization" href="quant.html" />
     <link rel="prev" title="8.2. Butterfly Structures" href="butterfly.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
@@ -206,6 +206,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="dit.html">8.1. Decimation-in-Time Algorithm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="butterfly.html">8.2. Butterfly Structures</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">8.3. HLS Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quant.html">8.4. Effects of Quantization</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">9. References</a></li>
@@ -403,6 +404,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#one-shot-implementation">8.3.1. One-shot Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#block-by-block-pipeline-implementation">8.3.2. Block-by-Block Pipeline Implementation</a></li>
 </ul>
             </nav>
         </div>
@@ -417,7 +419,7 @@ document.write(`
   <section class="tex2jax_ignore mathjax_ignore" id="hls-implementation">
 <span id="sec-fft-impl"></span><h1><span class="section-number">8.3. </span>HLS Implementation<a class="headerlink" href="#hls-implementation" title="Permalink to this headline">#</a></h1>
 <section id="one-shot-implementation">
-<h2><span class="section-number">8.3.1. </span>One-shot Implementation<a class="headerlink" href="#one-shot-implementation" title="Permalink to this headline">#</a></h2>
+<span id="sec-1fft"></span><h2><span class="section-number">8.3.1. </span>One-shot Implementation<a class="headerlink" href="#one-shot-implementation" title="Permalink to this headline">#</a></h2>
 <ul>
 <li><p>Let us first consider a naive HLS implementation of the modified
 decimation-in-time butterfly SFG described in
@@ -736,6 +738,211 @@ performance estimates.</p>
 </li>
 </ul>
 </section>
+<section id="block-by-block-pipeline-implementation">
+<h2><span class="section-number">8.3.2. </span>Block-by-Block Pipeline Implementation<a class="headerlink" href="#block-by-block-pipeline-implementation" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>In practice, we often take FFT on, sometimes overlapping, blocks from
+a continuous stream of samples. Calling the one-shot FFT implementations
+presented in <a class="reference internal" href="#sec-1fft"><span class="std std-numref">Section 8.3.1</span></a> multiple times is inefficient.</p></li>
+<li><p>A more efficient approach to take blocks of FFT on a continuous
+stream of samples is to pipeline the FFT butterfly stages, for
+example in <a class="reference internal" href="butterfly.html#butterfly8-unif"><span class="std std-numref">Fig. 8.5</span></a>, block by block.</p></li>
+<li><p>An example block-by-block pipeline implementation of the
+modified butterfly SFG with uniform stages discussed in
+<a class="reference internal" href="butterfly.html#sec-butterfly-uniform"><span class="std std-numref">Section 8.2.3</span></a> is shown below:</p>
+<p>Header:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;ap_fixed.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;math.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;complex.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;tuple&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;hls_stream.h&gt;</span>
+
+<span class="cp">#define nu 10            </span><span class="c1">// FFT size M = 2^nu (nu&gt;=2)</span>
+<span class="cp">#define eta 1            </span><span class="c1">// Chunk szie C = 2^eta (eta&gt;=1)</span>
+<span class="cp">#define COSIM_NUMBLKS 16 </span><span class="c1">// Number of blocks in COSIM</span>
+<span class="cp">#define MAX_NUMBLKS 1000 </span><span class="c1">// Max number of blocks for loop tripcount</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">nu</span><span class="p">;</span><span class="w">  </span><span class="c1">// FFT size</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">M2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">M</span><span class="o">&gt;&gt;</span><span class="mi">1</span><span class="p">;</span><span class="w">  </span><span class="c1">// M/2</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">COSIM_MTOTAL</span><span class="o">=</span><span class="n">M</span><span class="o">*</span><span class="n">COSIM_NUMBLKS</span><span class="p">;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">eta</span><span class="p">;</span><span class="w">  </span><span class="c1">// Number of samples per chunk</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">C</span><span class="o">&gt;&gt;</span><span class="mi">1</span><span class="p">;</span><span class="w">   </span><span class="c1">// C/2</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">MC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">M</span><span class="o">&gt;&gt;</span><span class="n">eta</span><span class="p">;</span><span class="w"> </span><span class="c1">// Number of chunks per FFT block</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">MC2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MC</span><span class="o">&gt;&gt;</span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// MC/2</span>
+
+<span class="cp">#define MAX_MTOTAL MAX_NUMBLKS*M</span>
+
+<span class="c1">// typedef template to increase the number of integer </span>
+<span class="c1">// bits going through the FFT butterfly stages</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="kt">int</span><span class="w"> </span><span class="n">S</span><span class="o">&gt;</span>
+<span class="k">using</span><span class="w"> </span><span class="n">d_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="n">ap_fixed</span><span class="o">&lt;</span><span class="n">S</span><span class="o">+</span><span class="mi">24</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">+</span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&gt;</span><span class="p">;</span>
+<span class="c1">// typedef template for an array of FFT coeffs</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="kt">int</span><span class="w"> </span><span class="n">S</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span>
+<span class="k">using</span><span class="w"> </span><span class="n">a_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">d_t</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="c1">// typedef template for a stream of arrays of FFT coeffs</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="kt">int</span><span class="w"> </span><span class="n">S</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span>
+<span class="k">using</span><span class="w"> </span><span class="n">stream_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="n">a_t</span><span class="o">&lt;</span><span class="n">S</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&gt;</span><span class="p">;</span>
+<span class="c1">// typedef template for an complex float arrays of FFT coeffs</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="kt">int</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span>
+<span class="k">using</span><span class="w"> </span><span class="n">cf_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">top</span><span class="p">(</span><span class="n">cf_t</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">cf_t</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">numblks</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Kernel source:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">pipeline_butterfly_stage</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="n">stream_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="p">,</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">stream_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="p">,</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">numblks</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS inline off</span>
+<span class="cp">#pragma HLS function_instantiate variable=i</span>
+
+<span class="w">  </span><span class="c1">// Create a ping-pong buffer</span>
+<span class="w">  </span><span class="n">a_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="p">,</span><span class="n">M</span><span class="o">&gt;</span><span class="w"> </span><span class="n">block</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="cp">#pragma HLS array_partition variable=block dim=1 type=complete</span>
+<span class="cp">#pragma HLS array_partition variable=block dim=2 type=cyclic factor=C2</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">ping_pong</span><span class="p">;</span>
+<span class="w">  </span><span class="nl">Butterfly_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">&lt;</span><span class="n">numblks</span><span class="o">*</span><span class="n">MC</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS loop_tripcount max=MAX_MTOTAL/C</span>
+<span class="w">    </span><span class="n">a_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="p">,</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="n">in_chunk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">kC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">k</span><span class="o">*</span><span class="n">C</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kC</span><span class="o">%</span><span class="n">M</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">blk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kC</span><span class="o">&gt;&gt;</span><span class="n">nu</span><span class="p">;</span>
+<span class="w">    </span><span class="n">ping_pong</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">blk</span><span class="o">%</span><span class="mi">2</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Going over C/2 basic butterflies</span>
+<span class="w">    </span><span class="nl">Chunk_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">&lt;</span><span class="n">C2</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS unroll</span>
+<span class="w">      </span><span class="kt">int</span><span class="w"> </span><span class="n">idx0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">j</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">;</span>
+<span class="w">      </span><span class="kt">int</span><span class="w"> </span><span class="n">idx1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">idx0</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+<span class="w">      </span><span class="kt">int</span><span class="w"> </span><span class="n">fftk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">offset</span><span class="o">+</span><span class="n">idx0</span><span class="p">;</span>
+<span class="w">      </span><span class="kt">int</span><span class="w"> </span><span class="n">km</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">((</span><span class="n">fftk</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">nu</span><span class="o">-</span><span class="n">i</span><span class="p">))</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">nu</span><span class="o">-</span><span class="n">i</span><span class="mi">-1</span><span class="p">);</span>
+<span class="w">      </span><span class="n">fftk</span><span class="w"> </span><span class="o">&gt;&gt;=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">i</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="p">(</span><span class="n">km</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="n">in_chunk</span><span class="p">[</span><span class="n">idx1</span><span class="p">]</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">w</span><span class="p">[</span><span class="n">km</span><span class="p">];</span>
+<span class="w">      </span><span class="n">block</span><span class="p">[</span><span class="n">ping_pong</span><span class="p">][</span><span class="n">fftk</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in_chunk</span><span class="p">[</span><span class="n">idx0</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">in_chunk</span><span class="p">[</span><span class="n">idx1</span><span class="p">];</span>
+<span class="w">      </span><span class="n">block</span><span class="p">[</span><span class="n">ping_pong</span><span class="p">][</span><span class="n">fftk</span><span class="o">+</span><span class="n">M2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in_chunk</span><span class="p">[</span><span class="n">idx0</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">in_chunk</span><span class="p">[</span><span class="n">idx1</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="c1">// Output a chunk from the previous block</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">blk</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">a_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="p">,</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="n">out_chunk</span><span class="p">;</span>
+<span class="w">      </span><span class="kt">int</span><span class="w"> </span><span class="n">other_ping_pong</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">ping_pong</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="mi">2</span><span class="p">;</span><span class="w"> </span>
+<span class="w">      </span><span class="nl">Out_Chunk</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">&lt;</span><span class="n">C</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS unroll</span>
+<span class="w">        </span><span class="n">out_chunk</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">block</span><span class="p">[</span><span class="n">other_ping_pong</span><span class="p">][</span><span class="n">offset</span><span class="o">+</span><span class="n">j</span><span class="p">];</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="n">out</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">out_chunk</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="nl">Output_Last_Block</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">&lt;</span><span class="n">MC</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">a_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="p">,</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="n">out_chunk</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">k</span><span class="o">*</span><span class="n">C</span><span class="p">;</span>
+<span class="w">    </span><span class="nl">Out_Chunk_Last</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">&lt;</span><span class="n">C</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS unroll</span>
+<span class="w">      </span><span class="n">out_chunk</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">block</span><span class="p">[</span><span class="n">ping_pong</span><span class="p">][</span><span class="n">offset</span><span class="o">+</span><span class="n">j</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">out</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">out_chunk</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">pipeline_bit_reversal_stage</span><span class="p">(</span><span class="n">stream_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="p">,</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">stream_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="p">,</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">out</span><span class="p">,</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">numblks</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS inline off</span>
+<span class="w">  </span><span class="c1">// Create a ping-pong buffer</span>
+<span class="w">  </span><span class="n">a_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="p">,</span><span class="n">M</span><span class="o">&gt;</span><span class="w"> </span><span class="n">block</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="cp">#pragma HLS array_partition variable=block dim=1 type=complete</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">ping_pong</span><span class="p">;</span>
+<span class="w">  </span><span class="nl">Bit_Reversal_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">&lt;</span><span class="n">numblks</span><span class="o">*</span><span class="n">MC</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS loop_tripcount max=MAX_MTOTAL/C</span>
+<span class="w">    </span><span class="n">a_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="p">,</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="n">in_chunk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">kC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">k</span><span class="o">*</span><span class="n">C</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kC</span><span class="o">%</span><span class="n">M</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">blk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kC</span><span class="o">&gt;&gt;</span><span class="n">nu</span><span class="p">;</span>
+<span class="w">    </span><span class="n">ping_pong</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">blk</span><span class="o">%</span><span class="mi">2</span><span class="p">;</span>
+<span class="w">    </span><span class="nl">Read_A_Chunk</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">&lt;</span><span class="n">C</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS unroll</span>
+<span class="w">      </span><span class="n">block</span><span class="p">[</span><span class="n">ping_pong</span><span class="p">][</span><span class="n">offset</span><span class="o">+</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in_chunk</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="c1">// Output a chunk from the previous block</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">blk</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">a_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="p">,</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="n">out_chunk</span><span class="p">;</span>
+<span class="w">      </span><span class="kt">int</span><span class="w"> </span><span class="n">other_ping_pong</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">ping_pong</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="mi">2</span><span class="p">;</span><span class="w"> </span>
+<span class="w">      </span><span class="nl">Reverse_A_Chunk</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">&lt;</span><span class="n">C</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS unroll</span>
+<span class="w">        </span><span class="n">out_chunk</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">block</span><span class="p">[</span><span class="n">other_ping_pong</span><span class="p">][</span><span class="n">br</span><span class="p">[</span><span class="n">offset</span><span class="o">+</span><span class="n">j</span><span class="p">]];</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="n">out</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">out_chunk</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="nl">Output_Last_Block</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">&lt;</span><span class="n">MC</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">a_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="p">,</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="n">out_chunk</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">k</span><span class="o">*</span><span class="n">C</span><span class="p">;</span>
+<span class="w">    </span><span class="nl">Reverse_A_Chunk_Last</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">&lt;</span><span class="n">C</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS unroll</span>
+<span class="w">      </span><span class="n">out_chunk</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">block</span><span class="p">[</span><span class="n">ping_pong</span><span class="p">][</span><span class="n">br</span><span class="p">[</span><span class="n">offset</span><span class="o">+</span><span class="n">j</span><span class="p">]];</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">out</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">out_chunk</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="n">cf_t</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">stream_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="p">,</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">numblks</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nl">Read_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">numblks</span><span class="o">*</span><span class="n">MC</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS loop_tripcount max=MAX_MTOTAL/C</span>
+<span class="w">    </span><span class="n">a_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="p">,</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="n">chunk</span><span class="p">;</span>
+<span class="w">    </span><span class="nl">Chunk_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">&lt;</span><span class="n">C</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS unroll</span>
+<span class="w">      </span><span class="n">chunk</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="n">j</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">buf</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">store</span><span class="p">(</span><span class="n">stream_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="p">,</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="n">cf_t</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">numblks</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nl">Write_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">&lt;</span><span class="n">numblks</span><span class="o">*</span><span class="n">MC</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS loop_tripcount max=MAX_MTOTAL/C</span>
+<span class="w">    </span><span class="n">a_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="p">,</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="n">chunk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">buf</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
+<span class="w">    </span><span class="nl">Chunk_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">&lt;</span><span class="n">C</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS unroll</span>
+<span class="w">      </span><span class="n">out</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">chunk</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">top</span><span class="p">(</span><span class="n">cf_t</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">cf_t</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">numblks</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS interface mode=m_axi port=in depth=COSIM_MTOTAL/C</span>
+<span class="cp">#pragma HLS interface mode=m_axi port=out depth=COSIM_MTOTAL/C</span>
+<span class="cp">#pragma HLS dataflow</span>
+
+<span class="w">  </span><span class="c1">// Create twiddle (w^k_M) table</span>
+<span class="w">  </span><span class="n">init_twiddle_table</span><span class="p">(</span><span class="n">w</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// Create bit reversal tables</span>
+<span class="w">  </span><span class="n">init_bit_reversal_table</span><span class="p">(</span><span class="n">br</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">stream_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="p">,</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="n">buf_in</span><span class="p">,</span><span class="w"> </span><span class="n">buf_stage</span><span class="p">[</span><span class="n">nu</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
+
+<span class="w">  </span><span class="n">load</span><span class="p">(</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">buf_in</span><span class="p">,</span><span class="w"> </span><span class="n">numblks</span><span class="p">);</span>
+<span class="w">  </span><span class="n">pipeline_bit_reversal_stage</span><span class="p">(</span><span class="n">buf_in</span><span class="p">,</span><span class="w"> </span><span class="n">buf_stage</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">numblks</span><span class="p">);</span>
+<span class="w">  </span><span class="nl">Stage_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">nu</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS unroll</span>
+<span class="w">    </span><span class="n">pipeline_butterfly_stage</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">buf_stage</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w"> </span><span class="n">buf_stage</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="n">numblks</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">store</span><span class="p">(</span><span class="n">buf_stage</span><span class="p">[</span><span class="n">nu</span><span class="p">],</span><span class="w"> </span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">numblks</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Pipelining of the butterfly stages, bit-reversal stage, load task,
+and store task is implemented using the dataflow pragma in the
+top-level function <code class="docutils literal notranslate"><span class="pre">top()</span></code>.</p></li>
+<li><p>Complex-valued data samples (coefficients) are packaged into
+chucks of size <code class="docutils literal notranslate"><span class="pre">C</span></code> for streaming to and from the host as well as
+between tasks (stages) for parallelization.</p></li>
+<li><p>Block-by-block pipelining is explicitly implemented in the
+bit-reversal stage and the butterfly stage task functions
+<code class="docutils literal notranslate"><span class="pre">pipeline_bit_reversal_stage</span></code> and <code class="docutils literal notranslate"><span class="pre">pipeline_butterfly_stage()</span></code>
+using ping-pong buffers.</p></li>
+</ul>
+</li>
+</ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -779,11 +986,11 @@ performance estimates.</p>
       </div>
     </a>
     <a class="right-next"
-       href="../refs.html"
+       href="quant.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">9. </span>References</p>
+        <p class="prev-next-title"><span class="section-number">8.4. </span>Effects of Quantization</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -806,6 +1013,7 @@ performance estimates.</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#one-shot-implementation">8.3.1. One-shot Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#block-by-block-pipeline-implementation">8.3.2. Block-by-Block Pipeline Implementation</a></li>
 </ul>
   </nav></div>
 
