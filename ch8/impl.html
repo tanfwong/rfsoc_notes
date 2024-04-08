@@ -937,8 +937,22 @@ chucks of size <code class="docutils literal notranslate"><span class="pre">C</s
 between tasks (stages) for parallelization.</p></li>
 <li><p>Block-by-block pipelining is explicitly implemented in the
 bit-reversal stage and the butterfly stage task functions
-<code class="docutils literal notranslate"><span class="pre">pipeline_bit_reversal_stage</span></code> and <code class="docutils literal notranslate"><span class="pre">pipeline_butterfly_stage()</span></code>
+<code class="docutils literal notranslate"><span class="pre">pipeline_bit_reversal_stage()</span></code> and <code class="docutils literal notranslate"><span class="pre">pipeline_butterfly_stage()</span></code>
 using ping-pong buffers.</p></li>
+<li><p>Latency of <code class="docutils literal notranslate"><span class="pre">pipeline_butterfly_stage()</span></code> mat be further reduced by
+outputting the first half of the coefficients in the butterfly
+stage during the current block as done in
+<code class="docutils literal notranslate"><span class="pre">butterfly_stage_pipelined()</span></code> (see code in <a class="reference internal" href="#sec-1fft"><span class="std std-numref">Section 8.3.1</span></a>).</p></li>
+<li><p>The implementation of <code class="docutils literal notranslate"><span class="pre">pipeline_bit_reversal_stage()</span></code> turns out to
+require a large amount of block RAM (or other memory) resource
+when the value of <code class="docutils literal notranslate"><span class="pre">C</span></code> is set beyond 4. A potential way to overcome
+this problem is to give up the uniform connection structure of the
+butterfly stages and reshuffle the orders of the vertices in each
+stage of the butterfly SFG in order to eliminate the requirement
+of bit-reversal ordering (see <span id="id1">[<a class="reference internal" href="../refs.html#id5" title="Alan Oppenheim and Ronald Schafer. Discrete-Time Signal Processing. Prentice Hall, 3rd edition, 2010.">OS10</a>]</span>). However,
+this may require different array partition strategies for
+different stages in order to avoid transferring the block RAM
+usage requirement to the butterfly stages instead.</p></li>
 </ul>
 </li>
 </ul>

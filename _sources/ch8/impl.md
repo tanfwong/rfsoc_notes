@@ -512,7 +512,23 @@
     between tasks (stages) for parallelization. 
   - Block-by-block pipelining is explicitly implemented in the
     bit-reversal stage and the butterfly stage task functions
-    `pipeline_bit_reversal_stage` and `pipeline_butterfly_stage()`
+    `pipeline_bit_reversal_stage()` and `pipeline_butterfly_stage()`
     using ping-pong buffers.
+  - Latency of `pipeline_butterfly_stage()` mat be further reduced by
+    outputting the first half of the coefficients in the butterfly
+    stage during the current block as done in
+    `butterfly_stage_pipelined()` (see code in {numref}`sec:1fft`).
+  - The implementation of `pipeline_bit_reversal_stage()` turns out to
+    require a large amount of block RAM (or other memory) resource
+    when the value of `C` is set beyond 4. A potential way to overcome
+    this problem is to give up the uniform connection structure of the
+    butterfly stages and reshuffle the orders of the vertices in each
+    stage of the butterfly SFG in order to eliminate the requirement
+    of bit-reversal ordering (see {cite}`oppenheim2010`). However,
+    this may require different array partition strategies for
+    different stages in order to avoid transferring the block RAM
+    usage requirement to the butterfly stages instead.
+
+
 
 
