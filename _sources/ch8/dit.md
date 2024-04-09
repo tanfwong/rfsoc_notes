@@ -128,8 +128,8 @@ In the discussion of the decimation-in-time algorithm above, the signal
 samples ($x[n]$) may be complex-valued in general. In the case that
 the signal samples are real-valued, the FFT coefficients must be
 conjugate symmetric, i.e., $X_{M-k} = X_k^*$ for $k=0,1, \ldots, 
-\frac{M}{2}-1$. It is possible to calculate the
-FFT coefficients $\{X_k\}_{k=0}^{\frac{M}{2}-1}$ by using the
+\frac{M}{2}-1$. It is possible to calculate all the
+FFT coefficients $\{X_k\}_{k=0}^{M-1}$ by using the
 $\frac{M}{2}$-point decimation-in-time algorithm. See Lab 8 for
 details.
 ```

@@ -14,8 +14,7 @@
   #include <math.h>
   #include <complex.h>
 
-  #define nu 10         // FFT size M = 2^nu
-
+  #define nu 10        // FFT size M = 2^nu
   const int M = 1<<nu; // FFT size
   const int M2 = M>>1; // M/2
 
