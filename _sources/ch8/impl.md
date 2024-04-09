@@ -19,10 +19,12 @@
   const int M = 1<<nu; // FFT size
   const int M2 = M>>1; // M/2
 
+  #define Wb 25
+  #define Ib 2
   // typedef template to increase the number of integer 
   // bits going through the FFT butterfly stages
   template <int S>
-  using d_t = std::complex<ap_fixed<S+25, S+2> >;
+  using d_t = std::complex<ap_fixed<S+Wb, S+Ib> >;
 
   void top(std::complex<float> *in, std::complex<float> *out);
   ```
@@ -128,11 +130,11 @@
 
   - The implementation uses complex-valued fixed-point arithmetic
     instantiated by the `d_t<S>` template for the
-    `std::complex<ap_fixed<S+W,S+I>>` class. Note that going through
-    each basic butterfly element, we need to add one integer bit in the
-    fixed-point representation of the output. The `d_t<S>` template
-    helps to account for this requirement as we move through the
-    stages of the butterfly SFG.
+    `std::complex<ap_fixed<S+Wb,S+Ib>>` class. Note that going through
+    each basic butterfly element, we need to add one integer bit in
+    the fixed-point representation of the output. The `d_t<S>`
+    template helps to account for this requirement as we move through
+    the stages of the butterfly SFG.
   - Look-up tables are generated to store the twiddle factors and
     bit-reversal indices in the `static` vectors `w` and `br`,
     respectively. By declaring the vector as `static` and writing to
@@ -356,10 +358,12 @@
 
   #define MAX_MTOTAL MAX_NUMBLKS*M
 
+  #define Wb 25
+  #define Ib 2
   // typedef template to increase the number of integer 
   // bits going through the FFT butterfly stages
   template <int S>
-  using d_t = std::complex<ap_fixed<S+24, S+2> >;
+  using d_t = std::complex<ap_fixed<S+Wb, S+Ib> >;
   // typedef template for an array of FFT coeffs
   template <int S, int V>
   using a_t = std::array<d_t<S>, V>;

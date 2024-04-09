@@ -525,6 +525,17 @@ reduction in the computational complexity, requiring a relatively
 small increase in the storage requirement.</strong></p>
 </li>
 </ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>In the discussion of the decimation-in-time algorithm above, the signal
+samples (<span class="math notranslate nohighlight">\(x[n]\)</span>) may be complex-valued in general. In the case that
+the signal samples are real-valued, the FFT coefficients must be
+conjugate symmetric, i.e., <span class="math notranslate nohighlight">\(X_{M-k} = X_k^*\)</span> for <span class="math notranslate nohighlight">\(k=0,1, \ldots, 
+\frac{M}{2}-1\)</span>. It is possible to calculate the
+FFT coefficients <span class="math notranslate nohighlight">\(\{X_k\}_{k=0}^{\frac{M}{2}-1}\)</span> by using the
+<span class="math notranslate nohighlight">\(\frac{M}{2}\)</span>-point decimation-in-time algorithm. See Lab 8 for
+details.</p>
+</div>
 </section>
 
     <script type="text/x-thebe-config">

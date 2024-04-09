@@ -435,10 +435,12 @@ calculation of a single <span class="math notranslate nohighlight">\(2^\nu\)</sp
 <span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">nu</span><span class="p">;</span><span class="w"> </span><span class="c1">// FFT size</span>
 <span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">M2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">M</span><span class="o">&gt;&gt;</span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// M/2</span>
 
+<span class="cp">#define Wb 25</span>
+<span class="cp">#define Ib 2</span>
 <span class="c1">// typedef template to increase the number of integer </span>
 <span class="c1">// bits going through the FFT butterfly stages</span>
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="kt">int</span><span class="w"> </span><span class="n">S</span><span class="o">&gt;</span>
-<span class="k">using</span><span class="w"> </span><span class="n">d_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="n">ap_fixed</span><span class="o">&lt;</span><span class="n">S</span><span class="o">+</span><span class="mi">25</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">+</span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&gt;</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="n">d_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="n">ap_fixed</span><span class="o">&lt;</span><span class="n">S</span><span class="o">+</span><span class="n">Wb</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">+</span><span class="n">Ib</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&gt;</span><span class="p">;</span>
 
 <span class="kt">void</span><span class="w"> </span><span class="nf">top</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">);</span>
 </pre></div>
@@ -545,11 +547,11 @@ calculation of a single <span class="math notranslate nohighlight">\(2^\nu\)</sp
 <ul>
 <li><p>The implementation uses complex-valued fixed-point arithmetic
 instantiated by the <code class="docutils literal notranslate"><span class="pre">d_t&lt;S&gt;</span></code> template for the
-<code class="docutils literal notranslate"><span class="pre">std::complex&lt;ap_fixed&lt;S+W,S+I&gt;&gt;</span></code> class. Note that going through
-each basic butterfly element, we need to add one integer bit in the
-fixed-point representation of the output. The <code class="docutils literal notranslate"><span class="pre">d_t&lt;S&gt;</span></code> template
-helps to account for this requirement as we move through the
-stages of the butterfly SFG.</p></li>
+<code class="docutils literal notranslate"><span class="pre">std::complex&lt;ap_fixed&lt;S+Wb,S+Ib&gt;&gt;</span></code> class. Note that going through
+each basic butterfly element, we need to add one integer bit in
+the fixed-point representation of the output. The <code class="docutils literal notranslate"><span class="pre">d_t&lt;S&gt;</span></code>
+template helps to account for this requirement as we move through
+the stages of the butterfly SFG.</p></li>
 <li><p>Look-up tables are generated to store the twiddle factors and
 bit-reversal indices in the <code class="docutils literal notranslate"><span class="pre">static</span></code> vectors <code class="docutils literal notranslate"><span class="pre">w</span></code> and <code class="docutils literal notranslate"><span class="pre">br</span></code>,
 respectively. By declaring the vector as <code class="docutils literal notranslate"><span class="pre">static</span></code> and writing to
@@ -782,10 +784,12 @@ modified butterfly SFG with uniform stages discussed in
 
 <span class="cp">#define MAX_MTOTAL MAX_NUMBLKS*M</span>
 
+<span class="cp">#define Wb 25</span>
+<span class="cp">#define Ib 2</span>
 <span class="c1">// typedef template to increase the number of integer </span>
 <span class="c1">// bits going through the FFT butterfly stages</span>
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="kt">int</span><span class="w"> </span><span class="n">S</span><span class="o">&gt;</span>
-<span class="k">using</span><span class="w"> </span><span class="n">d_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="n">ap_fixed</span><span class="o">&lt;</span><span class="n">S</span><span class="o">+</span><span class="mi">24</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">+</span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&gt;</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="n">d_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="n">ap_fixed</span><span class="o">&lt;</span><span class="n">S</span><span class="o">+</span><span class="n">Wb</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">+</span><span class="n">Ib</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&gt;</span><span class="p">;</span>
 <span class="c1">// typedef template for an array of FFT coeffs</span>
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="kt">int</span><span class="w"> </span><span class="n">S</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span>
 <span class="k">using</span><span class="w"> </span><span class="n">a_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">d_t</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="p">;</span>
