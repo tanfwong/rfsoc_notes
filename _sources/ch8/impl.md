@@ -41,7 +41,7 @@
     for (int k=0; k<M2; k++) {
       double c = cos(2*M_PI*k/M);
       double s = -sin(2*M_PI*k/M);
-      tw[k] = d_t<0>(c, s);
+      tw[k] = d_t<nu>(c, s);
     }
   }
 
