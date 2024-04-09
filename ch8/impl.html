@@ -438,7 +438,7 @@ calculation of a single <span class="math notranslate nohighlight">\(2^\nu\)</sp
 <span class="c1">// typedef template to increase the number of integer </span>
 <span class="c1">// bits going through the FFT butterfly stages</span>
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="kt">int</span><span class="w"> </span><span class="n">S</span><span class="o">&gt;</span>
-<span class="k">using</span><span class="w"> </span><span class="n">d_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="n">ap_fixed</span><span class="o">&lt;</span><span class="n">S</span><span class="o">+</span><span class="mi">24</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">+</span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&gt;</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="n">d_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="n">ap_fixed</span><span class="o">&lt;</span><span class="n">S</span><span class="o">+</span><span class="mi">25</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">+</span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&gt;</span><span class="p">;</span>
 
 <span class="kt">void</span><span class="w"> </span><span class="nf">top</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">);</span>
 </pre></div>
@@ -497,7 +497,7 @@ calculation of a single <span class="math notranslate nohighlight">\(2^\nu\)</sp
 <span class="p">}</span>
 
 <span class="kt">void</span><span class="w"> </span><span class="nf">fft</span><span class="p">(</span><span class="n">d_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">d_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">d_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="o">&gt;</span><span class="w"> </span><span class="n">X</span><span class="p">[</span><span class="n">nu</span><span class="p">][</span><span class="n">M</span><span class="p">];</span>
+<span class="w">  </span><span class="n">d_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="o">&gt;</span><span class="w"> </span><span class="n">X</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">M</span><span class="p">];</span>
 <span class="cp">#pragma HLS array_partition variable=X dim=1 type=complete</span>
 <span class="cp">#pragma HLS array_partition variable=X dim=2 type=cyclic factor=BTFY_PARA</span>
 
@@ -507,9 +507,9 @@ calculation of a single <span class="math notranslate nohighlight">\(2^\nu\)</sp
 <span class="w">  </span><span class="p">}</span>
 <span class="w">  </span><span class="nl">Stage_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">nu</span><span class="mi">-1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="cp">#pragma HLS unroll</span>
-<span class="w">    </span><span class="n">butterfly_stage</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="o">&amp;</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]);</span>
+<span class="w">    </span><span class="n">butterfly_stage</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="o">%</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="o">&amp;</span><span class="n">X</span><span class="p">[(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]);</span>
 <span class="w">  </span><span class="p">}</span>
-<span class="w">  </span><span class="n">butterfly_stage</span><span class="p">(</span><span class="n">nu</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">X</span><span class="p">[</span><span class="n">nu</span><span class="mi">-1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">out</span><span class="p">);</span>
+<span class="w">  </span><span class="n">butterfly_stage</span><span class="p">(</span><span class="n">nu</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">X</span><span class="p">[(</span><span class="n">nu</span><span class="mi">-1</span><span class="p">)</span><span class="o">%</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">out</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="kt">void</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">d_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">buf</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
@@ -571,10 +571,10 @@ synthesized.</p></li>
 <li><p>All the stages in the butterfly SFG are instantiated in the loop
 <code class="docutils literal notranslate"><span class="pre">Stage_Loop</span></code> of the function <code class="docutils literal notranslate"><span class="pre">fft()</span></code>. The loop is fully unrolled,
 and <span class="math notranslate nohighlight">\(\nu\)</span> different instances of <code class="docutils literal notranslate"><span class="pre">butterfly_stage()</span></code> will be
-synthesized to implement the butterfly SFG. The two-dimensional
-array <code class="docutils literal notranslate"><span class="pre">X</span></code> is instantiated to hold the intermediate FFT
+synthesized to implement the butterfly SFG. A ping-pong buffer
+(array <code class="docutils literal notranslate"><span class="pre">X</span></code>) is instantiated to hold the intermediate FFT
 coefficients shown in the shaded vertices in
-<a class="reference internal" href="butterfly.html#butterfly8-mod"><span class="std std-numref">Fig. 8.4</span></a>. The array is implemented as blockRAM,
+<a class="reference internal" href="butterfly.html#butterfly8-mod"><span class="std std-numref">Fig. 8.4</span></a>. The array is implemented as block RAM,
 and is partitioned differently in the two dimensions to improve
 access to the block RAM.</p></li>
 <li><p>We may use more PL resources to parallelize the processing the
@@ -617,7 +617,7 @@ version:</p>
 <span class="p">}</span>
 
 <span class="kt">void</span><span class="w"> </span><span class="nf">fft_uniform</span><span class="p">(</span><span class="n">d_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">d_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="o">&gt;</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">d_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="o">&gt;</span><span class="w"> </span><span class="n">X</span><span class="p">[</span><span class="n">nu</span><span class="p">][</span><span class="n">M</span><span class="p">];</span>
+<span class="w">  </span><span class="n">d_t</span><span class="o">&lt;</span><span class="n">nu</span><span class="o">&gt;</span><span class="w"> </span><span class="n">X</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">M</span><span class="p">];</span>
 <span class="cp">#pragma HLS array_partition variable=X dim=1 type=complete</span>
 <span class="cp">#pragma HLS array_partition variable=X dim=2 type=cyclic factor=BTFY_PARA</span>
 
@@ -627,9 +627,9 @@ version:</p>
 <span class="w">  </span><span class="p">}</span>
 <span class="w">  </span><span class="nl">Stage_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">nu</span><span class="mi">-1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="cp">#pragma HLS unroll</span>
-<span class="w">    </span><span class="n">butterfly_stage_uniform</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="o">&amp;</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]);</span>
+<span class="w">    </span><span class="n">butterfly_stage_uniform</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="o">%</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="o">&amp;</span><span class="n">X</span><span class="p">[(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]);</span>
 <span class="w">  </span><span class="p">}</span>
-<span class="w">  </span><span class="n">butterfly_stage_uniform</span><span class="p">(</span><span class="n">nu</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">X</span><span class="p">[</span><span class="n">nu</span><span class="mi">-1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">out</span><span class="p">);</span>
+<span class="w">  </span><span class="n">butterfly_stage_uniform</span><span class="p">(</span><span class="n">nu</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">X</span><span class="p">[(</span><span class="n">nu</span><span class="mi">-1</span><span class="p">)</span><span class="o">%</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">out</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -711,7 +711,16 @@ butterfly stages. The functions <code class="docutils literal notranslate"><span
 the vertices in the butterfly stages. <code class="docutils literal notranslate"><span class="pre">X0</span></code> and <code class="docutils literal notranslate"><span class="pre">X1</span></code> are
 partitioned further to support more concurrent access to the block
 RAM in order to achieve an II=1 for the <code class="docutils literal notranslate"><span class="pre">Butterfly_Loop</span></code> in each
-stage.</p></li>
+stage.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Because of task-pipelining, we can not just use a ping-pong buffer
+to store the intermediate coefficients calculated by the butterfly
+stages. We need a streaming buffer between each pair of successive
+stages, and hence <code class="docutils literal notranslate"><span class="pre">X0</span></code> and <code class="docutils literal notranslate"><span class="pre">X1</span></code> need to be full-blown two-dimensional
+arrays.</p>
+</div>
+</li>
 <li><p>Task-level pipelining on the bit-reversal ordering and the
 butterfly stages is invoked by using the dataflow pragma
 inside the function <code class="docutils literal notranslate"><span class="pre">fft_pipelined()</span></code>and setting the streaming

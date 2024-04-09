@@ -22,7 +22,7 @@
   // typedef template to increase the number of integer 
   // bits going through the FFT butterfly stages
   template <int S>
-  using d_t = std::complex<ap_fixed<S+24, S+2> >;
+  using d_t = std::complex<ap_fixed<S+25, S+2> >;
 
   void top(std::complex<float> *in, std::complex<float> *out);
   ```
@@ -81,7 +81,7 @@
   }
 
   void fft(d_t<nu> *in, d_t<nu> *out) {
-    d_t<nu> X[nu][M];
+    d_t<nu> X[2][M];
   #pragma HLS array_partition variable=X dim=1 type=complete
   #pragma HLS array_partition variable=X dim=2 type=cyclic factor=BTFY_PARA
 
@@ -91,9 +91,9 @@
     }
     Stage_Loop: for (int i=0; i<nu-1; i++) {
   #pragma HLS unroll
-      butterfly_stage(i, &X[i][0], &X[i+1][0]);
+      butterfly_stage(i, &X[i%2][0], &X[(i+1)%2][0]);
     }
-    butterfly_stage(nu-1, &X[nu-1][0], out);
+    butterfly_stage(nu-1, &X[(nu-1)%2][0], out);
   }
 
   void load(std::complex<float> *in, d_t<nu> *buf) { 
@@ -154,10 +154,10 @@
   - All the stages in the butterfly SFG are instantiated in the loop
     `Stage_Loop` of the function `fft()`. The loop is fully unrolled,
     and $\nu$ different instances of `butterfly_stage()` will be
-    synthesized to implement the butterfly SFG. The two-dimensional
-    array `X` is instantiated to hold the intermediate FFT
+    synthesized to implement the butterfly SFG. A ping-pong buffer
+    (array `X`) is instantiated to hold the intermediate FFT
     coefficients shown in the shaded vertices in
-    {numref}`butterfly8_mod`. The array is implemented as blockRAM,
+    {numref}`butterfly8_mod`. The array is implemented as block RAM,
     and is partitioned differently in the two dimensions to improve
     access to the block RAM.
   - We may use more PL resources to parallelize the processing the
@@ -199,7 +199,7 @@
   }
 
   void fft_uniform(d_t<nu> *in, d_t<nu> *out) {
-    d_t<nu> X[nu][M];
+    d_t<nu> X[2][M];
   #pragma HLS array_partition variable=X dim=1 type=complete
   #pragma HLS array_partition variable=X dim=2 type=cyclic factor=BTFY_PARA
 
@@ -209,9 +209,9 @@
     }
     Stage_Loop: for (int i=0; i<nu-1; i++) {
   #pragma HLS unroll
-      butterfly_stage_uniform(i, &X[i][0], &X[i+1][0]);
+      butterfly_stage_uniform(i, &X[i%2][0], &X[(i+1)%2][0]);
     }
-    butterfly_stage_uniform(nu-1, &X[nu-1][0], out);
+    butterfly_stage_uniform(nu-1, &X[(nu-1)%2][0], out);
   }
   ```
     - One advantage of this implementation of uniform butterfly stages
@@ -290,6 +290,13 @@
     partitioned further to support more concurrent access to the block
     RAM in order to achieve an II=1 for the `Butterfly_Loop` in each
     stage.
+    ```{caution}
+    Because of task-pipelining, we can not just use a ping-pong buffer
+    to store the intermediate coefficients calculated by the butterfly
+    stages. We need a streaming buffer between each pair of successive
+    stages, and hence `X0` and `X1` need to be full-blown two-dimensional
+    arrays.
+    ```
   - Task-level pipelining on the bit-reversal ordering and the
     butterfly stages is invoked by using the dataflow pragma
     inside the function `fft_pipelined()`and setting the streaming
