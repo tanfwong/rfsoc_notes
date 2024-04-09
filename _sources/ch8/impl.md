@@ -18,7 +18,7 @@
   const int M = 1<<nu; // FFT size
   const int M2 = M>>1; // M/2
 
-  #define Wb 25
+  #define Wb 22
   #define Ib 2
   // typedef template to increase the number of integer 
   // bits going through the FFT butterfly stages
