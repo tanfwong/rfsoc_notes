@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>9. ADC as Signal Source &#8212; Real-time DSP Notes</title>
+    <title>9.1. Sampling Theorem &#8212; Real-time DSP Notes</title>
   
   
   
@@ -60,12 +60,14 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'ch9/adc';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ch9/sampthm';</script>
     <link rel="shortcut icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="9.1. Sampling Theorem" href="sampthm.html" />
-    <link rel="prev" title="8.4. Effects of Quantization" href="../ch8/quant.html" />
+    <link rel="next" title="10. References" href="../refs.html" />
+    <link rel="prev" title="9. ADC as Signal Source" href="adc.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
   </head>
@@ -207,8 +209,8 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l2"><a class="reference internal" href="../ch8/quant.html">8.4. Effects of Quantization</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">9. ADC as Signal Source</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="sampthm.html">9.1. Sampling Theorem</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="adc.html">9. ADC as Signal Source</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">9.1. Sampling Theorem</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../refs.html">10. References</a></li>
@@ -283,7 +285,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Fch9/adc.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/tanfwong/rfsoc_notes/issues/new?title=Issue%20on%20page%20%2Fch9/sampthm.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -313,7 +315,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../_sources/ch9/adc.md" target="_blank"
+      <li><a href="../_sources/ch9/sampthm.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -382,7 +384,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -393,11 +397,20 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>ADC as Signal Source</h1>
+    <h1>Sampling Theorem</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oversampling-f-s-2b">9.1.1. Oversampling (<span class="math notranslate nohighlight">\(f_s &gt; 2B\)</span>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#undersampling-f-s-leq-2b">9.1.2. Undersampling (<span class="math notranslate nohighlight">\(f_s \leq 2B\)</span>)</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -407,24 +420,188 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="adc-as-signal-source">
-<h1><span class="section-number">9. </span>ADC as Signal Source<a class="headerlink" href="#adc-as-signal-source" title="Permalink to this headline">#</a></h1>
-<ul class="simple">
-<li><p>Recall from <a class="reference internal" href="../ch1/rfsoc4x2.html#sec-hardware"><span class="std std-numref">Section 1.1</span></a>, that the RFSoC 4x2 board has 4 RF
-input ports that are connected to 4 ADCs on the XCZU48DR RFSoC
-device on board. In addition, as discussed in
-<a class="reference internal" href="../ch1/workflow.html#sec-class-platform"><span class="std std-numref">Section 1.3.3</span></a>, the class Vitis extensible platform
-<code class="docutils literal notranslate"><span class="pre">rfsoc_adc_vitis_platform</span></code> configures ADC-D (ADC0 on tile 224) on
-the RFSoC 4x2 board at sampling rate 307.2 Msps.</p></li>
-<li><p>The main goal of this section is to discuss how to use the ADC
-configured in <code class="docutils literal notranslate"><span class="pre">rfsoc_adc_vitis_platform</span></code> as a signal source to our
-DSP kernels. To this end, we will first review some basic concepts
-pertaining to the sampling theorem. Then, we will talk about how to
-interface with the ADC hardware block in HLS as well as some simple
-efficient HLS coding techniques to process samples from the ADC.</p></li>
-</ul>
-<div class="toctree-wrapper compound">
+  <section class="tex2jax_ignore mathjax_ignore" id="sampling-theorem">
+<span id="sec-sampthm"></span><h1><span class="section-number">9.1. </span>Sampling Theorem<a class="headerlink" href="#sampling-theorem" title="Permalink to this headline">#</a></h1>
+<ul>
+<li><p>Suppose that a continuous-time signal <span class="math notranslate nohighlight">\(x(t)\)</span> is sampled at the
+sampling rate of <span class="math notranslate nohighlight">\(f_s\)</span> samples per second (sps) to obtain the
+discrete-time signal <span class="math notranslate nohighlight">\(x[n] = x(\frac{n}{f_s})\)</span>. Then, the
+discrete-time Fourier transform (DTFT) <span class="math notranslate nohighlight">\(X(e^{j\hat\omega})\)</span> of the
+sampled signal <span class="math notranslate nohighlight">\(x[n]\)</span> may be expressed in terms of the Fourier
+transform (FT) <span class="math notranslate nohighlight">\(X(\omega)\)</span> of the original continuous-time signal
+<span class="math notranslate nohighlight">\(x(t)\)</span> as below:</p>
+<div class="math notranslate nohighlight" id="equation-e-folded-spectrum">
+<span class="eqno">(9.1)<a class="headerlink" href="#equation-e-folded-spectrum" title="Permalink to this equation">#</a></span>\[\begin{equation}
+X(e^{j\hat\omega}) = f_s \sum_{k=-\infty}^{\infty}
+X((\hat\omega+2\pi k)f_s)
+\end{equation}\]</div>
+<p>where the quantity on the RHS is often referred to as the <em>folded
+spectrum</em> of <span class="math notranslate nohighlight">\(x(t)\)</span>. In other words, the DTFT of the sampled
+signal <span class="math notranslate nohighlight">\(x[n]\)</span> is the folded spectrum of <span class="math notranslate nohighlight">\(x(t)\)</span>.</p>
+</li>
+<li><p>From <a class="reference internal" href="#equation-e-folded-spectrum">(9.1)</a>, it is clear that the folded spectrum
+depends on both the FT of the continuous-time signal and the sampling
+rate. The effects of both factors are best explained in
+picture. First, let us define the concept of <em>bandlimtedness</em>:</p>
+<div class="admonition-notation admonition">
+<p class="admonition-title">Notation</p>
+<p>A continuous-time signal <span class="math notranslate nohighlight">\(x(t)\)</span> is <em><strong>bandlimited</strong></em> to <span class="math notranslate nohighlight">\(\Omega =
+2\pi B\)</span> radian per second (or <span class="math notranslate nohighlight">\(B\)</span> Hz) if its FT <span class="math notranslate nohighlight">\(X(\omega) = 0\)</span> for
+<span class="math notranslate nohighlight">\(|\omega| &gt; \Omega\)</span>. The quantity <span class="math notranslate nohighlight">\(\Omega\)</span> (or <span class="math notranslate nohighlight">\(B\)</span>) is called the
+<em><strong>bandwidth</strong></em> of <span class="math notranslate nohighlight">\(x(t)\)</span>.</p>
 </div>
+</li>
+<li><p>For a simple illustration, consider a bandlimited continuous-time
+signal <span class="math notranslate nohighlight">\(x(t)\)</span> whose FT <span class="math notranslate nohighlight">\(X(\omega)\)</span> is of real-valued and as shown below:</p>
+<a class="reference internal image-reference" href="../_images/blspectrum.jpg"><img alt="A bandlimited spectrum" class="align-center" src="../_images/blspectrum.jpg" style="width: 400px;" /></a>
+<p>The bandwidth of <span class="math notranslate nohighlight">\(x(t)\)</span> is <span class="math notranslate nohighlight">\(\Omega\)</span> radians per second, or <span class="math notranslate nohighlight">\(B\)</span> Hz.
+To draw the folded spectrum of <span class="math notranslate nohighlight">\(x(t)\)</span>, we need to consider two
+different cases:</p>
+<ol class="arabic simple">
+<li><p>If <span class="math notranslate nohighlight">\(f_s &gt; 2B\)</span>, then the folded spectrum is as below:</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/oversample.jpg"><img alt="Folded spectrum (oversampling)" class="align-center" src="../_images/oversample.jpg" style="width: 800px;" /></a>
+<div class="admonition-notation admonition">
+<p class="admonition-title">Notation</p>
+<p>The condition <span class="math notranslate nohighlight">\(f_s &gt; 2B\)</span> is referred to as <em><strong>oversampling</strong></em>.
+The sampling rate <span class="math notranslate nohighlight">\(2B\)</span> is usually referred to as the <strong>Nyquits rate</strong>.</p>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>If <span class="math notranslate nohighlight">\(f_s \leq 2B\)</span>, then the folded spectrum is as below:</p></li>
+</ol>
+<a class="reference internal image-reference" href="../_images/undersample.jpg"><img alt="Folded spectrum (undersampling)" class="align-center" src="../_images/undersample.jpg" style="width: 600px;" /></a>
+<div class="admonition-notation admonition">
+<p class="admonition-title">Notation</p>
+<p>The condition <span class="math notranslate nohighlight">\(f_s \leq 2B\)</span> is referred to as <em><strong>undersampling</strong></em>.</p>
+</div>
+</li>
+</ul>
+<section id="oversampling-f-s-2b">
+<h2><span class="section-number">9.1.1. </span>Oversampling (<span class="math notranslate nohighlight">\(f_s &gt; 2B\)</span>)<a class="headerlink" href="#oversampling-f-s-2b" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>In this case, we can see from the plot that the FT <span class="math notranslate nohighlight">\(X(\omega)\)</span> of
+the original continuous-time signal is perserved in the folded
+spectrum <span class="math notranslate nohighlight">\(X(e^{j\hat\omega})\)</span>. Thus, <span class="math notranslate nohighlight">\(X(\omega)\)</span> can be easily
+recovered from <span class="math notranslate nohighlight">\(X(\omega)\)</span>, or equivalently in the time domain,
+<span class="math notranslate nohighlight">\(x(t)\)</span> can be recovered from <span class="math notranslate nohighlight">\(x[n]\)</span>.</p></li>
+<li><p>In the frequency domain, the ideal reconstruction process is simply:</p>
+<ol class="arabic">
+<li><p>Cut out the period of the folded spectrum <span class="math notranslate nohighlight">\(X(e^{j\hat\omega})\)</span>
+over <span class="math notranslate nohighlight">\([-\pi, \pi)\)</span> and scale it by <span class="math notranslate nohighlight">\(\frac{1}{f_s}\)</span>.</p></li>
+<li><p>Substitute <span class="math notranslate nohighlight">\(\hat\omega = \frac{\omega}{f_s}\)</span> in the cut-outi and
+scaled period of  <span class="math notranslate nohighlight">\(X(e^{j\hat\omega})\)</span> to convert it to the FT
+<span class="math notranslate nohighlight">\(\tilde{X}(\omega)\)</span> of the reconstructed continuous-time signal
+<span class="math notranslate nohighlight">\(\tilde{x}(t)\)</span>, i.e.,</p>
+<div class="math notranslate nohighlight" id="equation-e-cutfold">
+<span class="eqno">(9.2)<a class="headerlink" href="#equation-e-cutfold" title="Permalink to this equation">#</a></span>\[\begin{split}\begin{equation}
+\tilde{X}(\omega)
+=
+\begin{cases}
+\frac{1}{f_s} X\left( e^{j\frac{\omega}{f_s}} \right), 
+&amp; \text{if } -\pi f_s \leq \omega &lt; \pi f_s
+\\
+0, &amp; \text{otherwise.}
+\end{cases}
+\end{equation}\end{split}\]</div>
+<p>Since <span class="math notranslate nohighlight">\(X(\omega) = 0\)</span> for <span class="math notranslate nohighlight">\(|\omega| &gt; \Omega\)</span> (<span class="math notranslate nohighlight">\(x(t)\)</span> is
+bandlimited to <span class="math notranslate nohighlight">\(\Omega\)</span>) and <span class="math notranslate nohighlight">\(\pi f_s &gt; \Omega\)</span>, we have
+<span class="math notranslate nohighlight">\(\tilde{X}(\omega) = X(\omega)\)</span>, which of course implies
+<span class="math notranslate nohighlight">\(\tilde{x}(t) = x(t)\)</span> in the time domain.</p>
+</li>
+</ol>
+</li>
+<li><p>Reconsiderng the ideal reconstruction steps above from a
+time-domain perspective, we get</p>
+<div class="math notranslate nohighlight" id="equation-e-interpolation">
+<span class="eqno">(9.3)<a class="headerlink" href="#equation-e-interpolation" title="Permalink to this equation">#</a></span>\[\begin{align}
+\tilde{x}(t) 
+&amp;= 
+ \sum_{n=-\infty}^{\infty} x[n]  \cdot \frac{\sin\left( \pi f_s
+(t-\frac{n}{f_s}) \right)}{  \pi f_s (t-\frac{n}{f_s})}
+\end{align}\]</div>
+<p>Since <span class="math notranslate nohighlight">\(\tilde{x}(t)=x(t)\)</span> if <span class="math notranslate nohighlight">\(\pi f_s &gt; \Omega\)</span>, we obtain the
+following result which is usually referred to as the <em><strong>sampling
+theorem</strong></em>:</p>
+<div class="tip admonition">
+<p class="admonition-title">Sampling Theorem</p>
+<p>Consider sampling a continuous-time signal <span class="math notranslate nohighlight">\(x(t)\)</span> that is bandlimited to <span class="math notranslate nohighlight">\(B\)</span> Hz
+at the sampling rate of <span class="math notranslate nohighlight">\(f_s\)</span> samples per second to
+obtain the discrete-time signal <span class="math notranslate nohighlight">\(x[n] = x(\frac{n}{f_s})\)</span>. If <span class="math notranslate nohighlight">\(f_s &gt;
+2B\)</span>, then</p>
+<div class="math notranslate nohighlight" id="equation-e-sampthm">
+<span class="eqno">(9.4)<a class="headerlink" href="#equation-e-sampthm" title="Permalink to this equation">#</a></span>\[\begin{equation}
+x(t) = \sum_{n=-\infty}^{\infty} x[n] \, \text{sinc} \left( \pi f_s
+(t-\frac{n}{f_s}) \right)
+\end{equation}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\text{sinc}(t) = \frac{\sin t}{t}\)</span>.</p>
+</div>
+</li>
+<li><p>To illustrate the sampling theorem in picture, let us first plot the
+sinc kernel (signal) <span class="math notranslate nohighlight">\(\text{sinc}(\pi f_s t)\)</span>:</p>
+<a class="reference internal image-reference" href="../_images/sinc.png"><img alt="sinc kernel" class="align-center" src="../_images/sinc.png" style="width: 600px;" /></a>
+<p>The sampling theorem says that the original continuous-time signal
+<span class="math notranslate nohighlight">\(x(t)\)</span> can be reconstructed by interpolating the discrete-time (sampled)
+signal <span class="math notranslate nohighlight">\(x[n]\)</span> using the sinc kernel as long as we oversample:</p>
+<a class="reference internal image-reference" href="../_images/sampthm.png"><img alt="Interpolation using the sinc kernel" class="align-center" src="../_images/sampthm.png" style="width: 800px;" /></a>
+</li>
+<li><p>In practice, we can’t use the ideal sinc kernel to perform
+interpolation because the length (support) of the sinc kernel is
+infinite. We have to approximate the reconstruction by using a
+truncated version of the sinc kernel or other kernels of finite support:</p>
+<ul class="simple">
+<li><p><strong>zero-order hold</strong>: rectangular kernel
+<span class="math notranslate nohighlight">\(\begin{cases} 
+1, &amp; \text{if } |t| &lt; \frac{1}{2f_s} \\ 
+0, &amp; \text{otherwise.}
+\end{cases}\)</span></p></li>
+<li><p><strong>first-order hold (linear interpolation)</strong>: triangle kernel
+<span class="math notranslate nohighlight">\(\begin{cases} 
+1 - f_s |t|, &amp; \text{if } |t| &lt; \frac{1}{f_s} \\ 
+0, &amp; \text{otherwise.}
+\end{cases}\)</span></p></li>
+</ul>
+</li>
+<li><p>A typical practical DAC implementation employs zero-order hold
+interpolation and then passes the reconstructed signal through an
+analog lowpass filter to further smooth it. The combination of the
+zero-order hold interpolation and lowpass filtering is equivalent to
+using an interpolation kernel that is the convolution between the
+rectangular kernel and the impulse response of the lowpass filter.</p></li>
+</ul>
+</section>
+<section id="undersampling-f-s-leq-2b">
+<h2><span class="section-number">9.1.2. </span>Undersampling (<span class="math notranslate nohighlight">\(f_s \leq 2B\)</span>)<a class="headerlink" href="#undersampling-f-s-leq-2b" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>In this case, we see from the plot of the folded spectrum that the
+frequency-shifted copies of <span class="math notranslate nohighlight">\(X(\omega)\)</span> superimpose on each
+other. This phenomenon is usually called <em><strong>aliasing</strong></em>. Thus,
+<span class="math notranslate nohighlight">\(X(\omega)\)</span> cannot be recovered from the folded spectrum using the
+simple steps in the case of oversampling because <span class="math notranslate nohighlight">\(\tilde{X}(\omega)
+\neq X(\omega)\)</span>.</p></li>
+<li><p>Nevertheless, the interpolation formula in <a class="reference internal" href="#equation-e-interpolation">(9.3)</a> is
+still valid, but <span class="math notranslate nohighlight">\(\tilde{x}(t) \neq x(t)\)</span>. The reconstructed signal
+<span class="math notranslate nohighlight">\(\tilde{x}(t)\)</span> given by <a class="reference internal" href="#equation-e-interpolation">(9.3)</a> is called the
+<strong>aliased</strong> version of <span class="math notranslate nohighlight">\(x(t)\)</span>.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Note that undersampling <span class="math notranslate nohighlight">\(x(t)\)</span> doesn’t necessarily means that there
+is no possibility of recovering it from the sampled signal
+<span class="math notranslate nohighlight">\(x[n]\)</span>. However, to be able to do so may require <span class="math notranslate nohighlight">\(x(t)\)</span> to have some special
+structures and more significant signal processing.</p>
+</div>
+</li>
+<li><p>In practice, to avoid the “uncontrolled” effects of aliasing, the
+continuous-time signal <span class="math notranslate nohighlight">\(x(t)\)</span> is usually passed through an analog
+lowpass filter with cutoff frequency <span class="math notranslate nohighlight">\(\frac{f_s}{2}\)</span> Hz to remove
+any frequency components in <span class="math notranslate nohighlight">\(x(t)\)</span> that are above <span class="math notranslate nohighlight">\(\frac{f_s}{2}\)</span> Hz
+before sampling. The lowpassed signal then will not suffer from
+aliasing. The analog lowpass filter is often called an
+<em><strong>antialiasing filter</strong></em>.  Of course, we may only reconstruct the
+lowpassed version of <span class="math notranslate nohighlight">\(x(t)\)</span> from the sampled signal. Nevertheless,
+applying the antialiasing filter allows us to control the distortion
+we may suffer from potential undersampling.</p></li>
+</ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -459,20 +636,20 @@ efficient HLS coding techniques to process samples from the ADC.</p></li>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../ch8/quant.html"
+       href="adc.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title"><span class="section-number">8.4. </span>Effects of Quantization</p>
+        <p class="prev-next-title"><span class="section-number">9. </span>ADC as Signal Source</p>
       </div>
     </a>
     <a class="right-next"
-       href="sampthm.html"
+       href="../refs.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">9.1. </span>Sampling Theorem</p>
+        <p class="prev-next-title"><span class="section-number">10. </span>References</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -485,6 +662,21 @@ efficient HLS coding techniques to process samples from the ADC.</p></li>
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oversampling-f-s-2b">9.1.1. Oversampling (<span class="math notranslate nohighlight">\(f_s &gt; 2B\)</span>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#undersampling-f-s-leq-2b">9.1.2. Undersampling (<span class="math notranslate nohighlight">\(f_s \leq 2B\)</span>)</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
