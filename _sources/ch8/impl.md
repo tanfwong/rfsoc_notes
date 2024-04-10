@@ -357,7 +357,7 @@
 
   #define MAX_MTOTAL MAX_NUMBLKS*M
 
-  #define Wb 25
+  #define Wb 22
   #define Ib 2
   // typedef template to increase the number of integer 
   // bits going through the FFT butterfly stages
