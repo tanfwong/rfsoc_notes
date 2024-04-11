@@ -267,7 +267,7 @@
   in {numref}`sec:undersample`.
 
 * It is easy to see that the same aliasing trick theoretically applies
-  to bandpass signals lying in any "higher" Nyquist zone. However,
+  to bandpass signals lying in any "higher" Nyquist zones. However,
   the sampling operation in practical ADCs is not ideal. The effect of
   non-ideal sampling may be thought of as first lowpass filtering the
   continuous-time bandpass signal and then performing ideal
