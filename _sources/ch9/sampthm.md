@@ -242,10 +242,8 @@
 
 * Often, it is more convenient for subsequent processing to "bring"
   $x[n]$ (which is a discrete-time bandpass signal itself)  down to
-  the *baseband* by passing the frequency-shifted version 
-  \begin{equation*}
-  \tilde x[n] = x[n] e^{j(2\pi - \frac{\omega_0}{f_s})n}
-  \end{equation*}
+  the *baseband* by passing its frequency-shifted version 
+  $x[n] e^{j(2\pi - \frac{\omega_0}{f_s})n}$
   through an ideal lowpass filter with cutoff frequency
   $\frac{\Omega}{2f_s}$ radian per sample. The resulting signal will
   have the following DTFT:
@@ -254,7 +252,8 @@
   :width: 400px
   :align: center
   ```
-  This signal is often called the *complex baseband* version of
-  $x[n]$. It is a complex-valued bandlimited signal and retains all
-  spectrum information of the original continuous-time $x(t)$, i.e.,
-  we can reconstruct $x(t)$ from this complex baseband signal.
+  This signal at the output of the lowpass filter is often called the
+  *complex baseband* version of $x[n]$. It is a complex-valued
+  bandlimited signal and retains all spectrum information of the
+  original continuous-time $x(t)$, i.e., we can reconstruct $x(t)$
+  from this complex baseband signal.

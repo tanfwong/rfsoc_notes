@@ -649,19 +649,17 @@ case as shown in <a class="reference internal" href="#sec-oversample"><span clas
 </li>
 <li><p>Often, it is more convenient for subsequent processing to “bring”
 <span class="math notranslate nohighlight">\(x[n]\)</span> (which is a discrete-time bandpass signal itself)  down to
-the <em>baseband</em> by passing the frequency-shifted version</p>
-<div class="amsmath math notranslate nohighlight">
-\[\begin{equation*}
-  \tilde x[n] = x[n] e^{j(2\pi - \frac{\omega_0}{f_s})n}
-  \end{equation*}\]</div>
-<p>through an ideal lowpass filter with cutoff frequency
+the <em>baseband</em> by passing its frequency-shifted version
+<span class="math notranslate nohighlight">\(x[n] e^{j(2\pi - \frac{\omega_0}{f_s})n}\)</span>
+through an ideal lowpass filter with cutoff frequency
 <span class="math notranslate nohighlight">\(\frac{\Omega}{2f_s}\)</span> radian per sample. The resulting signal will
 have the following DTFT:</p>
 <a class="reference internal image-reference" href="../_images/complex_baseband.jpg"><img alt="The spectrum (DTFT) of the complex baseband signal" class="align-center" src="../_images/complex_baseband.jpg" style="width: 400px;" /></a>
-<p>This signal is often called the <em>complex baseband</em> version of
-<span class="math notranslate nohighlight">\(x[n]\)</span>. It is a complex-valued bandlimited signal and retains all
-spectrum information of the original continuous-time <span class="math notranslate nohighlight">\(x(t)\)</span>, i.e.,
-we can reconstruct <span class="math notranslate nohighlight">\(x(t)\)</span> from this complex baseband signal.</p>
+<p>This signal at the output of the lowpass filter is often called the
+<em>complex baseband</em> version of <span class="math notranslate nohighlight">\(x[n]\)</span>. It is a complex-valued
+bandlimited signal and retains all spectrum information of the
+original continuous-time <span class="math notranslate nohighlight">\(x(t)\)</span>, i.e., we can reconstruct <span class="math notranslate nohighlight">\(x(t)\)</span>
+from this complex baseband signal.</p>
 </li>
 </ul>
 </section>
