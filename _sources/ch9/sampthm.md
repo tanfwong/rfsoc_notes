@@ -21,7 +21,7 @@
 * From {eq}`e:folded_spectrum`, it is clear that the folded spectrum
   depends on both the FT of the continuous-time signal and the sampling
   rate. The effects of both factors are best explained in
-  picture. First, let us define the concept of *bandlimtedness*:
+  picture. First, let us define the concept of *bandlimitedness*:
   ```{admonition} Notation
   A continuous-time signal $x(t)$ is ***bandlimited*** to $\Omega =
   2\pi B$ radian per second (or $B$ Hz) if its FT $X(\omega) = 0$ for
@@ -189,3 +189,37 @@
   lowpassed version of $x(t)$ from the sampled signal. Nevertheless,
   applying the antialiasing filter allows us to control the distortion
   we may suffer from potential undersampling. 
+
+## Nyquist Zone Sampling of Bandpass Signal
+* In some situations, we may be able to turn the undesirable
+  phenomenon of aliasing into an advantage. One such situation is the
+  undersampling of a bandpass continuous-time signal.
+
+* First, we have to spell out what a *bandpass continuous-time signal* is:
+  ```{admonition} Notation
+  A (real-valued) continuous-time signal $x(t)$ is 
+  ***bandpass*** with a center
+  frequency at $\omega_0=2\pi f_0$ radian per second (or $f_0$ Hz) and
+  a bandwidth of $\Omega =
+  2\pi B$ radian per second (or $B$ Hz) if its FT $X(\omega) = 0$ for
+  $|\omega| \notin [\omega_0 - \frac{\Omega}{2}, \omega_0 + \frac{\Omega}{2}]$. 
+  ```
+* Clearly, the Nyquist rate of the bandpass signal $x(t)$ is $2f_0+B$
+  Hz. We must sample $x(t)$ at above $2f_0+B$ sps to avoid
+  aliasing. Nevertheless, sampling of the bandpass signal $x(t)$ is a
+  situation in which we may want to deliberately undersample in order to
+  exploit aliasing to our advantage.
+
+* Consider undersampling $x(t)$ with $f_s$ satisfying the condition
+  $f_0 + \frac{B}{2} < f_s < 2f_0 -B$. That is, all frequency
+  components of $x(t)$ lie within the frequency range $(\frac{f_s}{2},
+  f_s)$ Hz, which is often referred to as the *second Nyquist zone*. This
+  is in reference to that the frequency range $[0, \frac{f_s}{2})$ Hz
+  is called the *first Nyquist zone*. A pictorial illustration of a
+  bandpass $x(t)$ with its whole $X(\omega)$ lying in the second
+  Nyquist zone is as shown below:
+  ```{image} ../figs/nyqzone2.jpg
+  :alt: The spectrum of a bandpass signal lying within the second Nyquist zone
+  :width: 800px
+  :align: center
+  ```

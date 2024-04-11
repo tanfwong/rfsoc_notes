@@ -409,6 +409,7 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oversampling-f-s-2b">9.1.1. Oversampling (<span class="math notranslate nohighlight">\(f_s &gt; 2B\)</span>)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#undersampling-f-s-leq-2b">9.1.2. Undersampling (<span class="math notranslate nohighlight">\(f_s \leq 2B\)</span>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nyquist-zone-sampling-of-bandpass-signal">9.1.3. Nyquist Zone Sampling of Bandpass Signal</a></li>
 </ul>
             </nav>
         </div>
@@ -442,7 +443,7 @@ signal <span class="math notranslate nohighlight">\(x[n]\)</span> is the folded 
 <li><p>From <a class="reference internal" href="#equation-e-folded-spectrum">(9.1)</a>, it is clear that the folded spectrum
 depends on both the FT of the continuous-time signal and the sampling
 rate. The effects of both factors are best explained in
-picture. First, let us define the concept of <em>bandlimtedness</em>:</p>
+picture. First, let us define the concept of <em>bandlimitedness</em>:</p>
 <div class="admonition-notation admonition">
 <p class="admonition-title">Notation</p>
 <p>A continuous-time signal <span class="math notranslate nohighlight">\(x(t)\)</span> is <em><strong>bandlimited</strong></em> to <span class="math notranslate nohighlight">\(\Omega =
@@ -602,6 +603,40 @@ applying the antialiasing filter allows us to control the distortion
 we may suffer from potential undersampling.</p></li>
 </ul>
 </section>
+<section id="nyquist-zone-sampling-of-bandpass-signal">
+<h2><span class="section-number">9.1.3. </span>Nyquist Zone Sampling of Bandpass Signal<a class="headerlink" href="#nyquist-zone-sampling-of-bandpass-signal" title="Permalink to this headline">#</a></h2>
+<ul>
+<li><p>In some situations, we may be able to turn the undesirable
+phenomenon of aliasing into an advantage. One such situation is the
+undersampling of a bandpass continuous-time signal.</p></li>
+<li><p>First, we have to spell out what a <em>bandpass continuous-time signal</em> is:</p>
+<div class="admonition-notation admonition">
+<p class="admonition-title">Notation</p>
+<p>A (real-valued) continuous-time signal <span class="math notranslate nohighlight">\(x(t)\)</span> is
+<em><strong>bandpass</strong></em> with a center
+frequency at <span class="math notranslate nohighlight">\(\omega_0=2\pi f_0\)</span> radian per second (or <span class="math notranslate nohighlight">\(f_0\)</span> Hz) and
+a bandwidth of <span class="math notranslate nohighlight">\(\Omega =
+2\pi B\)</span> radian per second (or <span class="math notranslate nohighlight">\(B\)</span> Hz) if its FT <span class="math notranslate nohighlight">\(X(\omega) = 0\)</span> for
+<span class="math notranslate nohighlight">\(|\omega| \notin [\omega_0 - \frac{\Omega}{2}, \omega_0 + \frac{\Omega}{2}]\)</span>.</p>
+</div>
+</li>
+<li><p>Clearly, the Nyquist rate of the bandpass signal <span class="math notranslate nohighlight">\(x(t)\)</span> is <span class="math notranslate nohighlight">\(2f_0+B\)</span>
+Hz. We must sample <span class="math notranslate nohighlight">\(x(t)\)</span> at above <span class="math notranslate nohighlight">\(2f_0+B\)</span> sps to avoid
+aliasing. Nevertheless, sampling of the bandpass signal <span class="math notranslate nohighlight">\(x(t)\)</span> is a
+situation in which we may want to deliberately undersample in order to
+exploit aliasing to our advantage.</p></li>
+<li><p>Consider undersampling <span class="math notranslate nohighlight">\(x(t)\)</span> with <span class="math notranslate nohighlight">\(f_s\)</span> satisfying the condition
+<span class="math notranslate nohighlight">\(f_0 + \frac{B}{2} &lt; f_s &lt; 2f_0 -B\)</span>. That is, all frequency
+components of <span class="math notranslate nohighlight">\(x(t)\)</span> lie within the frequency range <span class="math notranslate nohighlight">\((\frac{f_s}{2},
+f_s)\)</span> Hz, which is often referred to as the <em>second Nyquist zone</em>. This
+is in reference to that the frequency range <span class="math notranslate nohighlight">\([0, \frac{f_s}{2})\)</span> Hz
+is called the <em>first Nyquist zone</em>. A pictorial illustration of a
+bandpass <span class="math notranslate nohighlight">\(x(t)\)</span> with its whole <span class="math notranslate nohighlight">\(X(\omega)\)</span> lying in the second
+Nyquist zone is as shown below:</p>
+<a class="reference internal image-reference" href="../_images/nyqzone2.jpg"><img alt="The spectrum of a bandpass signal lying within the second Nyquist zone" class="align-center" src="../_images/nyqzone2.jpg" style="width: 800px;" /></a>
+</li>
+</ul>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -673,6 +708,7 @@ we may suffer from potential undersampling.</p></li>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oversampling-f-s-2b">9.1.1. Oversampling (<span class="math notranslate nohighlight">\(f_s &gt; 2B\)</span>)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#undersampling-f-s-leq-2b">9.1.2. Undersampling (<span class="math notranslate nohighlight">\(f_s \leq 2B\)</span>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nyquist-zone-sampling-of-bandpass-signal">9.1.3. Nyquist Zone Sampling of Bandpass Signal</a></li>
 </ul>
   </nav></div>
 
