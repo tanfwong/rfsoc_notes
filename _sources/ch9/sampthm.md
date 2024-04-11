@@ -159,7 +159,8 @@
   zero-order hold interpolation and lowpass filtering is equivalent to
   using an interpolation kernel that is the convolution between the
   rectangular kernel and the impulse response of the lowpass filter.
-  
+
+(sec:undersample)=
 ## Undersampling ($f_s \leq 2B$) 
 
 * In this case, we see from the plot of the folded spectrum that the
@@ -257,3 +258,21 @@
   bandlimited signal and retains all spectrum information of the
   original continuous-time $x(t)$, i.e., we can reconstruct $x(t)$
   from this complex baseband signal.
+
+* In practice, we often pass the bandpass continuous-time signal
+  $x(t)$ through an analog bandpass filter with passband coinciding
+  the second Nyquist zone to remove all its frequency components
+  outside of the second Nyquist zone before sampling. This bandpass
+  filter acts in the same way as the anti-aliasing filter as discussed
+  in {numref}`sec:undersample`.
+
+* It is easy to see that the same aliasing trick theoretically applies
+  to bandpass signals lying in any "higher" Nyquist zone. However,
+  the sampling operation in practical ADCs is not ideal. The effect of
+  non-ideal sampling may be thought of as first lowpass filtering the
+  continuous-time bandpass signal and then performing ideal
+  sampling. Hence, a bandpass signal lying in a high Nyquist zone  may
+  be attenuated (and perhaps also distorted)  too much that the
+  sampled version may suffer significantly from the quantization noise
+  of the ADC. As a result, Nyquist zone sampling is often limited to
+  the second or third Nyquist zone in practice.
