@@ -58,6 +58,7 @@
     ```{admonition} Notation
     The condition $f_s \leq 2B$ is referred to as ***undersampling***.
     ```
+(sec:oversample)=
 ## Oversampling ($f_s > 2B$) 
 * In this case, we can see from the plot that the FT $X(\omega)$ of
   the original continuous-time signal is perserved in the folded
@@ -215,7 +216,7 @@
   components of $x(t)$ lie within the frequency range $(\frac{f_s}{2},
   f_s)$ Hz, which is often referred to as the *second Nyquist zone*. This
   is in reference to that the frequency range $[0, \frac{f_s}{2})$ Hz
-  is called the *first Nyquist zone*. A pictorial illustration of a
+  is called the *first Nyquist zone*. A pictorial illustration of a (real-valued)  
   bandpass $x(t)$ with its whole $X(\omega)$ lying in the second
   Nyquist zone is as shown below:
   ```{image} ../figs/nyqzone2.jpg
@@ -223,3 +224,37 @@
   :width: 800px
   :align: center
   ```
+* Applying the folded spectrum formula {eq}`e:folded_spectrum` to
+  obtain the DTFT $X(e^{j\hat\omega})$ of the sampled signal $x[n] =
+  x(\frac{n}{f_s})$ gives the following folded spectrum:
+  ```{image} ../figs/nyqzone2_folded.jpg
+  :alt: Folded spectrum of the bandpass signal lying within the second Nyquist zone
+  :width: 800px
+  :align: center
+  ```
+  We see the all spectrum information in the FT $X(\omega)$ of the
+  original continuous-time $x(t)$ is preserved in the folded spectrum
+  $X(e^{j\hat\omega})$ of the sampled signal $x[n]$ in this case. That
+  is, we may get back $X(\omega)$ from $X(e^{j\hat\omega})$
+  (equivalently $x(t)$ from $x[n]$), although the reconstruction
+  operation is a bit more complicated than that in the oversampling
+  case as shown in {numref}`sec:oversample` above.
+
+* Often, it is more convenient for subsequent processing to "bring"
+  $x[n]$ (which is a discrete-time bandpass signal itself)  down to
+  the *baseband* by passing the frequency-shifted version 
+  \begin{equation*}
+  \tilde x[n] = x[n] e^{j(2\pi - \frac{\omega_0}{f_s})n}
+  \end{equation*}
+  through an ideal lowpass filter with cutoff frequency
+  $\frac{\Omega}{2f_s}$ radian per sample. The resulting signal will
+  have the following DTFT:
+  ```{image} ../figs/complex_baseband.jpg
+  :alt: The spectrum (DTFT) of the complex baseband signal
+  :width: 400px
+  :align: center
+  ```
+  This signal is often called the *complex baseband* version of
+  $x[n]$. It is a complex-valued bandlimited signal and retains all
+  spectrum information of the original continuous-time $x(t)$, i.e.,
+  we can reconstruct $x(t)$ from this complex baseband signal.

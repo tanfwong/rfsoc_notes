@@ -478,7 +478,7 @@ The sampling rate <span class="math notranslate nohighlight">\(2B\)</span> is us
 </li>
 </ul>
 <section id="oversampling-f-s-2b">
-<h2><span class="section-number">9.1.1. </span>Oversampling (<span class="math notranslate nohighlight">\(f_s &gt; 2B\)</span>)<a class="headerlink" href="#oversampling-f-s-2b" title="Permalink to this headline">#</a></h2>
+<span id="sec-oversample"></span><h2><span class="section-number">9.1.1. </span>Oversampling (<span class="math notranslate nohighlight">\(f_s &gt; 2B\)</span>)<a class="headerlink" href="#oversampling-f-s-2b" title="Permalink to this headline">#</a></h2>
 <ul>
 <li><p>In this case, we can see from the plot that the FT <span class="math notranslate nohighlight">\(X(\omega)\)</span> of
 the original continuous-time signal is perserved in the folded
@@ -630,10 +630,38 @@ exploit aliasing to our advantage.</p></li>
 components of <span class="math notranslate nohighlight">\(x(t)\)</span> lie within the frequency range <span class="math notranslate nohighlight">\((\frac{f_s}{2},
 f_s)\)</span> Hz, which is often referred to as the <em>second Nyquist zone</em>. This
 is in reference to that the frequency range <span class="math notranslate nohighlight">\([0, \frac{f_s}{2})\)</span> Hz
-is called the <em>first Nyquist zone</em>. A pictorial illustration of a
+is called the <em>first Nyquist zone</em>. A pictorial illustration of a (real-valued)<br />
 bandpass <span class="math notranslate nohighlight">\(x(t)\)</span> with its whole <span class="math notranslate nohighlight">\(X(\omega)\)</span> lying in the second
 Nyquist zone is as shown below:</p>
 <a class="reference internal image-reference" href="../_images/nyqzone2.jpg"><img alt="The spectrum of a bandpass signal lying within the second Nyquist zone" class="align-center" src="../_images/nyqzone2.jpg" style="width: 800px;" /></a>
+</li>
+<li><p>Applying the folded spectrum formula <a class="reference internal" href="#equation-e-folded-spectrum">(9.1)</a> to
+obtain the DTFT <span class="math notranslate nohighlight">\(X(e^{j\hat\omega})\)</span> of the sampled signal <span class="math notranslate nohighlight">\(x[n] =
+x(\frac{n}{f_s})\)</span> gives the following folded spectrum:</p>
+<a class="reference internal image-reference" href="../_images/nyqzone2_folded.jpg"><img alt="Folded spectrum of the bandpass signal lying within the second Nyquist zone" class="align-center" src="../_images/nyqzone2_folded.jpg" style="width: 800px;" /></a>
+<p>We see the all spectrum information in the FT <span class="math notranslate nohighlight">\(X(\omega)\)</span> of the
+original continuous-time <span class="math notranslate nohighlight">\(x(t)\)</span> is preserved in the folded spectrum
+<span class="math notranslate nohighlight">\(X(e^{j\hat\omega})\)</span> of the sampled signal <span class="math notranslate nohighlight">\(x[n]\)</span> in this case. That
+is, we may get back <span class="math notranslate nohighlight">\(X(\omega)\)</span> from <span class="math notranslate nohighlight">\(X(e^{j\hat\omega})\)</span>
+(equivalently <span class="math notranslate nohighlight">\(x(t)\)</span> from <span class="math notranslate nohighlight">\(x[n]\)</span>), although the reconstruction
+operation is a bit more complicated than that in the oversampling
+case as shown in <a class="reference internal" href="#sec-oversample"><span class="std std-numref">Section 9.1.1</span></a> above.</p>
+</li>
+<li><p>Often, it is more convenient for subsequent processing to “bring”
+<span class="math notranslate nohighlight">\(x[n]\)</span> (which is a discrete-time bandpass signal itself)  down to
+the <em>baseband</em> by passing the frequency-shifted version</p>
+<div class="amsmath math notranslate nohighlight">
+\[\begin{equation*}
+  \tilde x[n] = x[n] e^{j(2\pi - \frac{\omega_0}{f_s})n}
+  \end{equation*}\]</div>
+<p>through an ideal lowpass filter with cutoff frequency
+<span class="math notranslate nohighlight">\(\frac{\Omega}{2f_s}\)</span> radian per sample. The resulting signal will
+have the following DTFT:</p>
+<a class="reference internal image-reference" href="../_images/complex_baseband.jpg"><img alt="The spectrum (DTFT) of the complex baseband signal" class="align-center" src="../_images/complex_baseband.jpg" style="width: 400px;" /></a>
+<p>This signal is often called the <em>complex baseband</em> version of
+<span class="math notranslate nohighlight">\(x[n]\)</span>. It is a complex-valued bandlimited signal and retains all
+spectrum information of the original continuous-time <span class="math notranslate nohighlight">\(x(t)\)</span>, i.e.,
+we can reconstruct <span class="math notranslate nohighlight">\(x(t)\)</span> from this complex baseband signal.</p>
 </li>
 </ul>
 </section>
