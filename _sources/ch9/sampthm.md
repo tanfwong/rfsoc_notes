@@ -192,6 +192,7 @@
   applying the antialiasing filter allows us to control the distortion
   we may suffer from potential undersampling. 
 
+(sec:nyquistzone)=
 ## Nyquist Zone Sampling of Bandpass Signal
 * In some situations, we may be able to turn the undesirable
   phenomenon of aliasing into an advantage. One such situation is the
