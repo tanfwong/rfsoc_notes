@@ -318,7 +318,7 @@
     account for the stalling behavior in order to get better latency
     performance estimates. 
     ```
-   
+ (sec:blk-by-blk-fft)=  
 ## Block-by-Block Pipeline Implementation
 
 * In practice, we often take FFT on, sometimes overlapping, blocks from

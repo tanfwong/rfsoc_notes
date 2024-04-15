@@ -75,7 +75,7 @@
   from the `axis` interface of the data converter block and then
   stores them in the global memory:
 
-  Header (`stream_to_mem.h`):
+  Kernel header (`stream_to_mem.h`):
   ```c++
   #include <ap_fixed.h>
   #include <hls_stream.h>
@@ -92,7 +92,7 @@
   // Stream of chunks from ADC
   typedef hls::stream<c_t> s_t;
 
-  void top(s_t &s_in, c_t *out, int N);
+  extern "C" void top(s_t &s_in, c_t *out, int N);
   ```
 
   Kernel:
@@ -110,11 +110,60 @@
       }
     }
   }
-
+  
+  extern "C" {
   void top(s_t &s_in, c_t *out, int N) {
   #pragma HLS interface mode=axis port=s_in depth=MAX_NC
   #pragma HLS interface mode=m_axi port=out depth=MAX_NC
     store(s_in, out, N);
   }
+  }
   ```
+  - The 16-bit samples from the data converter are casted into the
+    `ap_fixed<16,1>` type. 
+  - The same technique of chunking using the `std::array` class in
+    {numref}`sec:blk-by-blk-fft` is employed here.
+  - A `hls::stream` input argument is employed in the top-level
+    function `top()` to interface with the `axis` sample stream
+    provided by the data converter block.
+  - Chunks of fixed-point samples are stored in the global memory
+    as the output of the kernel.
   
+  Host code snippet:
+  ```c++
+  // Compute the size of array in bytes
+  size_t size_in_bytes = NC*sizeof(c_t);
+  // Instantiate host input and output vectors
+  std::vector<c_t, aligned_allocator<c_t> > x(NC);
+
+  // These commands will allocate memory on the Device
+  // and link to host pointers
+  OCL_CHECK(err, cl::Buffer x_buf(context, 
+    CL_MEM_USE_HOST_PTR|CL_MEM_WRITE_ONLY, size_in_bytes, x.data(), &err));
+
+  // set the kernel Arguments
+  OCL_CHECK(err, err = krnl.setArg(1, x_buf));
+  OCL_CHECK(err, err = krnl.setArg(2, N));
+
+  OCL_CHECK(err, err = q.enqueueTask(krnl));
+  // Transfer output from gloabl to host memory
+  OCL_CHECK(err, err = q.enqueueMigrateMemObjects({x_buf}, 
+    CL_MIGRATE_MEM_OBJECT_HOST));
+  OCL_CHECK(err, err = q.finish());
+  std::cout << "Done getting signal sample from ADC.\n";
+
+  // save output samples to file
+  std::cout << "Writing data to signal.txt\n";
+  std::ofstream file;
+  file.open("signal.txt");
+  for (int n=0; n<N; n++)
+    file << x[n/C][n%C] << std::endl;
+  file.close();
+  ```
+  - Only the top-level function arguments of the output global memory
+    buffer and the number of samples to capture are set in the host
+    code.
+  - Explicit connection of the `hls::stream` argument of the top-level
+    function to the `axis` interface of the data converter block must
+    be specified in the kernel configuration file in Vitis (see Lab
+    9).
