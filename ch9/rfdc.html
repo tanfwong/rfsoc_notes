@@ -576,7 +576,21 @@ code.</p></li>
 function to the <code class="docutils literal notranslate"><span class="pre">axis</span></code> interface of the data converter block must
 be specified in the kernel configuration file in Vitis (see Lab
 9).</p></li>
+<li><p>If the HLS kernel and the data converter block’s <code class="docutils literal notranslate"><span class="pre">axis</span></code> interface
+are under different clock domains (e.g., in
+<code class="docutils literal notranslate"><span class="pre">rfsoc_adc_vitis_platform</span></code>, the HLS kernel is drived by the <span class="math notranslate nohighlight">\(200\)</span>
+MHz platform clock while the data converter block’s
+<code class="docutils literal notranslate"><span class="pre">axis</span></code> interface clock is at <span class="math notranslate nohighlight">\(38.2\)</span> MHz as discussed above),
+Vitis will automatically insert an AXI4 stream clock converter to
+interface between the kernel and <code class="docutils literal notranslate"><span class="pre">axis</span></code> interface as shown:</p></li>
 </ul>
+<figure class="align-center" id="kernel-bd">
+<a class="reference internal image-reference" href="../_images/kernel_bd.png"><img alt="Block diagram showing connection between HLS kernel and data converter axis interface" src="../_images/kernel_bd.png" style="width: 1000px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 9.3 </span><span class="caption-text">Block diagram showing connection between the HLS kernel and the
+data converter’s <code class="docutils literal notranslate"><span class="pre">axis</span></code> interface in <code class="docutils literal notranslate"><span class="pre">rfsoc_adc_vitis_platform</span></code>.</span><a class="headerlink" href="#kernel-bd" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
 </li>
 </ul>
 </section>
