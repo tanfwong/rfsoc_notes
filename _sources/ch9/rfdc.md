@@ -171,7 +171,7 @@
     are under different clock domains (e.g., in
     `rfsoc_adc_vitis_platform`, the HLS kernel is drived by the $200$
     MHz platform clock while the data converter block's
-    `axis` interface clock is at $38.2$ MHz as discussed above), 
+    `axis` interface clock is at $38.4$ MHz as discussed above), 
     Vitis will automatically insert an AXI4 stream clock converter to
     interface between the kernel and `axis` interface as shown:
   ```{figure} ../figs/kernel_bd.png 
