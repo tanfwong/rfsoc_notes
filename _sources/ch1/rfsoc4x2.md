@@ -41,6 +41,7 @@ peripherals and ports for a typical embedded system development board:
   references, the RF ports, and the DDR4 memory for DSP development in
   this class.
 
+(sec:zynq)=
 ## Zynq RFSoC
 
 * The Zynq XCZU48DR UltraScale+ RFSoC device {cite}`rfsoc_data_sheet`
