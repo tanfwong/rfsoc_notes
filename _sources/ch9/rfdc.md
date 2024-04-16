@@ -89,33 +89,31 @@
   typedef ap_fixed<16,1> d_t;
   // Chuck type = array of C samples
   typedef std::array<d_t,C> c_t;
-  // Stream of chunks from ADC
-  typedef hls::stream<c_t> s_t;
 
-  extern "C" void top(s_t &s_in, c_t *out, int N);
+
+  extern "C" void top(hls::stream<c_t> &s_in, c_t *out, unsigned long N);
   ```
 
   Kernel:
   ```c++
   #include "stream_to_mem.h"
+  #include <assert.h>
 
-  void store(s_t &in, c_t *out, int N) {
-    Write_Loop: for (unsigned long n=0; n<N/C; n++) {
+  void store(hls::stream<c_t> &in, c_t *out, unsigned long N) {
+    assert(N%4==0);
+    Write_Loop: for (unsigned long n=0; n<N; n++) {
   #pragma HLS loop_tripcount max=MAX_NC
-      c_t chunk = in.read();
-  #pragma HLS array_partition variable=chunk type=complete
-      Chunk_Loop: for (int j=0; j<C; j++) { 
-  #pragma HLS unroll
-        out[n][j] = chunk[j];
-      }
+      out[n] = in.read();
     }
   }
-  
+
   extern "C" {
-  void top(s_t &s_in, c_t *out, int N) {
+  void top(hls::stream<c_t> &s_in, c_t *out, unsigned long N) {
   #pragma HLS interface mode=axis port=s_in depth=MAX_NC
   #pragma HLS interface mode=m_axi port=out depth=MAX_NC
-    store(s_in, out, N);
+  #pragma HLS dataflow
+  
+    store(s_in, out, N/C);
   }
   }
   ```
