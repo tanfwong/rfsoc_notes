@@ -183,3 +183,136 @@
   Block diagram showing connection between the HLS kernel and the
   data converter's `axis` interface in `rfsoc_adc_vitis_platform`.
   ```
+
+* The same chucking approach can also be applied to any DSP kernel that
+  is connected to the data converter block's `axis` interface, using
+  the ADC sample stream as a signal source. For example, one may
+  modify the direct-form FIR filter implementation discussed in
+  {numref}`sec:fir_direct` as below to filter the ADC
+  samples directly from the data converter block:
+  
+  Header (`fir.h`):
+  ```c++
+  #include <ap_fixed.h>
+  #include <hls_stream.h>
+  #include <tuple>
+
+  #define MAX_N 8192   // Number of samples
+  #define C 8          // Number of samples per chunk
+  #define MAX_NC MAX_N/C
+  #define L 33         // FIR length
+
+
+  // Basic ADC sample type
+  typedef ap_fixed<16,1> din_t;
+  // Chuck type = array of C samples
+  typedef std::array<din_t,C> cin_t;
+
+  // Filter output types
+  typedef ap_fixed<21,2> dout_t;
+  typedef std::array<dout_t,C> cout_t;
+
+  extern "C" void top(hls::stream<cin_t> &s_in, cout_t *out, unsigned long N);
+  ```
+  
+  Kernel:
+  ```c++
+  #include "fir.h"
+  #include <assert.h>
+
+  const dout_t b[L]={
+     0.007083263382862,
+    -0.000281667903341,
+    -0.002870264687538,
+    -0.006818591414896,
+    -0.011318092128126,
+    -0.015100299270572,
+    -0.016580950620816,
+    -0.014181642971131,
+    -0.006627769384691,
+     0.006688932062321,
+     0.025437031747426,
+     0.048285032105601,
+     0.072982469926792,
+     0.096680432171055,
+     0.116360747833188,
+     0.129388363148553,
+     0.133943224196236,
+     0.129388363148553,
+     0.116360747833188,
+     0.096680432171055,
+     0.072982469926792,
+     0.048285032105601,
+     0.025437031747426,
+     0.006688932062321,
+    -0.006627769384691,
+    -0.014181642971131,
+    -0.016580950620816,
+    -0.015100299270572,
+    -0.011318092128126,
+    -0.006818591414896,
+    -0.002870264687538,
+    -0.000281667903341,
+     0.007083263382862
+  };
+
+  void fir(hls::stream<cin_t> &in, hls::stream<cout_t> &out, unsigned long N) {
+
+    din_t w[L] = {};
+  #pragma HLS array_partition variable=w type=complete
+
+    chunk_loop: for (unsigned long n=0; n<N; n++) {
+  #pragma HLS loop_tripcount max=MAX_NC
+      cin_t chunk_in = in.read();
+      cout_t chunk_out;
+  #pragma HLS array_partition variable=chunk_in type=complete
+  #pragma HLS array_partition variable=chunk_out type=complete
+      each_chunk: for (int j=0; j<C; j++) {
+  #pragma HLS unroll factor=2
+        shift_loop: for (int k=L-1; k>0; k--) {
+          w[k] = w[k-1];
+        }
+        // Read in new chunk from in
+        w[0] = chunk_in[j]; 
+        // Calculate output sample
+        dout_t y = 0.0;
+  //#pragma HLS bind_op variable=y op=mul impl=fabric latency=1
+        fir_loop: for (int k=0; k<L; k++) {
+  #pragma HLS unroll
+          y += b[k]*w[k];
+        }
+        chunk_out[j] = y;
+      }
+      // Write to out
+      out.write(chunk_out);
+    }
+  }
+
+  void store(hls::stream<cout_t> &buf, cout_t *out, unsigned long N) {
+    assert(N%2==0);
+    Write_Loop: for (unsigned long n=0; n<N; n++) {
+  #pragma HLS loop_tripcount max=MAX_NC
+      out[n] = buf.read();
+    }
+  }
+
+  extern "C" {
+  void top(hls::stream<cin_t> &s_in, cout_t *out, unsigned long N) {
+  #pragma HLS interface mode=axis port=s_in depth=MAX_NC
+  #pragma HLS interface mode=m_axi port=out depth=MAX_NC
+
+    hls::stream<cout_t> buf;
+
+  #pragma HLS dataflow
+    fir(s_in, buf, N/C);
+    store(buf, out, N/C);
+  }
+  }
+  ```
+  - The loop `each_chunk` is unrolled with a factor of 2 to achieve a
+    tradeoff between throughput and PL resource usage.
+  - It can be verified from Vitis that the throughput for this FIR
+    filter implementation is slightly below 2 samples per clock
+    cycle. At the platform clock rate of $200$ MHz, this translates to
+    about $400$ Msps per second, high enough to support real-time
+    processing of the stream of samples at the rate of $307.2$ Msps.

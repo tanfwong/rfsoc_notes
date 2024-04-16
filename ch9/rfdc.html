@@ -591,6 +591,139 @@ data converter’s <code class="docutils literal notranslate"><span class="pre">
 </figcaption>
 </figure>
 </li>
+<li><p>The same chucking approach can also be applied to any DSP kernel that
+is connected to the data converter block’s <code class="docutils literal notranslate"><span class="pre">axis</span></code> interface, using
+the ADC sample stream as a signal source. For example, one may
+modify the direct-form FIR filter implementation discussed in
+<a class="reference internal" href="../ch7/fir.html#sec-fir-direct"><span class="std std-numref">Section 7.2.1</span></a> as below to filter the ADC
+samples directly from the data converter block:</p>
+<p>Header (<code class="docutils literal notranslate"><span class="pre">fir.h</span></code>):</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;ap_fixed.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;hls_stream.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;tuple&gt;</span>
+
+<span class="cp">#define MAX_N 8192   </span><span class="c1">// Number of samples</span>
+<span class="cp">#define C 8          </span><span class="c1">// Number of samples per chunk</span>
+<span class="cp">#define MAX_NC MAX_N/C</span>
+<span class="cp">#define L 33         </span><span class="c1">// FIR length</span>
+
+
+<span class="c1">// Basic ADC sample type</span>
+<span class="k">typedef</span><span class="w"> </span><span class="n">ap_fixed</span><span class="o">&lt;</span><span class="mi">16</span><span class="p">,</span><span class="mi">1</span><span class="o">&gt;</span><span class="w"> </span><span class="n">din_t</span><span class="p">;</span>
+<span class="c1">// Chuck type = array of C samples</span>
+<span class="k">typedef</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">din_t</span><span class="p">,</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cin_t</span><span class="p">;</span>
+
+<span class="c1">// Filter output types</span>
+<span class="k">typedef</span><span class="w"> </span><span class="n">ap_fixed</span><span class="o">&lt;</span><span class="mi">21</span><span class="p">,</span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">dout_t</span><span class="p">;</span>
+<span class="k">typedef</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">dout_t</span><span class="p">,</span><span class="n">C</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cout_t</span><span class="p">;</span>
+
+<span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">top</span><span class="p">(</span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="n">cin_t</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">s_in</span><span class="p">,</span><span class="w"> </span><span class="n">cout_t</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Kernel:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;fir.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;assert.h&gt;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="n">dout_t</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">L</span><span class="p">]</span><span class="o">=</span><span class="p">{</span>
+<span class="w">   </span><span class="mf">0.007083263382862</span><span class="p">,</span>
+<span class="w">  </span><span class="mf">-0.000281667903341</span><span class="p">,</span>
+<span class="w">  </span><span class="mf">-0.002870264687538</span><span class="p">,</span>
+<span class="w">  </span><span class="mf">-0.006818591414896</span><span class="p">,</span>
+<span class="w">  </span><span class="mf">-0.011318092128126</span><span class="p">,</span>
+<span class="w">  </span><span class="mf">-0.015100299270572</span><span class="p">,</span>
+<span class="w">  </span><span class="mf">-0.016580950620816</span><span class="p">,</span>
+<span class="w">  </span><span class="mf">-0.014181642971131</span><span class="p">,</span>
+<span class="w">  </span><span class="mf">-0.006627769384691</span><span class="p">,</span>
+<span class="w">   </span><span class="mf">0.006688932062321</span><span class="p">,</span>
+<span class="w">   </span><span class="mf">0.025437031747426</span><span class="p">,</span>
+<span class="w">   </span><span class="mf">0.048285032105601</span><span class="p">,</span>
+<span class="w">   </span><span class="mf">0.072982469926792</span><span class="p">,</span>
+<span class="w">   </span><span class="mf">0.096680432171055</span><span class="p">,</span>
+<span class="w">   </span><span class="mf">0.116360747833188</span><span class="p">,</span>
+<span class="w">   </span><span class="mf">0.129388363148553</span><span class="p">,</span>
+<span class="w">   </span><span class="mf">0.133943224196236</span><span class="p">,</span>
+<span class="w">   </span><span class="mf">0.129388363148553</span><span class="p">,</span>
+<span class="w">   </span><span class="mf">0.116360747833188</span><span class="p">,</span>
+<span class="w">   </span><span class="mf">0.096680432171055</span><span class="p">,</span>
+<span class="w">   </span><span class="mf">0.072982469926792</span><span class="p">,</span>
+<span class="w">   </span><span class="mf">0.048285032105601</span><span class="p">,</span>
+<span class="w">   </span><span class="mf">0.025437031747426</span><span class="p">,</span>
+<span class="w">   </span><span class="mf">0.006688932062321</span><span class="p">,</span>
+<span class="w">  </span><span class="mf">-0.006627769384691</span><span class="p">,</span>
+<span class="w">  </span><span class="mf">-0.014181642971131</span><span class="p">,</span>
+<span class="w">  </span><span class="mf">-0.016580950620816</span><span class="p">,</span>
+<span class="w">  </span><span class="mf">-0.015100299270572</span><span class="p">,</span>
+<span class="w">  </span><span class="mf">-0.011318092128126</span><span class="p">,</span>
+<span class="w">  </span><span class="mf">-0.006818591414896</span><span class="p">,</span>
+<span class="w">  </span><span class="mf">-0.002870264687538</span><span class="p">,</span>
+<span class="w">  </span><span class="mf">-0.000281667903341</span><span class="p">,</span>
+<span class="w">   </span><span class="mf">0.007083263382862</span>
+<span class="p">};</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">fir</span><span class="p">(</span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="n">cin_t</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="n">cout_t</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="n">din_t</span><span class="w"> </span><span class="n">w</span><span class="p">[</span><span class="n">L</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="cp">#pragma HLS array_partition variable=w type=complete</span>
+
+<span class="w">  </span><span class="nl">chunk_loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS loop_tripcount max=MAX_NC</span>
+<span class="w">    </span><span class="n">cin_t</span><span class="w"> </span><span class="n">chunk_in</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
+<span class="w">    </span><span class="n">cout_t</span><span class="w"> </span><span class="n">chunk_out</span><span class="p">;</span>
+<span class="cp">#pragma HLS array_partition variable=chunk_in type=complete</span>
+<span class="cp">#pragma HLS array_partition variable=chunk_out type=complete</span>
+<span class="w">    </span><span class="nl">each_chunk</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">&lt;</span><span class="n">C</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS unroll factor=2</span>
+<span class="w">      </span><span class="nl">shift_loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="n">L</span><span class="mi">-1</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">--</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">w</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">w</span><span class="p">[</span><span class="n">k</span><span class="mi">-1</span><span class="p">];</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="c1">// Read in new chunk from in</span>
+<span class="w">      </span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">chunk_in</span><span class="p">[</span><span class="n">j</span><span class="p">];</span><span class="w"> </span>
+<span class="w">      </span><span class="c1">// Calculate output sample</span>
+<span class="w">      </span><span class="n">dout_t</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="c1">//#pragma HLS bind_op variable=y op=mul impl=fabric latency=1</span>
+<span class="w">      </span><span class="nl">fir_loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">&lt;</span><span class="n">L</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS unroll</span>
+<span class="w">        </span><span class="n">y</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="n">w</span><span class="p">[</span><span class="n">k</span><span class="p">];</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="n">chunk_out</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="c1">// Write to out</span>
+<span class="w">    </span><span class="n">out</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk_out</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">store</span><span class="p">(</span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="n">cout_t</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="n">cout_t</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">assert</span><span class="p">(</span><span class="n">N</span><span class="o">%</span><span class="mi">2</span><span class="o">==</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">  </span><span class="nl">Write_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS loop_tripcount max=MAX_NC</span>
+<span class="w">    </span><span class="n">out</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">buf</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">top</span><span class="p">(</span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="n">cin_t</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">s_in</span><span class="p">,</span><span class="w"> </span><span class="n">cout_t</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS interface mode=axis port=s_in depth=MAX_NC</span>
+<span class="cp">#pragma HLS interface mode=m_axi port=out depth=MAX_NC</span>
+
+<span class="w">  </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="n">cout_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">buf</span><span class="p">;</span>
+
+<span class="cp">#pragma HLS dataflow</span>
+<span class="w">  </span><span class="n">fir</span><span class="p">(</span><span class="n">s_in</span><span class="p">,</span><span class="w"> </span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="o">/</span><span class="n">C</span><span class="p">);</span>
+<span class="w">  </span><span class="n">store</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="o">/</span><span class="n">C</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The loop <code class="docutils literal notranslate"><span class="pre">each_chunk</span></code> is unrolled with a factor of 2 to achieve a
+tradeoff between throughput and PL resource usage.</p></li>
+<li><p>It can be verified from Vitis that the throughput for this FIR
+filter implementation is slightly below 2 samples per clock
+cycle. At the platform clock rate of <span class="math notranslate nohighlight">\(200\)</span> MHz, this translates to
+about <span class="math notranslate nohighlight">\(400\)</span> Msps per second, high enough to support real-time
+processing of the stream of samples at the rate of <span class="math notranslate nohighlight">\(307.2\)</span> Msps.</p></li>
+</ul>
+</li>
 </ul>
 </section>
 
