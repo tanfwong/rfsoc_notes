@@ -140,8 +140,9 @@
     CL_MEM_USE_HOST_PTR|CL_MEM_WRITE_ONLY, size_in_bytes, x.data(), &err));
 
   // set the kernel Arguments
+  unsigned long numsamps = N;
   OCL_CHECK(err, err = krnl.setArg(1, x_buf));
-  OCL_CHECK(err, err = krnl.setArg(2, N));
+  OCL_CHECK(err, err = krnl.setArg(2, numsamps));
 
   OCL_CHECK(err, err = q.enqueueTask(krnl));
   // Transfer output from gloabl to host memory
