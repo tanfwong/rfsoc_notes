@@ -13,7 +13,7 @@ RFSoC device in the configuration below:
      (real-valued) signal samples at the sampling rate of $307.2$ Msps.
   2. DSP kernels will be implemented using the various resources in
      the PL.  The results will be stored in the global memory (DDR4)
-     connected to the PL.
+     connected to the PS.
   3. The ARM Cortex-A53 APU in the PS will serve as a *host* for
      control of the DSP kernels in the PL, interfacing with the global
      memory, and simple post processing of the DSP results. An
