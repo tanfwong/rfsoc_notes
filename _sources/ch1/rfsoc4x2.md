@@ -94,5 +94,5 @@ peripherals and ports for a typical embedded system development board:
 
 * We will primarily use the ARM Cortex-A53 APU in the PS, the CLB, DSP
   and RAM resources in the PL, and one ADC, including the
-  corresponding PLL and data converter, the RF system for DSP
+  corresponding PLL and data converter, in the RF system for DSP
   development in this class.
