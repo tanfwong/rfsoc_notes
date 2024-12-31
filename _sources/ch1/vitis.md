@@ -3,15 +3,15 @@
 (sec:dsp_conf)=
 ## DSP Implementation Configuration
 There are many possible configurations of utilizing the various
-compute resources in the three subsystems in the XCZU48DR RFSoC
+compute resources in the three subsystems of the XCZU48DR RFSoC
 device to support DSP implementation. Since our main goal is to
 learn how to develop real-time, high-speed DSP implementation, we
-will employ the heterogeneous compute resources in the XCZU48DR
+will employ the heterogeneous compute resources of the XCZU48DR
 RFSoC device in the configuration below:
   1. One ADC, the corresponding PLL, and data converter in the RF
      system will be configured to supply a continuous stream of
      (real-valued) signal samples at the sampling rate of $307.2$ Msps.
-  2. DSP kernels will be implemented using the various resources in
+  2. DSP kernels will be implemented using the resources in
      the PL.  The results will be stored in the global memory (DDR4)
      connected to the PS.
   3. The ARM Cortex-A53 APU in the PS will serve as a *host* for
