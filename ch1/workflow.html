@@ -437,7 +437,8 @@ here, namely DSP kernel implementation.</p></li>
 <li><p>In order to simplify our development process, we will employ the
 following approach:</p>
 <ol class="arabic simple">
-<li><p>Follow the <em>Vitis Application Acceleration Development (VAAD) Flow</em>.</p></li>
+<li><p>Follow the <em>Vitis Application Acceleration Development (VAAD)
+Flow</em> <span id="id1">[<a class="reference internal" href="../refs.html#id12" title="Vitis Application Acceleration Development Design Hub. AMD-Xilinx, Dec. 2024. DH215 (v2024.2). URL: https://docs.amd.com/v/u/en-US/dh0088-vitis-acceleration.">AMD-Xilinx24b</a>]</span>.</p></li>
 <li><p>Use HLS to develop DSP kernels under the VAAD flow.  We will
 discuss more about the HLS design process in <a class="reference internal" href="../ch2/hls.html#sec-hls"><span class="std std-numref">Section 2</span></a>.</p></li>
 </ol>
@@ -446,11 +447,13 @@ discuss more about the HLS design process in <a class="reference internal" href=
 <section id="vitis-application-acceleration-development-flow">
 <h2><span class="section-number">1.3.1. </span>Vitis Application Acceleration Development Flow<a class="headerlink" href="#vitis-application-acceleration-development-flow" title="Permalink to this headline">#</a></h2>
 <ul>
-<li><p>The VAAD flow <span id="id1">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23b</a>]</span> is essentially a design process that
+<li><p>The VAAD flow <span id="id2">[<a class="reference internal" href="../refs.html#id12" title="Vitis Application Acceleration Development Design Hub. AMD-Xilinx, Dec. 2024. DH215 (v2024.2). URL: https://docs.amd.com/v/u/en-US/dh0088-vitis-acceleration.">AMD-Xilinx24b</a>]</span> is essentially a design process that
 allows developers to focus on developing the core functionalities of
 the PL kernels while the development of the required interfaces is
-all automated by Vitis.</p></li>
-<li><p>It contains:</p>
+all automated by Vitis.  For embedded system development, the VAAD
+flow corresponds to the <em>Vitis Integrated Flow</em> since Vitis v2024.2
+<span id="id3">[<a class="reference internal" href="../refs.html#id11" title="Embedded Design Development Using Vitis User Guide. AMD-Xilinx, Nov. 2024. UG1701 (v2024.2). URL: https://docs.amd.com/r/en-US/ug1701-vitis-accelerated-embedded/Getting-Started-with-Vitis.">AMD-Xilinx24a</a>]</span>.</p></li>
+<li><p>The components constitute a VAAD flow inlcude:</p>
 <ul>
 <li><p>a <em>Vitis extensible platform</em> which serves as an abstraction of
 the PL hardware to the host application development process, and
@@ -458,7 +461,7 @@ the platform is composed of</p>
 <ul class="simple">
 <li><p>a <em>domain</em> with the necessary software to run Linux on the PS host</p></li>
 <li><p>a base PL hardware block with a predefined configuration of AXI4
-interfaces for PL kernel control by the PS host and for data
+interfaces for PL kernels control by the PS host and for data
 transfer between the PS host and the PL kernels via global
 memory, clocks, and interrupt signals</p></li>
 </ul>
@@ -466,14 +469,17 @@ memory, clocks, and interrupt signals</p></li>
 <a class="reference internal image-reference" href="../_images/vitis_platform.png"><img alt="Vitis extensible platform" src="../_images/vitis_platform.png" style="width: 600px;" /></a>
 <figcaption>
 <p><span class="caption-number">Fig. 1.4 </span><span class="caption-text">Components of a Vitis extensible platform
-(image taken from <span id="id2">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23b</a>]</span>)</span><a class="headerlink" href="#vitis-platform" title="Permalink to this image">#</a></p>
+(image taken from <span id="id4">[<a class="reference internal" href="../refs.html#id13" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23b</a>]</span>)</span><a class="headerlink" href="#vitis-platform" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 </li>
+<li><p>PL kernels that implement DSP objects and algorithms</p></li>
 <li><p>a predefined configuration of AXI4 interfaces for kernel control
 and data transfer, clock input, and interrupt signals to which
-each PL kernel must conform</p></li>
-<li><p>the <a class="reference external" href="https://xilinx.github.io/XRT/2023.2/html/index.html">Xilinx Runtime
+each PL kernel must conform,</p></li>
+<li><p>a host application program that controls the PL kernels, and passes
+input to and retrieves output from the PL kernels, and</p></li>
+<li><p>the <a class="reference external" href="https://xilinx.github.io/XRT/master/html/index.html">Xilinx Runtime
 (XRT)</a>
 library which contains Linux drivers and APIs to support PL kernel
 control and data transfer in host application programming.</p></li>
@@ -483,11 +489,12 @@ control and data transfer in host application programming.</p></li>
 interfaces that conform to the predefined configuration required by
 VAAD for a PL kernel.</p></li>
 <li><p>The tradeoffs for adopting VAAD are potential losses in flexibility
-of the implementation architecture and in PL utilization
-efficiency. Nonetheless, these potential losses are rather
-acceptable for us since we will not be interested in developing
-interfaces to other peripherals, and the adoption of VAAD allows us
-to focus only on the “DSP stuff” in our development.</p></li>
+of the implementation architecture, low-level control of the PL
+resources, and PL utilization efficiency. Nonetheless, these
+potential losses are rather acceptable for us since we will not be
+interested in developing interfaces to other peripherals, and the
+adoption of VAAD allows us to focus only on the “DSP stuff” in our
+development.</p></li>
 </ul>
 </section>
 <section id="vaad-procedures-in-vitis">
@@ -517,7 +524,9 @@ emulation, and/or hardware in Vitis.</p></li>
 <li><p>Deploy the host executable and FPGA bit-stream, if applicable, for
 testing, debugging, and verification. The usual sequence of testing
 build is to start from software emulation, then to hardware
-emulation, and finally to hardware.</p></li>
+emulation, and finally to hardware. <em>Starting from Vitis v2024.2,
+the software emulation for the whole system (host application and
+PL kernels) is not supported.</em></p></li>
 </ol>
 <ul class="simple">
 <li><p>Note that steps 2-5 can be replaced, and often simplified, by
@@ -528,7 +537,7 @@ Vitis and modifying the corresponding components in the example.</p></li>
 <a class="reference internal image-reference" href="../_images/vitis_build.png"><img alt="Vitis extensible platform" src="../_images/vitis_build.png" style="width: 1000px;" /></a>
 <figcaption>
 <p><span class="caption-number">Fig. 1.5 </span><span class="caption-text">VAAD Procedures in Vitis
-(image modified from <span id="id3">[<a class="reference internal" href="../refs.html#id11" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23b</a>]</span>)</span><a class="headerlink" href="#vitis-build" title="Permalink to this image">#</a></p>
+(image modified from <span id="id5">[<a class="reference internal" href="../refs.html#id13" title="Vitis Unified Software Platform Documentation: Application Acceleration Development. AMD-Xilinx, Dec. 2023. UG1393 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1393-vitis-application-acceleration.">AMD-Xilinx23b</a>]</span>)</span><a class="headerlink" href="#vitis-build" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 </section>
@@ -537,12 +546,12 @@ Vitis and modifying the corresponding components in the example.</p></li>
 <ul class="simple">
 <li><p>To ease the development process, I have built a simple Vitis
 extensible platform described in step 1 of <a class="reference internal" href="#sec-vaadf-steps"><span class="std std-numref">Section 1.3.2</span></a>
-for use in class. The platform is called <code class="docutils literal notranslate"><span class="pre">rfsoc_adc_vitis_platform</span></code>
+for use in class. The platform is called <code class="docutils literal notranslate"><span class="pre">eee4511c_vitis_platform</span></code>
 and will be provided. Those interested may follow the steps similar
 to those in <a class="reference external" href="https://github.com/tanfwong/rfsoc4x2/blob/main/vitis_adc_platform.md">this
 tutorial</a>
-to generate the Vitis platform.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">rfsoc_adc_vitis_platform</span></code> has ADC-D (ADC0 on tile 224) on the
+to generate the Vitis platform (for Vivado and Vitis v2023.2).</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">eee4511c_vitis_platform</span></code> has ADC-D (ADC0 on tile 224) on the
 RFSoC4x2 board enabled at sampling rate <span class="math notranslate nohighlight">\(307.2\)</span> Msps. It also
 provides two clocks at <span class="math notranslate nohighlight">\(200\)</span> MHz and <span class="math notranslate nohighlight">\(400\)</span> MHz to drive the PL
 kernels. For all examples discussed in the later sections, we use
@@ -551,9 +560,9 @@ block diagram of the hardware platform component generated by Vivado
 is given below:</p></li>
 </ul>
 <figure class="align-center" id="hardware">
-<a class="reference internal image-reference" href="../_images/rfsoc_adc_block_design.png"><img alt="Hardware component of `rfsoc_adc_vitis_platform`" src="../_images/rfsoc_adc_block_design.png" style="width: 1000px;" /></a>
+<a class="reference internal image-reference" href="../_images/rfsoc_adc_block_design.png"><img alt="Hardware component of `eee4511c_vitis_platform`" src="../_images/rfsoc_adc_block_design.png" style="width: 1000px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 1.6 </span><span class="caption-text">Hardware platform component of <code class="docutils literal notranslate"><span class="pre">rfsoc_adc_vitis_platform</span></code></span><a class="headerlink" href="#hardware" title="Permalink to this image">#</a></p>
+<p><span class="caption-number">Fig. 1.6 </span><span class="caption-text">Hardware platform component of <code class="docutils literal notranslate"><span class="pre">eee4511c_vitis_platform</span></code></span><a class="headerlink" href="#hardware" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 </section>

@@ -13,23 +13,26 @@
 
 * In order to simplify our development process, we will employ the
   following approach:
-  1. Follow the *Vitis Application Acceleration Development (VAAD) Flow*. 
+  1. Follow the *Vitis Application Acceleration Development (VAAD)
+     Flow* {cite}`dh215`. 
   2. Use HLS to develop DSP kernels under the VAAD flow.  We will
      discuss more about the HLS design process in {numref}`sec:hls`.
 
 ## Vitis Application Acceleration Development Flow
-* The VAAD flow {cite}`ug1393` is essentially a design process that
+* The VAAD flow {cite}`dh215` is essentially a design process that
   allows developers to focus on developing the core functionalities of
   the PL kernels while the development of the required interfaces is
-  all automated by Vitis.
+  all automated by Vitis.  For embedded system development, the VAAD
+  flow corresponds to the *Vitis Integrated Flow* since Vitis v2024.2
+  {cite}`ug1701`.
 
-* It contains:
+* The components constitute a VAAD flow inlcude:
   - a *Vitis extensible platform* which serves as an abstraction of
     the PL hardware to the host application development process, and
     the platform is composed of
     - a *domain* with the necessary software to run Linux on the PS host
     - a base PL hardware block with a predefined configuration of AXI4
-      interfaces for PL kernel control by the PS host and for data
+      interfaces for PL kernels control by the PS host and for data
       transfer between the PS host and the PL kernels via global
       memory, clocks, and interrupt signals
     ```{figure} ../figs/vitis_platform.png
@@ -42,11 +45,14 @@
     Components of a Vitis extensible platform
     (image taken from {cite}`ug1393`)
     ```
+  - PL kernels that implement DSP objects and algorithms
   - a predefined configuration of AXI4 interfaces for kernel control
       and data transfer, clock input, and interrupt signals to which
-      each PL kernel must conform
+      each PL kernel must conform,
+  - a host application program that controls the PL kernels, and passes
+     input to and retrieves output from the PL kernels, and
   - the [Xilinx Runtime
-    (XRT)](https://xilinx.github.io/XRT/2023.2/html/index.html)
+    (XRT)](https://xilinx.github.io/XRT/master/html/index.html)
     library which contains Linux drivers and APIs to support PL kernel
     control and data transfer in host application programming.
 
@@ -55,11 +61,12 @@
   VAAD for a PL kernel. 
 
 * The tradeoffs for adopting VAAD are potential losses in flexibility
-  of the implementation architecture and in PL utilization
-  efficiency. Nonetheless, these potential losses are rather
-  acceptable for us since we will not be interested in developing
-  interfaces to other peripherals, and the adoption of VAAD allows us
-  to focus only on the "DSP stuff" in our development.
+  of the implementation architecture, low-level control of the PL
+  resources, and PL utilization efficiency. Nonetheless, these
+  potential losses are rather acceptable for us since we will not be
+  interested in developing interfaces to other peripherals, and the
+  adoption of VAAD allows us to focus only on the "DSP stuff" in our
+  development.
 
 (sec:vaadf_steps)=
 ## VAAD Procedures in Vitis
@@ -90,7 +97,9 @@ VAAD:
 7. Deploy the host executable and FPGA bit-stream, if applicable, for
    testing, debugging, and verification. The usual sequence of testing
    build is to start from software emulation, then to hardware
-   emulation, and finally to hardware.
+   emulation, and finally to hardware. *Starting from Vitis v2024.2,
+   the software emulation for the whole system (host application and
+   PL kernels) is not supported.*
 
 * Note that steps 2-5 can be replaced, and often simplified, by
   generating all the components from an *Acceleration Example* in
@@ -110,13 +119,13 @@ VAAD Procedures in Vitis
 ## Class Vitis Extensible Platform
 * To ease the development process, I have built a simple Vitis
   extensible platform described in step 1 of {numref}`sec:vaadf_steps`
-  for use in class. The platform is called `rfsoc_adc_vitis_platform`
+  for use in class. The platform is called `eee4511c_vitis_platform`
   and will be provided. Those interested may follow the steps similar
   to those in [this
   tutorial](https://github.com/tanfwong/rfsoc4x2/blob/main/vitis_adc_platform.md)
-  to generate the Vitis platform.
+  to generate the Vitis platform (for Vivado and Vitis v2023.2).
 
-* The `rfsoc_adc_vitis_platform` has ADC-D (ADC0 on tile 224) on the
+* The `eee4511c_vitis_platform` has ADC-D (ADC0 on tile 224) on the
   RFSoC4x2 board enabled at sampling rate $307.2$ Msps. It also
   provides two clocks at $200$ MHz and $400$ MHz to drive the PL
   kernels. For all examples discussed in the later sections, we use
@@ -127,9 +136,9 @@ VAAD Procedures in Vitis
 ```{figure} ../figs/rfsoc_adc_block_design.png
 ---
 name: hardware
-alt: Hardware component of `rfsoc_adc_vitis_platform`
+alt: Hardware component of `eee4511c_vitis_platform`
 width: 1000px
 align: center
 ---
-Hardware platform component of `rfsoc_adc_vitis_platform`
+Hardware platform component of `eee4511c_vitis_platform`
 ```
