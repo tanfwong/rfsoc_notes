@@ -482,7 +482,7 @@ the complete DSP kernel.</p></li>
 </ol>
 </li>
 <li><p>The following two illustrative examples, taken directly from
-<span id="id1">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>, help to explain the HLS tasks listed above.</p></li>
+<span id="id1">[<a class="reference internal" href="../refs.html#id14" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Nov. 2024. UG1399 (v2024.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx24c</a>]</span>, help to explain the HLS tasks listed above.</p></li>
 </ul>
 <section id="scheduling-and-binding-example">
 <span id="sec-hls-tasks-ex1"></span><h2><span class="section-number">2.1.1. </span>Scheduling and Binding Example<a class="headerlink" href="#scheduling-and-binding-example" title="Permalink to this headline">#</a></h2>
@@ -506,7 +506,7 @@ the scheduling and binding tasks:</p>
 <a class="reference internal image-reference" href="../_images/hls2-3.png"><img alt="HLS scheduling and binding tasks" src="../_images/hls2-3.png" style="width: 800px;" /></a>
 <figcaption>
 <p><span class="caption-number">Fig. 2.1 </span><span class="caption-text">Example showing the assigments in the HLS scheduling and binding
-tasks (image taken from <span id="id2">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>)</span><a class="headerlink" href="#hls-tasks-2-3" title="Permalink to this image">#</a></p>
+tasks (image taken from <span id="id2">[<a class="reference internal" href="../refs.html#id14" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Nov. 2024. UG1399 (v2024.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx24c</a>]</span>)</span><a class="headerlink" href="#hls-tasks-2-3" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 </li>
@@ -561,7 +561,7 @@ the scheduling and binding tasks:</p>
 <a class="reference internal image-reference" href="../_images/hls4.png"><img alt="HLS control logic extraction task" src="../_images/hls4.png" style="width: 800px;" /></a>
 <figcaption>
 <p><span class="caption-number">Fig. 2.2 </span><span class="caption-text">Example showing the FSM and I/O ports generated in the control logic
-extraction task (image taken from <span id="id3">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>)</span><a class="headerlink" href="#hls-task-4" title="Permalink to this image">#</a></p>
+extraction task (image taken from <span id="id3">[<a class="reference internal" href="../refs.html#id14" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Nov. 2024. UG1399 (v2024.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx24c</a>]</span>)</span><a class="headerlink" href="#hls-task-4" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 </li>
@@ -570,11 +570,12 @@ schedule that is different than the one for the function <code class="docutils l
 <a class="reference internal" href="#sec-hls-tasks-ex1"><span class="std std-numref">Section 2.1.1</span></a> because the current schedule is more
 efficient for the for-loop in <code class="docutils literal notranslate"><span class="pre">ex2</span></code> (no need to recalculate <code class="docutils literal notranslate"><span class="pre">b+c</span></code>
 in each iteration).</p></li>
-<li><p>In the binding task, the input and output arrays <code class="docutils literal notranslate"><span class="pre">in</span></code> and
-<code class="docutils literal notranslate"><span class="pre">out</span></code> are bound to RAM resource external to the kernel and
-the other variables are bound to registers. Each of the parameter
-input variables <code class="docutils literal notranslate"><span class="pre">a</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span></code>, and <code class="docutils literal notranslate"><span class="pre">c</span></code> is mapped to an input 8-bit data
-port.</p></li>
+<li><p>In the binding task, the input and output arrays <code class="docutils literal notranslate"><span class="pre">in</span></code> and <code class="docutils literal notranslate"><span class="pre">out</span></code> are
+bound to the block RAM resource in the PL.  The HLS tool
+automatically creates data ports, address ports, and any required
+chip-enable or write-enable signals to access the block RAM.  The
+other variables are bound to registers. Each of the parameter input
+variables <code class="docutils literal notranslate"><span class="pre">a</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span></code>, and <code class="docutils literal notranslate"><span class="pre">c</span></code> is mapped to an input 8-bit data port.</p></li>
 <li><p>In the control logic extraction task, control logics for accessing
 the RAM and the input data ports for the parameters, such as
 data ports, address ports, chip-enable (ce) and write-enable (we)
@@ -609,7 +610,8 @@ ports will be accessed through the AXI-M and AXI4-Lite protocols in
 the VAAD flow. Kernel control will also be supported through the
 AXI4-Lite protocol. In that case, AXI4-M and AXI4-Lite interfaces
 will be generated by the HLS tool in the external interface
-generation task.</p></li>
+generation task. All these will be further discussed in
+<a class="reference internal" href="../ch5/hls_intf.html#sec-kernel-intf"><span class="std std-numref">Section 5</span></a>.</p></li>
 </ul>
 </section>
 </section>

@@ -480,7 +480,7 @@ process until the buffer becomes not full. A non-blocking write to
 a full buffer results in the data being dropped.</p></li>
 <li><p>Vitis HLS supports a data-driven model and a control-driven model to
 structure the execution of tasks in a data flow graph
-<span id="id1">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>. Details of these models will be discussed below. The
+<span id="id1">[<a class="reference internal" href="../refs.html#id14" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Nov. 2024. UG1399 (v2024.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx24c</a>]</span>. Details of these models will be discussed below. The
 use of the two models can also be mixed in a data flow graph.</p></li>
 </ul>
 </section>
@@ -596,7 +596,7 @@ sequence of task functions conforming to the task model in
 <a class="reference internal" href="#sec-task-model"><span class="std std-numref">Section 3.4.1</span></a> can help Vitis HLS to infer a more
 optimized data flow graph. In particular, it is recommended that the
 dataflow region should be written in the <em>canonical</em> form
-<span id="id2">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span> for more predictable inferencing by Vitis HLS.</p></li>
+<span id="id2">[<a class="reference internal" href="../refs.html#id14" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Nov. 2024. UG1399 (v2024.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx24c</a>]</span> for more predictable inferencing by Vitis HLS.</p></li>
 <li><p>A dataflow region is in the canonical form if:</p>
 <ul class="simple">
 <li><p>The task functions should not be inlined.</p></li>

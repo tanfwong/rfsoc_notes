@@ -1,3 +1,4 @@
+(sec:kernel_intf)=
 # HLS Kernel Interface
 
 * Under the VAAD flow, Vitis HLS automatically defines the interface

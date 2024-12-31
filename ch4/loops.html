@@ -437,7 +437,7 @@ task-level pipelining and parallelization discussed in
 <ul>
 <li><p>By default, Vitis HLS automatically pipelines a loop. We may also
 invoke loop pipelining by using <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-pipeline"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">pipeline</span></code></a>
-as shown in the following C++ code snippet from <span id="id1">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span>:</p>
+as shown in the following C++ code snippet from <span id="id1">[<a class="reference internal" href="../refs.html#id14" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Nov. 2024. UG1399 (v2024.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx24c</a>]</span>:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="nl">vadd</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">len</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="cp">#pragma HLS pipeline II=1</span>
 <span class="w">  </span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
@@ -530,7 +530,7 @@ loop is executed only once in the pipeline without any conditionals.</p></li>
 <code class="docutils literal notranslate"><span class="pre">style=</span></code> option. The three possible choices are <code class="docutils literal notranslate"><span class="pre">stp</span></code> standing for a
 stall pipeline, <code class="docutils literal notranslate"><span class="pre">flp</span></code> standing for a flushable pipeline, and <code class="docutils literal notranslate"><span class="pre">frp</span></code>
 standing for a free-running pipeline. The stall pipeline is the
-default choice. See <span id="id2">[<a class="reference internal" href="../refs.html#id12" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Dec. 2023. UG1399 (v2023.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx23a</a>]</span> for details about these three
+default choice. See <span id="id2">[<a class="reference internal" href="../refs.html#id14" title="Vitis High-Level Synthesis User Guide. AMD-Xilinx, Nov. 2024. UG1399 (v2024.2). URL: https://docs.xilinx.com/r/en-US/ug1399-vitis-hls.">AMD-Xilinx24c</a>]</span> for details about these three
 different pipeline types.</p></li>
 <li><p>We may also pipeline the body of a function in the same way that we
 pipeline a loop.</p></li>
