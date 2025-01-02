@@ -3,8 +3,9 @@
 
 * A ***deadlock*** in a data flow graph refers to the situation in
   which two or more tasks are waiting for one another to release the
-  streaming buffers connecting them, resulting in no tasks can access
-  any data and continue their operations indefinitely.
+  streaming buffers connecting them, resulting in the problem that no
+  tasks can access any data and continue their operations
+  indefinitely.
 
 * Let reconsider the diamond-shaped data flow graph in
   {eq}`diamond` to see how the use of FIFOs of insufficient depth
@@ -27,8 +28,8 @@
   and insert pieces of data alternatively into $\mathcal{B}_{A,B}$ and
   $\mathcal{B}_{A,C}$, and that tasks $B$ and $C$ are each able to
   consume a piece of data from their respective FIFOs every two clock
-  cycles. Note that the insertion rate matches the consumption rate for
-  $\mathcal{B}_{A,B}$ and $\mathcal{B}_{A,C}$.
+  cycles. Note that the insertion rate matches the combined
+  consumption rate for $\mathcal{B}_{A,B}$ and $\mathcal{B}_{A,C}$.
 
 * Let us denote four consecutive clock cycles by $C_1, C_2, C_3,$ and
   $C_4$.  Consider now task $A$ generates data $d_{A}[1]$ and inserts

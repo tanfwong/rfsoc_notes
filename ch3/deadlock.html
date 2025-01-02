@@ -415,8 +415,9 @@ document.write(`
 <ul>
 <li><p>A <em><strong>deadlock</strong></em> in a data flow graph refers to the situation in
 which two or more tasks are waiting for one another to release the
-streaming buffers connecting them, resulting in no tasks can access
-any data and continue their operations indefinitely.</p></li>
+streaming buffers connecting them, resulting in the problem that no
+tasks can access any data and continue their operations
+indefinitely.</p></li>
 <li><p>Let reconsider the diamond-shaped data flow graph in
 <a class="reference internal" href="model.html#equation-diamond">(3.2)</a> to see how the use of FIFOs of insufficient depth
 can cause a deadlock:</p>
@@ -436,8 +437,8 @@ produces a piece of data (e.g., a signal sample) each clock cycle
 and insert pieces of data alternatively into <span class="math notranslate nohighlight">\(\mathcal{B}_{A,B}\)</span> and
 <span class="math notranslate nohighlight">\(\mathcal{B}_{A,C}\)</span>, and that tasks <span class="math notranslate nohighlight">\(B\)</span> and <span class="math notranslate nohighlight">\(C\)</span> are each able to
 consume a piece of data from their respective FIFOs every two clock
-cycles. Note that the insertion rate matches the consumption rate for
-<span class="math notranslate nohighlight">\(\mathcal{B}_{A,B}\)</span> and <span class="math notranslate nohighlight">\(\mathcal{B}_{A,C}\)</span>.</p>
+cycles. Note that the insertion rate matches the combined
+consumption rate for <span class="math notranslate nohighlight">\(\mathcal{B}_{A,B}\)</span> and <span class="math notranslate nohighlight">\(\mathcal{B}_{A,C}\)</span>.</p>
 </li>
 <li><p>Let us denote four consecutive clock cycles by <span class="math notranslate nohighlight">\(C_1, C_2, C_3,\)</span> and
 <span class="math notranslate nohighlight">\(C_4\)</span>.  Consider now task <span class="math notranslate nohighlight">\(A\)</span> generates data <span class="math notranslate nohighlight">\(d_{A}[1]\)</span> and inserts
