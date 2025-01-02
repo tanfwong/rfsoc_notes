@@ -49,9 +49,10 @@
     when the first input item enters into the pipeline to the time at
     which the pipeline produces the first output item.  Iteration
     latency specifies a *transient* characteristic of the pipeline.
-  - ***Initiation interval (II)*** of a pipeline task is the amount of
+  - ***Initiation interval (II)*** of a pipeline task/station is the amount of
     time required to elapse between successive operations by the same
-    station. The II of the pipeline is the duration between successive
+    station. In a pipeline that has multiple tasks/stations, we may
+    define the II of the pipeline as the duration between successive
     output units produced by the pipeline. Clearly, the throughput of
     the pipeline is determined by its II.
    
