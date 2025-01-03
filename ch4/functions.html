@@ -433,7 +433,7 @@ by a configuration parameter in Vitis HLS (see the instructions of
 Lab 2).</p></li>
 <li><p>The top-level function is synthesized into the top-level module in
 the RTL specification.</p></li>
-<li><p>Data access to the kernel from outside (the host, the Vitis platform, other
+<li><p>Any data access to the kernel from outside (the host, the Vitis platform, other
 kernels, and the test bench) must go through an argument of the
 top-level function. The arguments of the top-level function are
 synthesized into interfaces to external hardware components.</p></li>
@@ -461,17 +461,17 @@ different argument types are listed in the table below:</p>
 <td><p>Register</p></td>
 <td><p>AXI4 Lite (<code class="docutils literal notranslate"><span class="pre">s_axilite</span></code>)</p></td>
 </tr>
-<tr class="row-even"><td><p>Array</p></td>
-<td><p>Memory</p></td>
-<td><p>AXI4 Memory Mapped (<code class="docutils literal notranslate"><span class="pre">m_axi</span></code>)</p></td>
-</tr>
-<tr class="row-odd"><td><p>Pointer to array</p></td>
-<td><p>Memory</p></td>
-<td><p>AXI4 Memory Mapped (<code class="docutils literal notranslate"><span class="pre">m_axi</span></code>)</p></td>
-</tr>
 <tr class="row-even"><td><p>Reference</p></td>
 <td><p>Register</p></td>
 <td><p>AXI4 Lite (<code class="docutils literal notranslate"><span class="pre">s_axilite</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Array</p></td>
+<td><p>Memory</p></td>
+<td><p>AXI4 Memory Mapped (<code class="docutils literal notranslate"><span class="pre">m_axi</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>Pointer to array</p></td>
+<td><p>Memory</p></td>
+<td><p>AXI4 Memory Mapped (<code class="docutils literal notranslate"><span class="pre">m_axi</span></code>)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">hls::stream</span></code></p></td>
 <td><p>Stream</p></td>
@@ -480,6 +480,8 @@ different argument types are listed in the table below:</p>
 </tbody>
 </table>
 </li>
+<li><p>More detailed discussions about top-level function interfaces will
+be provided in <a class="reference internal" href="../ch5/hls_intf.html#sec-kernel-intf"><span class="std std-numref">Section 5</span></a>.</p></li>
 </ul>
 </section>
 <section id="function-inlining">
@@ -553,7 +555,8 @@ some inputs to the function are constant values when the
 function is called. This optimization may simplify the surrounding control
 structures and produce smaller more optimized function blocks.</p></li>
 <li><p>Function instantiation is involved by using <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-function_instantiate"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">function_instantiate</span></code></a>
-as shown in the following <a class="reference external" href="https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/2023.2/Pipelining/Functions/function_instantiate/example.cpp">example</a>:</p>
+as shown in the following
+<a class="reference external" href="https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/master/Pipelining/Functions/function_instantiate/example.cpp">example</a>:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">char</span><span class="w"> </span><span class="nf">foo</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="n">inval</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">incr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="cp">#pragma HLS INLINE OFF</span>
 <span class="cp">#pragma HLS FUNCTION_INSTANTIATE variable = incr</span>

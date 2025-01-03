@@ -13,7 +13,7 @@ below).
 * The top-level function is synthesized into the top-level module in
   the RTL specification.
 
-* Data access to the kernel from outside (the host, the Vitis platform, other
+* Any data access to the kernel from outside (the host, the Vitis platform, other
   kernels, and the test bench) must go through an argument of the
   top-level function. The arguments of the top-level function are
   synthesized into interfaces to external hardware components. 
@@ -36,6 +36,10 @@ below).
     - Register
     - AXI4 Lite (`s_axilite`)
 
+  * - Reference
+    - Register
+    - AXI4 Lite (`s_axilite`)
+
   * - Array
     - Memory
     - AXI4 Memory Mapped (`m_axi`)
@@ -43,10 +47,6 @@ below).
   * - Pointer to array
     - Memory
     - AXI4 Memory Mapped (`m_axi`)
-  
-  * - Reference
-    - Register
-    - AXI4 Lite (`s_axilite`)
 
   * - `hls::stream`
     - Stream
@@ -54,6 +54,9 @@ below).
 
   ```
 
+* More detailed discussions about top-level function interfaces will
+  be provided in {numref}`sec:kernel_intf`.
+  
 ## Function Inlining 
 * Inlining a function is a standard C++ optimization technique that
   dissolves the function logic into the calling function. In HLS,
@@ -123,7 +126,8 @@ below).
 
 * Function instantiation is involved by using [`#pragma HLS
   function_instantiate`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-function_instantiate)
-  as shown in the following [example](https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/2023.2/Pipelining/Functions/function_instantiate/example.cpp):
+  as shown in the following
+  [example](https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/master/Pipelining/Functions/function_instantiate/example.cpp):
   ```c++
   char foo(char inval, char incr) {
   #pragma HLS INLINE OFF
