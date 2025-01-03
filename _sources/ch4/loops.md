@@ -86,10 +86,11 @@ task-level pipelining and parallelization discussed in
   - In the third clock cycle, `y[n]` is written. 
   
   Then, the specified II=1 can be achieved in spite of the cyclic
-  dependence. As a matter of fact, Vitis HLS is smart enough to
-  perform the re-factoring for `iir1` automatically during
-  synthesis. See Lab 3 for a more in-depth treatment of the above
-  example.
+  dependence becasue the arrays `x` and `y` are accessed only once in
+  different clock cycles each iteration. As a matter of fact, Vitis
+  HLS is smart enough to perform the re-factoring for `iir1`
+  automatically during synthesis. See Lab 3 for a more in-depth
+  treatment of the above example.
 
 * We may explicitly turn off loop pipelining by putting `#pragma HLS
   pipiline off` in the loop body.
@@ -185,10 +186,10 @@ task-level pipelining and parallelization discussed in
   tells Vitis HLS to merge all loops within the scope the pragma is
   placed, conforming to the following set of rules:
   - If the loop bounds are variables, they must have the same value,
-    i.e., the number of iterations of the loops mus be the same.
+    i.e., the number of iterations of the loops must be the same.
   - If the loop bounds are constants, the maximum is used as the bound of the merged loop.
   - Loops with both variable bounds and constant bounds cannot be merged.
-  - The code between loops to be merged cannot have side effects,
+  - The code between loops to be merged can not have side effects,
     i.e., multiple execution of this code should generate the same results.
   - Loops cannot be merged when they contain FIFO reads because
     merging may change the order of the reads.
@@ -274,7 +275,7 @@ task-level pipelining and parallelization discussed in
   ```
 
 * Both unrolling the inner loop and flattening the nested loops before
-  pipelining in the examples above have the added advantage reducing
+  pipelining in the examples above have the added advantage of reducing
   the number of clock cycles going through the loop hierarchy. Recall
   that a clock cycle is needed for each entering and each exiting the
   inner loop `loop_j`. Thus, a total of 20 additional clock cycles are
@@ -359,8 +360,8 @@ task-level pipelining and parallelization discussed in
   synthesis of the kernel code. It solely helps Vitis HLS in reporting its
   estimates of the synthesis design's performance. 
 
-*  For example, consider the
-  following loop whose bound `N` is a variable:
+* For example, consider the following loop whose bound `N` is a
+  variable:
   ```c++ 
   int acc = 0; 
   Loop_var: for (int n=0; n<N; n++) { 

@@ -516,10 +516,11 @@ the operations in this line.)</p></li>
 <li><p>In the third clock cycle, <code class="docutils literal notranslate"><span class="pre">y[n]</span></code> is written.</p></li>
 </ul>
 <p>Then, the specified II=1 can be achieved in spite of the cyclic
-dependence. As a matter of fact, Vitis HLS is smart enough to
-perform the re-factoring for <code class="docutils literal notranslate"><span class="pre">iir1</span></code> automatically during
-synthesis. See Lab 3 for a more in-depth treatment of the above
-example.</p>
+dependence becasue the arrays <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> are accessed only once in
+different clock cycles each iteration. As a matter of fact, Vitis
+HLS is smart enough to perform the re-factoring for <code class="docutils literal notranslate"><span class="pre">iir1</span></code>
+automatically during synthesis. See Lab 3 for a more in-depth
+treatment of the above example.</p>
 </li>
 <li><p>We may explicitly turn off loop pipelining by putting <code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">pipiline</span> <span class="pre">off</span></code> in the loop body.</p></li>
 <li><p>We may <em>rewind</em> a pipelined loop to effect continuous execution of
@@ -614,10 +615,10 @@ tells Vitis HLS to merge all loops within the scope the pragma is
 placed, conforming to the following set of rules:</p>
 <ul>
 <li><p>If the loop bounds are variables, they must have the same value,
-i.e., the number of iterations of the loops mus be the same.</p></li>
+i.e., the number of iterations of the loops must be the same.</p></li>
 <li><p>If the loop bounds are constants, the maximum is used as the bound of the merged loop.</p></li>
 <li><p>Loops with both variable bounds and constant bounds cannot be merged.</p></li>
-<li><p>The code between loops to be merged cannot have side effects,
+<li><p>The code between loops to be merged can not have side effects,
 i.e., multiple execution of this code should generate the same results.</p></li>
 <li><p>Loops cannot be merged when they contain FIFO reads because
 merging may change the order of the reads.</p></li>
@@ -715,7 +716,7 @@ specifically, we can classify nested loops into the following 3 categories:</p>
 </div>
 </li>
 <li><p>Both unrolling the inner loop and flattening the nested loops before
-pipelining in the examples above have the added advantage reducing
+pipelining in the examples above have the added advantage of reducing
 the number of clock cycles going through the loop hierarchy. Recall
 that a clock cycle is needed for each entering and each exiting the
 inner loop <code class="docutils literal notranslate"><span class="pre">loop_j</span></code>. Thus, a total of 20 additional clock cycles are
@@ -793,7 +794,7 @@ increasing PL resource utilization.</p>
 </section>
 <section id="loop-tripcount">
 <h2><span class="section-number">4.2.5. </span>Loop Tripcount<a class="headerlink" href="#loop-tripcount" title="Permalink to this headline">#</a></h2>
-<ul class="simple">
+<ul>
 <li><p>For a loop with variable bound, Vitis HLS is not able to report the
 <em>tripcount</em>, i.e., the number of iterations and the latency of the
 loop in the synthesis step because the tripcount is unknown during
@@ -805,9 +806,8 @@ specify the maximum, minimum, and average tripcount of the
 loop. Note that the loop-tripcount pragma does not affect the
 synthesis of the kernel code. It solely helps Vitis HLS in reporting its
 estimates of the synthesis design’s performance.</p></li>
-<li><p>For example, consider the
-following loop whose bound <code class="docutils literal notranslate"><span class="pre">N</span></code> is a variable:</p></li>
-</ul>
+<li><p>For example, consider the following loop whose bound <code class="docutils literal notranslate"><span class="pre">N</span></code> is a
+variable:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">acc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span>
 <span class="nl">Loop_var</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
 <span class="cp">#pragma HLS loop_tripcount max=100 min=1 avg=50</span>
@@ -818,6 +818,8 @@ following loop whose bound <code class="docutils literal notranslate"><span clas
 <p>allows Vitis HLS to calculate the maximum, minimum, and average values
 for the latency of the loop based on the specified tripcount
 values.</p>
+</li>
+</ul>
 </section>
 </section>
 
