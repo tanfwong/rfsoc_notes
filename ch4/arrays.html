@@ -432,7 +432,7 @@ types of memory supported include, RAM (<code class="docutils literal notranslat
 <code class="docutils literal notranslate"><span class="pre">RAM_2P</span></code>, <code class="docutils literal notranslate"><span class="pre">RAM_S2P</span></code>, <code class="docutils literal notranslate"><span class="pre">RAM_T2P</span></code>), ROM (<code class="docutils literal notranslate"><span class="pre">ROM_1P</span></code>, <code class="docutils literal notranslate"><span class="pre">ROM_2P</span></code>,
 <code class="docutils literal notranslate"><span class="pre">ROM_NP</span></code>), and shift registers (<code class="docutils literal notranslate"><span class="pre">FIFO</span></code>).  More detailed
 descriptions about these different types of memory can be found
-from the manual of <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-bind_storage"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span>&#160; <span class="pre">bind_storage</span></code></a>. Each
+from the manual of <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-bind_storage"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">bind_storage</span></code></a>. Each
 of these types of memory can be implemented using different PL
 resources, such as block RAM, URAM, and CLBs.</p>
 <div class="admonition tip">
@@ -445,20 +445,19 @@ synthesis.</p>
 <li><p>By default, Vitis HLS automatically decides the type of memory to
 synthesize an array into as well as the suitable PL resource to
 implement the selected type of memory. For example, if the Vitis HLS
-infers that an array is ether read or written only once per
+infers that an array is either read or written only once per
 iteration in a loop, then it synthesizes the array as a single-port
-RAM (<code class="docutils literal notranslate"><span class="pre">RAM_1P</span></code>), and if the array size is small, Vitis HLS (actually
-Vivado) implements the single-port RAM will be implemented using
-CLBs in the PL. We may override Vitis HLS by using the bind-storage
-pragma.</p></li>
+RAM (<code class="docutils literal notranslate"><span class="pre">RAM_1P</span></code>), and if the array size is small, the single-port RAM
+will be implemented using CLBs in the PL. We may override the
+implementation choice of Vitis HLS by using the bind-storage pragma.</p></li>
 <li><p>Array arguments of the top-level function in a DSP kernel are mapped
 according to <a class="reference internal" href="functions.html#top-func-args"><span class="std std-numref">Table 4.1</span></a> and will be discussed in
-a later section.</p></li>
+<a class="reference internal" href="../ch5/hls_intf.html#sec-kernel-intf"><span class="std std-numref">Section 5</span></a>.</p></li>
 </ul>
 <section id="array-access-performance">
 <h2><span class="section-number">4.3.1. </span>Array Access Performance<a class="headerlink" href="#array-access-performance" title="Permalink to this headline">#</a></h2>
 <ul>
-<li><p>Let us recall the simple  loop-unrolling example in <a class="reference internal" href="loops.html#sec-loop-unroll"><span class="std std-numref">Section 4.2.2</span></a>:</p>
+<li><p>Let us revsist the simple  loop-unrolling example in <a class="reference internal" href="loops.html#sec-loop-unroll"><span class="std std-numref">Section 4.2.2</span></a>:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">acc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
 <span class="nl">Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
@@ -582,12 +581,12 @@ individual sections of the element. For example, doing</p>
 
 <span class="nl">Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
 <span class="cp">#pragma HLS unroll </span>
-<span class="n">acc</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+<span class="w">  </span><span class="n">acc</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>gives the same latency for the unrolled loop <code class="docutils literal notranslate"><span class="pre">Loop</span></code> as array
-partitioning but requires more CBN resource to implement the reshaping.</p>
+partitioning but requires more CLB resource to implement the reshaping.</p>
 </li>
 </ul>
 </section>
