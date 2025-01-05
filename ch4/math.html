@@ -551,7 +551,7 @@ details of all these can be found in <span id="id2">[<a class="reference interna
 <h2><span class="section-number">4.4.2. </span>Floating Point Types<a class="headerlink" href="#floating-point-types" title="Permalink to this headline">#</a></h2>
 <ul>
 <li><p>Vitis HLS supports the standard C/C++ <code class="docutils literal notranslate"><span class="pre">float</span></code> and <code class="docutils literal notranslate"><span class="pre">double</span></code> types as
-well as the half-precision type <code class="docutils literal notranslate"><span class="pre">half</span></code> for synthesis with <a class="reference external" href="https://en.wikipedia.org/wiki/IEEE_754#CITEREFIEEE_7542008">IEEE-754
+well as the half-precision type <code class="docutils literal notranslate"><span class="pre">half</span></code> for synthesis with <a class="reference external" href="https://en.wikipedia.org/wiki/IEEE_754">IEEE-754
 standard</a>
 partial compliance <span id="id3">[<a class="reference internal" href="../refs.html#id15" title="Floating-Point Operator: LogiCORE IP Product Guide. AMD-Xilinx, Dec. 2020. PG060 (v7.1). URL: https://docs.xilinx.com/v/u/en-US/pg060-floating-point.">AMD-Xilinx20</a>]</span>:</p>
 <table class="table" id="float-types">
@@ -598,7 +598,7 @@ partial compliance <span id="id3">[<a class="reference internal" href="../refs.h
 gives the exact same implementation as <code class="docutils literal notranslate"><span class="pre">double</span></code>. Hence, there is no
 point to use <code class="docutils literal notranslate"><span class="pre">long</span> <span class="pre">double</span></code>.</p>
 </div>
-<p>The following unions defined in <a class="reference external" href="https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/2023.2/Modeling/using_float_and_double/fp_mul_pow2.h">this
+<p>The following unions defined in <a class="reference external" href="https://github.com/Xilinx/Vitis-HLS-Introductory-Examples/blob/master/Modeling/using_float_and_double/fp_mul_pow2.h">this
 example</a>
 may be employed to access mantissa and exponent components of
 <code class="docutils literal notranslate"><span class="pre">half</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>, and <code class="docutils literal notranslate"><span class="pre">double</span></code> variables:</p>
@@ -689,17 +689,26 @@ versions of the standard cosine function are <code class="docutils literal notra
 <code class="docutils literal notranslate"><span class="pre">hls::cosf</span></code>, and <code class="docutils literal notranslate"><span class="pre">hls::cos</span></code>, respectively.</p></li>
 <li><p>Using the version of a function corresponding to the argument type
 typically saves PL resources and reduces latency since not type
-conversion is needed and the implementation is usually faster and
+conversion is needed, and the implementation is usually faster and
 smaller for the lower precision versions.</p></li>
 <li><p>Since the bit-approximate implementation of a function in the
 Vitis HLS Math Library may use a different underlying algorithm,
 it may not provide the same accuracy of the standard C++ math
 library counterpart. In order to match the RTL simulation and
-bench golden results in the co-simulation step, we should always
+test bench golden results in the co-simulation step, we should always
 use functions in the Vitis HLS Math Library in both the DSP kernel
 code and the test bench code.</p></li>
 </ul>
 </li>
+<li><p>Start from v2024.2, Vitis HLS also support arbitrary precision float
+types using the template <code class="docutils literal notranslate"><span class="pre">ap_float&lt;W,</span> <span class="pre">E&gt;</span></code>, where <code class="docutils literal notranslate"><span class="pre">W</span></code> is the total
+bitwidth and E is the bitwidth of the exponent, leaving <code class="docutils literal notranslate"><span class="pre">1</span></code> bit for
+sign and the remaining <code class="docutils literal notranslate"><span class="pre">W-E-1</span></code> bits ffor the mantissa. Standard
+arithmetic operators and a small subset of math functions are supported
+for the AP float types. The header file <code class="docutils literal notranslate"><span class="pre">&lt;ap_float.h&gt;</span></code> must be
+included to use the AP float types. More details of the AP float
+point types can be found
+<a class="reference external" href="https://docs.amd.com/r/en-US/ug1399-vitis-hls/Overview-of-Arbitrary-Precision-Fixed-Point-Data-Types">here</a>.</p></li>
 </ul>
 </section>
 <section id="arbitrary-precision-fixed-point-types">
@@ -779,7 +788,7 @@ performed using the standard C++ array initialization syntax.</p></li>
 </pre></div>
 </div>
 <p>Vitis HLS synthesizes 100 adders and 200 registers to hold
-and add the elements of the vectors <code class="docutils literal notranslate"><span class="pre">a</span></code> abd <code class="docutils literal notranslate"><span class="pre">b</span></code> in parallel. The RTL
+and add the elements of the vectors <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> in parallel. The RTL
 design would be similar to the one generated by using <code class="docutils literal notranslate"><span class="pre">int</span></code> arrays
 for <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> and performing the addition in a loop with the loop
 completely unrolled and the arrays completely reshaped. The SIMD
