@@ -702,8 +702,8 @@ code and the test bench code.</p></li>
 </li>
 <li><p>Start from v2024.2, Vitis HLS also support arbitrary precision float
 types using the template <code class="docutils literal notranslate"><span class="pre">ap_float&lt;W,</span> <span class="pre">E&gt;</span></code>, where <code class="docutils literal notranslate"><span class="pre">W</span></code> is the total
-bitwidth and E is the bitwidth of the exponent, leaving <code class="docutils literal notranslate"><span class="pre">1</span></code> bit for
-sign and the remaining <code class="docutils literal notranslate"><span class="pre">W-E-1</span></code> bits ffor the mantissa. Standard
+bitwidth and <code class="docutils literal notranslate"><span class="pre">E</span></code> is the bitwidth of the exponent, leaving <code class="docutils literal notranslate"><span class="pre">1</span></code> bit for
+sign and the remaining <code class="docutils literal notranslate"><span class="pre">W-E-1</span></code> bits for the mantissa. Standard
 arithmetic operators and a small subset of math functions are supported
 for the AP float types. The header file <code class="docutils literal notranslate"><span class="pre">&lt;ap_float.h&gt;</span></code> must be
 included to use the AP float types. More details of the AP float

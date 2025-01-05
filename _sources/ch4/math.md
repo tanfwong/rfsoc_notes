@@ -249,8 +249,8 @@ functions that operate on them.
 
 * Start from v2024.2, Vitis HLS also support arbitrary precision float
   types using the template `ap_float<W, E>`, where `W` is the total
-  bitwidth and E is the bitwidth of the exponent, leaving `1` bit for
-  sign and the remaining `W-E-1` bits ffor the mantissa. Standard
+  bitwidth and `E` is the bitwidth of the exponent, leaving `1` bit for
+  sign and the remaining `W-E-1` bits for the mantissa. Standard
   arithmetic operators and a small subset of math functions are supported
   for the AP float types. The header file `<ap_float.h>` must be
   included to use the AP float types. More details of the AP float
