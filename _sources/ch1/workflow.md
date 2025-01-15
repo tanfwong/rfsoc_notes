@@ -32,7 +32,7 @@
     the platform is composed of
     - a *domain* with the necessary software to run Linux on the PS host
     - a base PL hardware block with a predefined configuration of AXI4
-      interfaces for PL kernels control by the PS host and for data
+      interfaces for PL kernel control by the PS host and for data
       transfer between the PS host and the PL kernels via global
       memory, clocks, and interrupt signals
     ```{figure} ../figs/vitis_platform.png
