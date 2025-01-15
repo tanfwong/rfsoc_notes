@@ -97,9 +97,7 @@ VAAD:
 7. Deploy the host executable and FPGA bit-stream, if applicable, for
    testing, debugging, and verification. The usual sequence of testing
    build is to start from software emulation, then to hardware
-   emulation, and finally to hardware. *Starting from Vitis v2024.2,
-   the software emulation for the whole system (host application and
-   PL kernels) is not supported.*
+   emulation, and finally to hardware. 
 
 * Note that steps 2-5 can be replaced, and often simplified, by
   generating all the components from an *Acceleration Example* in
