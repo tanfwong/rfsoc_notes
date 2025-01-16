@@ -74,7 +74,8 @@ The followings are the steps of performing our DSP development under
 VAAD:
 1. Build a Vitis extensible platform for the RFSoC 4x2 board:
    - Use Vivado to build a hardware platform component
-   - Use PetaLinux to build an image for the Linux domain with the
+   - Use PetaLinux to build an image, rootfs, and the corresponding
+     SDK for the Linux domain with the
      required boot files, device tree, and XRT library
    - Create a *Platform Component* in Vitis to build the Vitis
      extensible platform
