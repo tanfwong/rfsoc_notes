@@ -26,7 +26,7 @@
   flow corresponds to the *Vitis Integrated Flow* since Vitis v2024.2
   {cite}`ug1701`.
 
-* The components constitute a VAAD flow inlcude:
+* The components that constitute a VAAD flow inlcude:
   - a *Vitis extensible platform* which serves as an abstraction of
     the PL hardware to the host application development process, and
     the platform is composed of
