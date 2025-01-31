@@ -152,7 +152,7 @@ which are also often referred to as ***channels***.
 ## Control-driven Execution Model 
 * Under the control-driven model, execution of tasks in a DSP kernel
   is controlled by the PS host through its interactions with the kernel,
-  such function calls and parameter passing. Tasks may also access
+  such function call and parameter passing. Tasks may also access
   global memory in this model.
 
 * Unlike in the data-driven case, we do not need to explicitly
@@ -174,10 +174,10 @@ which are also often referred to as ***channels***.
   {cite}`ug1399` for more predictable inferencing by Vitis HLS.
 
 * A dataflow region is in the canonical form if:
-  - The task functions should not be inlined. 
-  - Each task function's return type must be `void`.
-  - Each task function should only use local and non-static variables. 
-  - The sequence of task functions should pass data forward such that
+  - The task functions are not be inlined. 
+  - Each task function's return type is `void`.
+  - Each task function uses only local and non-static variables. 
+  - The sequence of task functions pass data forward such that
     an acyclic data flow graph can be inferred from the
     sequence. Standard C++ scalar and array arguments can be employed
     to pass data from one task function to the next in the
@@ -186,8 +186,8 @@ which are also often referred to as ***channels***.
     feedback connections must use `hls::stream` or
     `hls::stream_of_blocks` arguments.
   - Array argument variables linking a producer task to a consumer
-     task must be written before read.
-  - No conditional, loop, return, goto, exception can be used to
+     task are written before read.
+  - No conditional, loop, return, goto, exception are used to
     control the data flow in the sequence of task functions. 
 
 * Again, it is more illustrative to consider the following piece of
