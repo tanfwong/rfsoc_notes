@@ -685,7 +685,7 @@ of the task functions lets Vitis HLS infer the diamond-shape data
 flow graph in <a class="reference internal" href="model.html#equation-diamond">(3.2)</a> with task-level pipelining and the
 independency between tasks <span class="math notranslate nohighlight">\(B\)</span> and <span class="math notranslate nohighlight">\(C\)</span> for parallelization.</p></li>
 <li><p>By default, the arrays <code class="docutils literal notranslate"><span class="pre">c1</span></code>, <code class="docutils literal notranslate"><span class="pre">c2</span></code>, <code class="docutils literal notranslate"><span class="pre">c3</span></code>, and <code class="docutils literal notranslate"><span class="pre">c4</span></code> are mapped to
-PIPOs (while scalar arguments are mapped to FIFOs). In this
+PIPOs. In this
 example, users can also choose to map the arrays to FIFOs as they
 are accessed sequentially as shown in the bodies of the task
 functions. The choice of streaming buffer type can be specified in

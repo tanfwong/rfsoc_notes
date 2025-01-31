@@ -258,7 +258,7 @@ which are also often referred to as ***channels***.
     flow graph in {eq}`diamond` with task-level pipelining and the
     independency between tasks $B$ and $C$ for parallelization.
   - By default, the arrays `c1`, `c2`, `c3`, and `c4` are mapped to
-    PIPOs (while scalar arguments are mapped to FIFOs). In this
+    PIPOs. In this
     example, users can also choose to map the arrays to FIFOs as they
     are accessed sequentially as shown in the bodies of the task
     functions. The choice of streaming buffer type can be specified in
