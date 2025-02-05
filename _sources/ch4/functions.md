@@ -144,5 +144,8 @@ below).
   ```
     where each instance of `foo()` is independently optimized for the
     specific input constant value to the argument `incr`. The
-    resulting RTL code implements calls to three
-    differently optimized versions of `foo()`.
+    resulting RTL code implements calls to only two 
+    differently optimized versions of `foo()` because Vitis HLS
+        recognizes that the function call `foo(inval1,0)` does not
+        require any arithmetic operation, and thus inlines 
+        the function call into the top-level function.

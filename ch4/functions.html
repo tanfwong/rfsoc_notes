@@ -573,8 +573,11 @@ as shown in the following
 </div>
 <p>where each instance of <code class="docutils literal notranslate"><span class="pre">foo()</span></code> is independently optimized for the
 specific input constant value to the argument <code class="docutils literal notranslate"><span class="pre">incr</span></code>. The
-resulting RTL code implements calls to three
-differently optimized versions of <code class="docutils literal notranslate"><span class="pre">foo()</span></code>.</p>
+resulting RTL code implements calls to only two
+differently optimized versions of <code class="docutils literal notranslate"><span class="pre">foo()</span></code> because Vitis HLS
+recognizes that the function call <code class="docutils literal notranslate"><span class="pre">foo(inval1,0)</span></code> does not
+require any arithmetic operation, and thus inlines
+the function call into the top-level function.</p>
 </li>
 </ul>
 </section>
