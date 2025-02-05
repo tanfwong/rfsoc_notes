@@ -519,14 +519,13 @@ the operations in this line.)</p></li>
 dependence becasue the arrays <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> are accessed only once in
 different clock cycles each iteration. As a matter of fact, Vitis
 HLS is smart enough to perform the re-factoring for <code class="docutils literal notranslate"><span class="pre">iir1</span></code>
-automatically during synthesis. See Lab 3 for a more in-depth
-treatment of the above example.</p>
+automatically during synthesis.</p>
 </li>
 <li><p>We may explicitly turn off loop pipelining by putting <code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">pipiline</span> <span class="pre">off</span></code> in the loop body.</p></li>
 <li><p>We may <em>rewind</em> a pipelined loop to effect continuous execution of
-successive calls to the loop by using the option <code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">pipeline</span> <span class="pre">rewind</span></code>.  Rewinding can only apply if there is one single
-loop inside the top-level function and the code segment before the
-loop is executed only once in the pipeline without any conditionals.</p></li>
+successive calls to the loop by using the option <code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">pipeline</span> <span class="pre">rewind</span></code>.  Rewinding can only apply to the outermost loop
+inside the top-level function and the code segment before the loop
+is executed only once in the pipeline without any conditionals.</p></li>
 <li><p>We may also specify the type of pipeline to be used using the
 <code class="docutils literal notranslate"><span class="pre">style=</span></code> option. The three possible choices are <code class="docutils literal notranslate"><span class="pre">stp</span></code> standing for a
 stall pipeline, <code class="docutils literal notranslate"><span class="pre">flp</span></code> standing for a flushable pipeline, and <code class="docutils literal notranslate"><span class="pre">frp</span></code>
@@ -574,7 +573,7 @@ the <code class="docutils literal notranslate"><span class="pre">skip_exit_check
 <span class="math notranslate nohighlight">\(\lceil \log_2 10 \rceil = 4\)</span>. However, we may not see much reduction
 in the latency of <code class="docutils literal notranslate"><span class="pre">Loop</span></code> because of limitations in accessing the
 elements of array <code class="docutils literal notranslate"><span class="pre">x</span></code> which are stored in RAM. See more discussions
-about this in <a class="reference internal" href="arrays.html#sec-arrays"><span class="std std-numref">Section 4.3</span></a> and Lab 3.</p>
+about this in <a class="reference internal" href="arrays.html#sec-arrays"><span class="std std-numref">Section 4.3</span></a>.</p>
 </li>
 <li><p>We may fully unroll a loop with a variable loop bound by refactoring
 the loop to have a constant loop bound. For example, consider the

@@ -89,17 +89,16 @@ task-level pipelining and parallelization discussed in
   dependence becasue the arrays `x` and `y` are accessed only once in
   different clock cycles each iteration. As a matter of fact, Vitis
   HLS is smart enough to perform the re-factoring for `iir1`
-  automatically during synthesis. See Lab 3 for a more in-depth
-  treatment of the above example.
+  automatically during synthesis.
 
 * We may explicitly turn off loop pipelining by putting `#pragma HLS
   pipiline off` in the loop body.
 
 * We may *rewind* a pipelined loop to effect continuous execution of
   successive calls to the loop by using the option `#pragma HLS
-  pipeline rewind`.  Rewinding can only apply if there is one single
-  loop inside the top-level function and the code segment before the
-  loop is executed only once in the pipeline without any conditionals.
+  pipeline rewind`.  Rewinding can only apply to the outermost loop
+  inside the top-level function and the code segment before the loop
+  is executed only once in the pipeline without any conditionals.
 
 * We may also specify the type of pipeline to be used using the
   `style=` option. The three possible choices are `stp` standing for a
@@ -148,7 +147,7 @@ task-level pipelining and parallelization discussed in
   $\lceil \log_2 10 \rceil = 4$. However, we may not see much reduction
   in the latency of `Loop` because of limitations in accessing the
   elements of array `x` which are stored in RAM. See more discussions
-  about this in {numref}`sec:arrays` and Lab 3. 
+  about this in {numref}`sec:arrays`. 
 
 * We may fully unroll a loop with a variable loop bound by refactoring
   the loop to have a constant loop bound. For example, consider the
