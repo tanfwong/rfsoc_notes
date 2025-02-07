@@ -112,9 +112,9 @@
   Ten registers are synthesized for the 10 elements of `x`. Reading
   from the 10 registers and accumulating through the adder tree
   generated form unrolling `Loop` can all be done in parallel with a
-  single clock cycle! The 10 registers with array partitioning and
-  two-port RAM without are both implemented using CLB
-  resource. Implementation of the former requires more resource.
+  single clock cycle! The 10 registers with array partitioning and the
+  two-port RAM without array partitioning are both implemented using
+  CLB resources. Implementation of the former requires more resource.
 
 ### Array Reshaping
 * An array can be reshaped by using [`#pragma HLS
