@@ -169,8 +169,8 @@
   ```
   ```{tip}
   - Initializing an array as in the example above requires clock cycles
-    to write to the array elements to memory. If the array `x` is
-    declared (and initialized) with a function and the function is
+    to write the array elements to memory. If the array `x` is
+    declared (and initialized) within a function and the function is
     called multiple times, then the extra clock cycles consumed on
     initializing `x` are needed for each call to the function.
   - We may save those extra array initialization clock cycles by using
