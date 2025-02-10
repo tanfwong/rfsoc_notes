@@ -247,7 +247,7 @@ functions that operate on them.
     use functions in the Vitis HLS Math Library in both the DSP kernel
     code and the test bench code.
 
-* Start from v2024.2, Vitis HLS also support arbitrary precision float
+* Starting from v2024.2, Vitis HLS also supports arbitrary precision float
   types using the template `ap_float<W, E>`, where `W` is the total
   bitwidth and `E` is the bitwidth of the exponent, leaving `1` bit for
   sign and the remaining `W-E-1` bits for the mantissa. Standard
