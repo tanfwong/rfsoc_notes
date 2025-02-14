@@ -118,7 +118,7 @@
   - The request is then routed through the AXI interconnect to the
     memory interface generator (MIG), which interfaces the off-chip
     DDR memory. Getting through the AXI interconnect may take about 30
-    clock cycles, and getting to the DDR memory and the getting the
+    clock cycles, and getting to the DDR memory and then getting the
     first piece of data back from the memory via the MIG may take 9 to
     14 clock cycles. 
   - The situation is similar for the write request, write data, and
