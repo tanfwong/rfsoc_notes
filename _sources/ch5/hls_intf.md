@@ -4,7 +4,7 @@
 * Under the VAAD flow, Vitis HLS automatically defines the interface
   of a DSP kernel so that the PS host can pass control commands to the
   kernel, and data can be exchanged between the kernel and the PS
-  host, as well as with other kernels and externel hardware
+  host, as well as with other kernels and external hardware
   components. All discussions about the kernel interface in this
   section primarily pertain to VAAD kernels.
 
