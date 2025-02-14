@@ -115,7 +115,7 @@
     to the 4k-byte access limit and to avoid hogging the AXI
     interconnect. A request may take 5 to 7 clock cycles to go through
     the `m_axi` adapter.
-  - The request thens routed through the AXI interconnect to the
+  - The request is then routed through the AXI interconnect to the
     memory interface generator (MIG), which interfaces the off-chip
     DDR memory. Getting through the AXI interconnect may take about 30
     clock cycles, and getting to the DDR memory and the getting the
