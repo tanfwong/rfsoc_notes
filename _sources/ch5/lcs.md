@@ -78,11 +78,11 @@
       applied to the LCS dataflow graph. As a result, the latency of
       the top-level function `top()` less than a half of that
       of the example in  {numref}`sec:cache` is achieved.
-      ```{tip}
-      The port widening for the writes in `Write_Loop`
-      causes a small negative slack in the synthesis step. If that is
-      not desirable, we may use the option
-      `max_widen_bitwidth=32` in an interface pragma to turn off
-      port widening for a more conservative scheduling design.
-      ```
+   % ```{tip}
+ %   The port widening for the writes in `Write_Loop`
+ %   causes a small negative slack in the synthesis step. If that is
+ %   not desirable, we may use the option
+ %   `max_widen_bitwidth=32` in an interface pragma to turn off
+ %   port widening for a more conservative scheduling design.
+ %   ```
  
