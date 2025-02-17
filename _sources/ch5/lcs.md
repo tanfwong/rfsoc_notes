@@ -7,7 +7,7 @@
   and port widening, preferably automatically inferred and implemented
   by Vitis HLS.
 
-* In order to help Vitis HLS infer opportunities for pipeling or
+* In order to help Vitis HLS infer opportunities for pipeline or
   sequential bursting and port widening, we may employ the
   producer-consumer model discussed in {numref}`sec:pro-con` to
   construct a data flow graph connecting the following sequence of
