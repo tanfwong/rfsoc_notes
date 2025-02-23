@@ -77,7 +77,8 @@ TPUs
 
 * Again, mapping this memory model back to our case (see {numref}`sec:hardware`):
   - The DDR4 bank connected to the PS is the host memory.
-  - The DDR4 back connected to the PL is the global memory.
+  - The DDR4 bank connected to the PS is the global memory (in our
+    platform setting).
   - Local memory includes all memory resources within a DSP kernel
     generated for global variables, variables in the top-level
     function,  and streaming buffers.
