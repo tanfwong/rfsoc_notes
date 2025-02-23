@@ -1204,7 +1204,7 @@ in the Vitis repository (with some modifications):</p>
 <ul class="simple">
 <li><p>The host code above executes three kernels, <code class="docutils literal notranslate"><span class="pre">mscale</span></code>, <code class="docutils literal notranslate"><span class="pre">madd</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">mmult</span></code>.  One input to <code class="docutils literal notranslate"><span class="pre">madd</span></code> is the output of <code class="docutils literal notranslate"><span class="pre">mscale</span></code>. Hence,
-the execution of <code class="docutils literal notranslate"><span class="pre">madd</span></code> must not begin until that of <code class="docutils literal notranslate"><span class="pre">madd</span></code>
+the execution of <code class="docutils literal notranslate"><span class="pre">madd</span></code> must not begin until that of <code class="docutils literal notranslate"><span class="pre">mscale</span></code>
 completes. On the other hand, the execution of <code class="docutils literal notranslate"><span class="pre">mmult</span></code> is
 completely independent of that of <code class="docutils literal notranslate"><span class="pre">mscale</span></code> and <code class="docutils literal notranslate"><span class="pre">madd</span></code>; hence can
 be performed in parallel.</p></li>

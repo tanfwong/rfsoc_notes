@@ -761,7 +761,7 @@
   ```
   - The host code above executes three kernels, `mscale`, `madd`, and
     `mmult`.  One input to `madd` is the output of `mscale`. Hence,
-    the execution of `madd` must not begin until that of `madd`
+    the execution of `madd` must not begin until that of `mscale`
     completes. On the other hand, the execution of `mmult` is
     completely independent of that of `mscale` and `madd`; hence can
     be performed in parallel.
