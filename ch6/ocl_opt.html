@@ -952,7 +952,7 @@ in the global memory is finally issued by</p>
 command, and the command should wait for the event <code class="docutils literal notranslate"><span class="pre">kernel_events[flag]</span></code>
 in <code class="docutils literal notranslate"><span class="pre">eventList</span></code> to complete before it starts.</p>
 </li>
-<li><p>Then, in the next iteration that use the same PIPO component
+<li><p>Then, in the next iteration that uses the same PIPO component
 buffers as indicated by the value <code class="docutils literal notranslate"><span class="pre">flag</span></code>, we wait for the command in 3. to
 complete using</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read_events</span><span class="p">[</span><span class="n">flag</span><span class="p">].</span><span class="n">wait</span><span class="p">();</span>

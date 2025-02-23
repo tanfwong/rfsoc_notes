@@ -520,7 +520,7 @@
         where the event `read_events[flag]` is associated with this
         command, and the command should wait for the event `kernel_events[flag]`
         in `eventList` to complete before it starts.
-     4. Then, in the next iteration that use the same PIPO component
+     4. Then, in the next iteration that uses the same PIPO component
         buffers as indicated by the value `flag`, we wait for the command in 3. to
         complete using
         ```c++
