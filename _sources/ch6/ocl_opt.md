@@ -195,12 +195,12 @@
   `buffer_a` and `buffer_b` in global memory, and `Rc0` stands for
   reading data from `buffer_result` in global memory back to host
   memory.  We see from the timing diagram that there are large idling
-  gaps in using the AXI interconnect for data transfer between the
-  host and the kernel as well as large idling gaps in executing the
-  kernel in the PL. These idling gaps are due to the latency of data
-  transfer and that of the kernel. They lower the throughput achieved
-  by the overall implementation, despite the kernel implementation may
-  have been optimized.
+  gaps in data transfer between the host and the kernel as well as
+  large idling gaps in executing the kernel in the PL. These idling
+  gaps are due to the latency of data transfer and that of the
+  kernel. They lower the throughput achieved by the overall
+  implementation, despite the kernel implementation may have been
+  optimized.
 
 * To increase the throughput of the overall implementation, we can
   overlap the data transfer between the host and the kernel and the

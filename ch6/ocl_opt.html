@@ -623,12 +623,12 @@ execution timing diagram will result:</p>
 <code class="docutils literal notranslate"><span class="pre">buffer_a</span></code> and <code class="docutils literal notranslate"><span class="pre">buffer_b</span></code> in global memory, and <code class="docutils literal notranslate"><span class="pre">Rc0</span></code> stands for
 reading data from <code class="docutils literal notranslate"><span class="pre">buffer_result</span></code> in global memory back to host
 memory.  We see from the timing diagram that there are large idling
-gaps in using the AXI interconnect for data transfer between the
-host and the kernel as well as large idling gaps in executing the
-kernel in the PL. These idling gaps are due to the latency of data
-transfer and that of the kernel. They lower the throughput achieved
-by the overall implementation, despite the kernel implementation may
-have been optimized.</p>
+gaps in data transfer between the host and the kernel as well as
+large idling gaps in executing the kernel in the PL. These idling
+gaps are due to the latency of data transfer and that of the
+kernel. They lower the throughput achieved by the overall
+implementation, despite the kernel implementation may have been
+optimized.</p>
 </li>
 <li><p>To increase the throughput of the overall implementation, we can
 overlap the data transfer between the host and the kernel and the
