@@ -538,7 +538,7 @@
   kernel by setting the connectivity argument `nk` in the configuration
   file of the kernel. For example, the following lines in the
   configuration file of the kernel `vadd` tells Vitis to synthesize 4
-  symmetricak compute units of `vadd`:
+  symmetrical compute units of `vadd`:
   ~~~
   [connectivity]
   nk=vadd:4
