@@ -12,7 +12,7 @@ domain or {eq}`firz` in the $z$-domain:
   &= 
   \sum_{k=0}^M b_k z^{-k} X(z) \\
   & =
-  b_0 W_0(z) + (b_1 W_1(z) + (b_2 W_2(z) + \cdots + (b_{M=1}
+  b_0 W_0(z) + (b_1 W_1(z) + (b_2 W_2(z) + \cdots + (b_{M-1}
   W_{M-1}(z)+ b_M W_M(z)) \cdots )
   \end{align}
   ```
@@ -85,7 +85,7 @@ domain or {eq}`firz` in the $z$-domain:
 
       dout_t y = 0.0;
       acc_loop: for (int k=0; k<L; k++) {
-  #pragma HLS bind_op variable=y op=mul impl=fabric latency=1
+  #pragma HLS bind_op variable=y op=mul impl=fabric
         y += b[k]*w[k];
       }
     }
