@@ -590,8 +590,8 @@ SFG above:</p>
 <ul class="simple">
 <li><p>Vitis HLS gives a RTL implementation of <code class="docutils literal notranslate"><span class="pre">sample_loop</span></code> with
 II=2.</p></li>
-<li><p>The bottleneck prevents achieving II=1 is the *carried
-dependence that updating <code class="docutils literal notranslate"><span class="pre">w[0]</span></code> in an iteration of <code class="docutils literal notranslate"><span class="pre">sample_loop</span></code>
+<li><p>The bottleneck prevents achieving II=1 is the <em>carried
+dependence</em> that updating <code class="docutils literal notranslate"><span class="pre">w[0]</span></code> in an iteration of <code class="docutils literal notranslate"><span class="pre">sample_loop</span></code>
 requires the accumulation of <code class="docutils literal notranslate"><span class="pre">y</span></code> in <code class="docutils literal notranslate"><span class="pre">acc_loop</span></code> to complete
 first. Although <code class="docutils literal notranslate"><span class="pre">acc_loop</span></code> is automatically unrolled by Vitis
 HLS, it still takes at least two clock cycles to complete

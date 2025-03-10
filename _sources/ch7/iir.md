@@ -160,7 +160,7 @@ as large as the feedforward order $M$, i.e., $N \geq M$.
     - Vitis HLS gives a RTL implementation of `sample_loop` with
       II=2.
     - The bottleneck prevents achieving II=1 is the *carried
-      dependence that updating `w[0]` in an iteration of `sample_loop`
+      dependence* that updating `w[0]` in an iteration of `sample_loop`
       requires the accumulation of `y` in `acc_loop` to complete
       first. Although `acc_loop` is automatically unrolled by Vitis
       HLS, it still takes at least two clock cycles to complete
