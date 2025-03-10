@@ -160,7 +160,7 @@ domain or {eq}`firz` in the $z$-domain:
   void fir(hls::stream<din_t> &in, hls::stream<dout_t> &out, int N) {
 
     static dout_t u[L-1] = {};
-  #pragma HLS array_partition variable=w type=complete
+  #pragma HLS array_partition variable=u type=complete
 
     sample_loop: for (int n=0; n<N; n++) {
   #pragma HLS loop_tripcount max=MAX_N
