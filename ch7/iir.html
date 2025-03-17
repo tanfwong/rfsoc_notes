@@ -569,39 +569,53 @@ SFG above:</p>
 <span class="w">      </span><span class="n">w</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">w</span><span class="p">[</span><span class="n">k</span><span class="mi">-1</span><span class="p">];</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">    </span><span class="c1">// Read in new sample from in</span>
-<span class="w">    </span><span class="n">dout_t</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
-<span class="w">    </span><span class="n">dout_t</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="w">    </span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="n">dout_t</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
 <span class="cp">#pragma HLS bind_op variable=y op=mul impl=fabric</span>
-<span class="cp">#pragma HLS bind_op variable=by op=mul impl=fabric</span>
+<span class="cp">#pragma HLS bind_op variable=w op=mul impl=fabric </span>
 <span class="w">    </span><span class="nl">acc_loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">&lt;</span><span class="n">fbL</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">y</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="n">w</span><span class="p">[</span><span class="n">k</span><span class="p">];</span>
+<span class="w">      </span><span class="n">dout_t</span><span class="w"> </span><span class="n">aw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="n">w</span><span class="p">[</span><span class="n">k</span><span class="p">];</span>
+<span class="w">      </span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">aw</span><span class="p">;</span>
 <span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="o">&lt;</span><span class="n">ffL</span><span class="p">)</span>
-<span class="w">        </span><span class="n">by</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="n">w</span><span class="p">[</span><span class="n">k</span><span class="p">];</span>
+<span class="w">        </span><span class="n">y</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="n">w</span><span class="p">[</span><span class="n">k</span><span class="p">];</span>
 <span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
-<span class="w">    </span><span class="n">y</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">    </span><span class="n">y</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
 <span class="w">    </span><span class="c1">// Write to out</span>
-<span class="w">    </span><span class="n">out</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">y</span><span class="o">+</span><span class="n">by</span><span class="p">);</span>
+<span class="w">    </span><span class="n">out</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">y</span><span class="p">);</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<ul class="simple">
+<ul>
 <li><p>Vitis HLS gives a RTL implementation of <code class="docutils literal notranslate"><span class="pre">sample_loop</span></code> with
-II=2.</p></li>
+II=2.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">acc_loop</span></code> above, the accumulation operation <code class="docutils literal notranslate"><span class="pre">w[0]</span> <span class="pre">-=</span> <span class="pre">a[k]*w[k]</span></code>
+is re-factored into:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">dout_t</span><span class="w"> </span><span class="n">aw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="n">w</span><span class="p">[</span><span class="n">k</span><span class="p">];</span>
+<span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">aw</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This re-factoring seems to be needed for Vitis HLS 2024.2; otherwise a
+balanced adder tree will not be synthesized and II=2 cannot be
+achived.</p>
+</div>
+</li>
 <li><p>The bottleneck prevents achieving II=1 is the <em>carried
 dependence</em> that updating <code class="docutils literal notranslate"><span class="pre">w[0]</span></code> in an iteration of <code class="docutils literal notranslate"><span class="pre">sample_loop</span></code>
-requires the accumulation of <code class="docutils literal notranslate"><span class="pre">y</span></code> in <code class="docutils literal notranslate"><span class="pre">acc_loop</span></code> to complete
+requires the accumulation of <code class="docutils literal notranslate"><span class="pre">a[k]*w[k]</span></code> in <code class="docutils literal notranslate"><span class="pre">acc_loop</span></code> to complete
 first. Although <code class="docutils literal notranslate"><span class="pre">acc_loop</span></code> is automatically unrolled by Vitis
 HLS, it still takes at least two clock cycles to complete
-accumulation on <code class="docutils literal notranslate"><span class="pre">y</span></code> for the example IIR filter of order <span class="math notranslate nohighlight">\(6\)</span>.  As
+accumulation for the example IIR filter of order <span class="math notranslate nohighlight">\(6\)</span>.  As
 a result, II=1 cannot be achieved for this filter.</p></li>
 <li><p>This bottleneck problem is inherent to the direct-form structure
 of the IIR implementation, and would be more severe as the order
 of the IIR filter increases. Thus, the direct-from
-implementation may not be suitable for implementing higher-order
-IIR filters operating at a high sampling rate.</p></li>
+implementation may not be suitable for a high throughput
+implemention of a higher-order IIR filter.</p></li>
 </ul>
 </li>
 </ul>

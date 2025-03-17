@@ -140,37 +140,49 @@ as large as the feedforward order $M$, i.e., $N \geq M$.
         w[k] = w[k-1];
       }
       // Read in new sample from in
-      dout_t y = in.read();
-      dout_t by = 0.0;
+      w[0] = in.read();
+      
+      dout_t y = 0.0;
   #pragma HLS bind_op variable=y op=mul impl=fabric
-  #pragma HLS bind_op variable=by op=mul impl=fabric
+  #pragma HLS bind_op variable=w op=mul impl=fabric 
       acc_loop: for (int k=1; k<fbL; k++) {
-        y -= a[k]*w[k];
+        dout_t aw = a[k]*w[k];
+        w[0] -= aw;
         if (k<ffL)
-          by += b[k]*w[k];
+          y += b[k]*w[k];
       }
-      w[0] = y;
-      y *= b[0];
+      y += b[0]*w[0]
 
       // Write to out
-      out.write(y+by);
+      out.write(y);
     }
   }
   ```
     - Vitis HLS gives a RTL implementation of `sample_loop` with
       II=2.
+      ```{caution}
+      In `acc_loop` above, the accumulation operation `w[0] -= a[k]*w[k]`
+      is re-factored into:
+      ~~~c++
+      dout_t aw = a[k]*w[k];
+      w[0] -= aw;
+      ~~~
+      This re-factoring seems to be needed for Vitis HLS 2024.2; otherwise a
+      balanced adder tree will not be synthesized and II=2 cannot be
+      achived.
+      ```
     - The bottleneck prevents achieving II=1 is the *carried
       dependence* that updating `w[0]` in an iteration of `sample_loop`
-      requires the accumulation of `y` in `acc_loop` to complete
+      requires the accumulation of `a[k]*w[k]` in `acc_loop` to complete
       first. Although `acc_loop` is automatically unrolled by Vitis
       HLS, it still takes at least two clock cycles to complete
-      accumulation on `y` for the example IIR filter of order $6$.  As
+      accumulation for the example IIR filter of order $6$.  As
       a result, II=1 cannot be achieved for this filter.
     - This bottleneck problem is inherent to the direct-form structure
       of the IIR implementation, and would be more severe as the order
       of the IIR filter increases. Thus, the direct-from
-      implementation may not be suitable for implementing higher-order
-      IIR filters operating at a high sampling rate.
+      implementation may not be suitable for a high throughput
+      implemention of a higher-order IIR filter.
 
 
 ## Transposed-form Implementation
