@@ -572,8 +572,6 @@ SFG above:</p>
 <span class="w">    </span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
 <span class="w">    </span>
 <span class="w">    </span><span class="n">dout_t</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
-<span class="cp">#pragma HLS bind_op variable=y op=mul impl=fabric</span>
-<span class="cp">#pragma HLS bind_op variable=w op=mul impl=fabric </span>
 <span class="w">    </span><span class="nl">acc_loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">&lt;</span><span class="n">fbL</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="n">dout_t</span><span class="w"> </span><span class="n">aw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="n">w</span><span class="p">[</span><span class="n">k</span><span class="p">];</span>
 <span class="w">      </span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">aw</span><span class="p">;</span>
@@ -655,10 +653,10 @@ from I:</p>
     &amp; \,\vdots \hspace{29pt} \vdots  \hspace{29pt}
     \,\vdots \hspace{30pt} \vdots 
     \\[-0pt]
-    {\scriptsize z^{-1}} &amp; \Big\downarrow  \hspace{25pt}
-    \Big\uparrow \hspace{27pt}
-    \Big\uparrow  \hspace{26pt}
-    \Big\downarrow  {\scriptsize z^{-1}}
+    {\scriptsize z^{-1}} &amp; \Big\uparrow  \hspace{25pt}
+    \Big\downarrow \hspace{27pt}
+    \Big\downarrow  \hspace{26pt}
+    \Big\uparrow  {\scriptsize z^{-1}}
     \\[-10pt]
      &amp;\!\bigcirc\!\!\xleftarrow{\hspace{5.5pt}{\scriptsize
     -a_N}\hspace{4.5pt}}\!\!\bigcirc \hspace{25pt}
@@ -717,16 +715,18 @@ filter:</p>
 </li>
 <li><p>Below is an example HLS function that implements the transposed-form II
 SFG above:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// This is a Chebyshev type-II lowpass filter with M=N=6 (L=7) </span>
-<span class="k">const</span><span class="w"> </span><span class="n">din_t</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">ffL</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="mf">0.168814352044553</span><span class="p">,</span><span class="w"> </span><span class="mf">0.792090023955804</span><span class="p">,</span><span class="w"> </span><span class="mf">1.723851142494651</span><span class="p">,</span><span class="w"> </span><span class="mf">2.197013405545998</span><span class="p">,</span>
-<span class="w">  </span><span class="mf">1.723851142494651</span><span class="p">,</span><span class="w"> </span><span class="mf">0.792090023955804</span><span class="p">,</span><span class="w"> </span><span class="mf">0.16881435204455</span>
-<span class="p">};</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;assert.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;hls_stream.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;iir.h&quot;</span>
 
-<span class="k">const</span><span class="w"> </span><span class="n">din_t</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">fbL</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.776425956077127</span><span class="p">,</span><span class="w"> </span><span class="mf">2.196211818205448</span><span class="p">,</span><span class="w"> </span><span class="mf">1.583727976930950</span><span class="p">,</span><span class="w"> </span>
-<span class="w">  </span><span class="mf">0.765387107901598</span><span class="p">,</span><span class="w"> </span><span class="mf">0.216231507219810</span><span class="p">,</span><span class="w"> </span><span class="mf">0.028540076201079</span>
-<span class="p">};</span>
+<span class="c1">// This is a Chebyshev type II filter with M=N=6 (L=7) </span>
+<span class="k">const</span><span class="w"> </span><span class="n">din_t</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">ffL</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mf">0.168814352044553</span><span class="p">,</span><span class="w"> </span><span class="mf">0.792090023955804</span><span class="p">,</span>
+<span class="w">  </span><span class="mf">1.723851142494651</span><span class="p">,</span><span class="w"> </span><span class="mf">2.197013405545998</span><span class="p">,</span><span class="w"> </span><span class="mf">1.723851142494651</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="mf">0.792090023955804</span><span class="p">,</span><span class="w"> </span><span class="mf">0.16881435204455</span><span class="p">};</span>
+
+<span class="k">const</span><span class="w"> </span><span class="n">din_t</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">fbL</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.776425956077127</span><span class="p">,</span>
+<span class="w">  </span><span class="mf">2.196211818205448</span><span class="p">,</span><span class="w"> </span><span class="mf">1.583727976930950</span><span class="p">,</span><span class="w"> </span><span class="mf">0.765387107901598</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="mf">0.216231507219810</span><span class="p">,</span><span class="w"> </span><span class="mf">0.028540076201079</span><span class="p">};</span>
 
 <span class="kt">void</span><span class="w"> </span><span class="nf">iir</span><span class="p">(</span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="n">din_t</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="n">dout_t</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 
@@ -736,51 +736,89 @@ SFG above:</p>
 <span class="w">  </span><span class="nl">sample_loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="cp">#pragma HLS loop_tripcount max=MAX_N</span>
 <span class="w">    </span><span class="n">din_t</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
-<span class="w">    </span><span class="n">dout_t</span><span class="w"> </span><span class="n">bx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">;</span>
-<span class="w">    </span><span class="n">dout_t</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bx</span><span class="o">+</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-<span class="w">    </span><span class="n">dout_t</span><span class="w"> </span><span class="n">ay</span><span class="p">;</span>
-<span class="cp">#pragma HLS bind_op variable=bx op=mul impl=dsp</span>
-<span class="cp">#pragma HLS bind_op variable=ay op=mul impl=dsp</span>
+<span class="w">    </span><span class="n">dout_t</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="o">+</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="cp">#pragma HLS bind_op variable=y op=mul impl=dsp</span>
 <span class="w">    </span><span class="c1">// Write to out</span>
 <span class="w">    </span><span class="n">out</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">y</span><span class="p">);</span>
 
-<span class="w">    </span><span class="nl">delay_add_loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">&lt;</span><span class="n">fbL</span><span class="mi">-1</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">dout_t</span><span class="w"> </span><span class="n">bx</span><span class="p">;</span>
+<span class="w">    </span><span class="n">dout_t</span><span class="w"> </span><span class="n">ay</span><span class="p">;</span>
+<span class="cp">#pragma HLS bind_op variable=bx op=mul impl=dsp</span>
+<span class="cp">#pragma HLS bind_op variable=ay op=mul impl=dsp</span>
+<span class="w">    </span><span class="nl">delay_add_loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">&lt;</span><span class="n">fbL</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="n">ay</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="n">y</span><span class="p">;</span>
 <span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="o">&lt;</span><span class="n">ffL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="n">bx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">;</span>
-<span class="w">        </span><span class="n">u</span><span class="p">[</span><span class="n">k</span><span class="mi">-1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">u</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">+</span><span class="n">bx</span><span class="o">-</span><span class="n">ay</span><span class="p">;</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="o">&lt;</span><span class="n">fbL</span><span class="mi">-1</span><span class="p">)</span>
+<span class="w">          </span><span class="n">u</span><span class="p">[</span><span class="n">k</span><span class="mi">-1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">u</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">+</span><span class="n">bx</span><span class="o">-</span><span class="n">ay</span><span class="p">;</span>
+<span class="w">        </span><span class="k">else</span>
+<span class="w">          </span><span class="n">u</span><span class="p">[</span><span class="n">k</span><span class="mi">-1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bx</span><span class="o">-</span><span class="n">ay</span><span class="p">;</span>
 <span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">u</span><span class="p">[</span><span class="n">k</span><span class="mi">-1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">u</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">-</span><span class="n">ay</span><span class="p">;</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="o">&lt;</span><span class="n">fbL</span><span class="mi">-1</span><span class="p">)</span>
+<span class="w">          </span><span class="n">u</span><span class="p">[</span><span class="n">k</span><span class="mi">-1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">u</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">-</span><span class="n">ay</span><span class="p">;</span>
+<span class="w">        </span><span class="k">else</span>
+<span class="w">          </span><span class="n">u</span><span class="p">[</span><span class="n">k</span><span class="mi">-1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">ay</span><span class="p">;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="n">ay</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="n">fbL</span><span class="mi">-1</span><span class="p">]</span><span class="o">*</span><span class="n">y</span><span class="p">;</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fbL</span><span class="o">==</span><span class="n">ffL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">bx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">[</span><span class="n">fbL</span><span class="mi">-1</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">;</span>
-<span class="w">      </span><span class="n">u</span><span class="p">[</span><span class="n">fbL</span><span class="mi">-2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bx</span><span class="o">-</span><span class="n">ay</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">u</span><span class="p">[</span><span class="n">fbL</span><span class="mi">-2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">ay</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span>
 <span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="n">din_t</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="w">  </span><span class="n">assert</span><span class="p">(</span><span class="n">N</span><span class="o">%</span><span class="mi">2</span><span class="o">==</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">  </span><span class="nl">Read_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS loop_tripcount max=MAX_N</span>
+<span class="w">    </span><span class="n">buf</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">in</span><span class="p">[</span><span class="n">n</span><span class="p">]);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">store</span><span class="p">(</span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="n">dout_t</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">assert</span><span class="p">(</span><span class="n">N</span><span class="o">%</span><span class="mi">2</span><span class="o">==</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">  </span><span class="nl">Write_Loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS loop_tripcount max=MAX_N</span>
+<span class="w">    </span><span class="n">out</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">buf</span><span class="p">.</span><span class="n">read</span><span class="p">().</span><span class="n">to_float</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">top</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="o">*</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="o">*</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#pragma HLS interface mode=m_axi port=in depth=MAX_N</span>
+<span class="cp">#pragma HLS interface mode=m_axi port=out depth=MAX_N</span>
+
+<span class="w">  </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="n">din_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">buf_in</span><span class="p">;</span>
+<span class="w">  </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="n">dout_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">buf_out</span><span class="p">;</span>
+
+<span class="cp">#pragma HLS DATAFLOW</span>
+<span class="w">  </span><span class="n">load</span><span class="p">(</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">buf_in</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
+<span class="w">  </span><span class="n">iir</span><span class="p">(</span><span class="n">buf_in</span><span class="p">,</span><span class="w"> </span><span class="n">buf_out</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
+<span class="w">  </span><span class="n">store</span><span class="p">(</span><span class="n">buf_out</span><span class="p">,</span><span class="w"> </span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<ul class="simple">
+<ul>
 <li><p>Vitis HLS gives a RTL implementation of <code class="docutils literal notranslate"><span class="pre">sample_loop</span></code> with
 II=1.</p></li>
 <li><p>The structure of the transposed-form implementation “simplifies”
 the carried dependence in <code class="docutils literal notranslate"><span class="pre">sample_loop</span></code> to that the update
-<code class="docutils literal notranslate"><span class="pre">y=bx+u[0]</span></code> needs to complete before the calculation of <code class="docutils literal notranslate"><span class="pre">a[1]*y</span></code>
+<code class="docutils literal notranslate"><span class="pre">y=b[0]*x+u[0]</span></code> needs to complete before the calculation of <code class="docutils literal notranslate"><span class="pre">a[1]*y</span></code>
 for updating <code class="docutils literal notranslate"><span class="pre">u[0]</span></code> in the next iteration of the loop. Similar to
 the first-order IIR filter example in <a class="reference internal" href="../ch4/loops.html#sec-loop-pipe"><span class="std std-numref">Section 4.2.1</span></a>, the
 objective of II=1 can be achieved as long as the update
-<code class="docutils literal notranslate"><span class="pre">y=bx+u[0]</span></code> and the multiplication <code class="docutils literal notranslate"><span class="pre">a[1]*y</span></code> afterward can be
-achieved within a clock cycle. This condition is much easier to
-satisfied for example by using DSP slices to implement the
-multipliers.</p></li>
+<code class="docutils literal notranslate"><span class="pre">y=b[0]*x+u[0]</span></code> and the subsequent update of  <code class="docutils literal notranslate"><span class="pre">u[0]</span></code> each can be
+achieved in a single and seperate clock cycle.
+This condition is easier to
+satisfied.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>For our case, we need to use the DSP slices to implement the
+multipliers and set the timing uncertainty (margin) in the
+sythesis process to 18% in order to satisying the condition
+mentioned above to achieve II=1. Timing can still be met with this
+setting after implementation.</p>
+</div>
+</li>
 <li><p>In general, the transposed-form structure is more suitable
 for higher speed implementation of IIR filters since the carried
 dependence induced by the transposed-form structure involves only
-a single multiplication rather than the accumulation of many
+a few multiplications rather than the accumulation of many
 products.</p></li>
 </ul>
 </li>
