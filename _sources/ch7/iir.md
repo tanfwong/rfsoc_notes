@@ -586,7 +586,7 @@ as large as the feedforward order $M$, i.e., $N \geq M$.
   }
   ```
   Vitis HLS gives a RTL implementation of `sample_loop` with
-  II=1. The latency of `sample_loop` is higher than that achieved
+  II=1 (with clock uncertainty set to 18%). The latency of `sample_loop` is higher than that achieved
   using the transposed-form implementation.
 
 ## Parallel-form Implementation
@@ -752,7 +752,7 @@ as large as the feedforward order $M$, i.e., $N \geq M$.
   }
 
   void iir(hls::stream<din_t> &in, hls::stream<dout_t> &out, int N) {
-    dout_t w[K][2] = {};
+     static dout_t w[K][2] = {};
   #pragma HLS array_partition variable=w type=complete
 
     sample_loop: for (int n=0; n<N; n++) {
@@ -769,4 +769,5 @@ as large as the feedforward order $M$, i.e., $N \geq M$.
   }
 
   ```
-     Vitis HLS gives a RTL implementation of `sample_loop` with II=1. 
+     Vitis HLS gives a RTL implementation of `sample_loop` with II=1
+     (with clock uncertainty set to 18%). 

@@ -1035,7 +1035,7 @@ SFG with transposed-form II SoSs:</p>
 </pre></div>
 </div>
 <p>Vitis HLS gives a RTL implementation of <code class="docutils literal notranslate"><span class="pre">sample_loop</span></code> with
-II=1. The latency of <code class="docutils literal notranslate"><span class="pre">sample_loop</span></code> is higher than that achieved
+II=1 (with clock uncertainty set to 18%). The latency of <code class="docutils literal notranslate"><span class="pre">sample_loop</span></code> is higher than that achieved
 using the transposed-form implementation.</p>
 </li>
 </ul>
@@ -1203,7 +1203,7 @@ SFG with transposed-form II second-order components</p>
 <span class="p">}</span>
 
 <span class="kt">void</span><span class="w"> </span><span class="nf">iir</span><span class="p">(</span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="n">din_t</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">in</span><span class="p">,</span><span class="w"> </span><span class="n">hls</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;</span><span class="n">dout_t</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">dout_t</span><span class="w"> </span><span class="n">w</span><span class="p">[</span><span class="n">K</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">   </span><span class="k">static</span><span class="w"> </span><span class="n">dout_t</span><span class="w"> </span><span class="n">w</span><span class="p">[</span><span class="n">K</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
 <span class="cp">#pragma HLS array_partition variable=w type=complete</span>
 
 <span class="w">  </span><span class="nl">sample_loop</span><span class="p">:</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">&lt;</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -1220,7 +1220,8 @@ SFG with transposed-form II second-order components</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Vitis HLS gives a RTL implementation of <code class="docutils literal notranslate"><span class="pre">sample_loop</span></code> with II=1.</p>
+<p>Vitis HLS gives a RTL implementation of <code class="docutils literal notranslate"><span class="pre">sample_loop</span></code> with II=1
+(with clock uncertainty set to 18%).</p>
 </li>
 </ul>
 </section>
