@@ -608,7 +608,11 @@ Y(z) &amp; = U_0(z),
 </pre></div>
 </div>
 <p>VItis HLS gives a RTL implementation with II=1 and a slightly smaller
-latency for the transposed-form SFG.</p>
+latency for the transposed-form SFG. Compared with the direct-form,
+there is not any <code class="docutils literal notranslate"><span class="pre">acc_loop</span></code> in
+the transposed-form implementation. One can achieve II=1 as long as
+all of  <code class="docutils literal notranslate"><span class="pre">u[k-1]</span> <span class="pre">=</span> <span class="pre">bx+u[k]</span></code> in <code class="docutils literal notranslate"><span class="pre">delay_add_loop</span></code> can be completed in a
+pipelined stage of a single clock cycle.</p>
 </li>
 </ul>
 </section>

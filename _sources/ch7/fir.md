@@ -184,8 +184,13 @@ domain or {eq}`firz` in the $z$-domain:
   }
   ```
   VItis HLS gives a RTL implementation with II=1 and a slightly smaller
-  latency for the transposed-form SFG.
+  latency for the transposed-form SFG. Compared with the direct-form,
+  there is not any `acc_loop` in 
+  the transposed-form implementation. One can achieve II=1 as long as
+  all of  `u[k-1] = bx+u[k]` in `delay_add_loop` can be completed in a
+  pipelined stage of a single clock cycle. 
 
+  
 (sec:fir_cascade)=
 ## Cascade-form Implementation
 * Rewrite {eq}`fir` in the cascade form as follows:
