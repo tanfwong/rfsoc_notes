@@ -374,11 +374,11 @@ as large as the feedforward order $M$, i.e., $N \geq M$.
     mentioned above to achieve II=1. Timing can still be met with this
     setting after implementation.
     ```
-  - In general, the transposed-form structure is more suitable
-     for higher speed implementation of IIR filters since the carried
+  - In general, the transposed-form structure is more suitable for
+     higher speed implementation of IIR filters since the carried
      dependence induced by the transposed-form structure involves only
-     a few multiplications rather than the accumulation of many
-     products.
+     a few multiplications, independent of the filter length, rather
+     than the accumulation of many products.
 
 ## Cascade-form Implementation
 * As in {numref}`sec:fir_cascade`, if the IIR filter taps in
