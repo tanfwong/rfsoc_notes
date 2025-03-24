@@ -94,7 +94,10 @@ domain or {eq}`firz` in the $z$-domain:
     out.write(y);
   }
   ```
-  Vitis HLS pipelines `fir_loop` to achieve II=1 for the function `fir()`.
+  Vitis HLS pipelines `fir_loop` to achieve II=1 for the function
+  `fir()`. However, as the length of the FIR filter increases, we may
+  not be able to achieve II=1 depending on whether the
+  accumulation in `acc_loop` can be done within a single clock cycle.
   ```{tip}
   The `static` qualifier in the declaration of the array `w[L]`
   prevents Vitis HLS from synthesizing hardware to reinitialize
