@@ -518,7 +518,7 @@ following direct-form SFG:</p>
 <p>Vitis HLS pipelines <code class="docutils literal notranslate"><span class="pre">fir_loop</span></code> to achieve II=1 for the function
 <code class="docutils literal notranslate"><span class="pre">fir()</span></code>. However, as the length of the FIR filter increases, we may
 not be able to achieve II=1 depending on whether the
-accumulation in <code class="docutils literal notranslate"><span class="pre">acc_loop</span></code> can be done within a single clock cycle.</p>
+accumulation in <code class="docutils literal notranslate"><span class="pre">acc_loop</span></code> can be completed within a single clock cycle.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">static</span></code> qualifier in the declaration of the array <code class="docutils literal notranslate"><span class="pre">w[L]</span></code>
