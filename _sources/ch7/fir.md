@@ -357,5 +357,7 @@ domain or {eq}`firz` in the $z$-domain:
   ```
    VItis HLS gives a RTL implementation with II=1 and a higher
   latency that both the direct-form and transposed-form SFGs. In
-  addition, significantly more LUT resource is needed.
+  addition, significantly more LUT resource is needed. Compared with
+  the transposed-form, the cascade-form implementation limits the
+  large fanout of the calculation of the terms `b[k]*x[n]`.
 
