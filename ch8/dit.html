@@ -427,11 +427,13 @@ define iteratively:</p>
   \end{align*}\]</div>
 <p>for each <span class="math notranslate nohighlight">\(n=0,1,\ldots,2^i-1\)</span> and each binary sequence <span class="math notranslate nohighlight">\(b\)</span> of length
 <span class="math notranslate nohighlight">\(\nu-1-i\)</span>.</p>
-<p>That is, we break the original signal <span class="math notranslate nohighlight">\(x[n]\)</span> into 2
-sub-signals respectively containing the even- and odd-indexed
-samples, each of which is further broken down into 2 sub-signals of
-even- and odd-indexed samples, and so on until there is a single
-sample left in each sub-signal of the last layer (<span class="math notranslate nohighlight">\(i=0\)</span>).</p>
+<p>That is, we break the original signal <span class="math notranslate nohighlight">\(x[n]\)</span> into 2 sub-signals
+respectively containing the even- and odd-indexed samples, each of
+which is further broken down into 2 sub-signals of even- and
+odd-indexed samples, and so on until there is a single sample left
+in each sub-signal of the last layer (<span class="math notranslate nohighlight">\(i=0\)</span>). The resulting signals
+can be arranged in a full binary tree with each signal indexed by
+its binary-sequence subscript.</p>
 </li>
 <li><p>Note that the length of <span class="math notranslate nohighlight">\(x^{(i)}_{b}[n]\)</span>  is <span class="math notranslate nohighlight">\(2^i\)</span>.
 Write the <span class="math notranslate nohighlight">\(2^i\)</span>-point DFT of <span class="math notranslate nohighlight">\(x^{(i)}_{b}[n]\)</span> as:</p>

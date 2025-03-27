@@ -15,11 +15,13 @@
   for each $n=0,1,\ldots,2^i-1$ and each binary sequence $b$ of length
   $\nu-1-i$. 
 
-  That is, we break the original signal $x[n]$ into 2
-  sub-signals respectively containing the even- and odd-indexed
-  samples, each of which is further broken down into 2 sub-signals of
-  even- and odd-indexed samples, and so on until there is a single
-  sample left in each sub-signal of the last layer ($i=0$).
+  That is, we break the original signal $x[n]$ into 2 sub-signals
+  respectively containing the even- and odd-indexed samples, each of
+  which is further broken down into 2 sub-signals of even- and
+  odd-indexed samples, and so on until there is a single sample left
+  in each sub-signal of the last layer ($i=0$). The resulting signals
+  can be arranged in a full binary tree with each signal indexed by
+  its binary-sequence subscript.
 
 * Note that the length of $x^{(i)}_{b}[n]$  is $2^i$. 
   Write the $2^i$-point DFT of $x^{(i)}_{b}[n]$ as:
