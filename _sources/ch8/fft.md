@@ -1,6 +1,6 @@
 # Fast Fourier Transform
 
-* The term **Fast Fourier Transform (FFT)** usually is used to
+* The term **Fast Fourier Transform (FFT)** is usually used to
   describe a general class of computationally efficient algorithms to
   calculate discrete Fourier transform (DFT) and its inverse (IDFT) of
   a finite-length discrete-time signal.

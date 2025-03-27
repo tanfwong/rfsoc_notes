@@ -142,16 +142,16 @@
     functions `init_twiddle_table()` and `init_bit_reversal_table()`
     but only use them to calculate the ROM values.
   - The butterfly stages with different structures as shown in
-    {numref}`butterfly8_mod` are genrally implemented in the function
+    {numref}`butterfly8_mod` are generally implemented in the function
     `butterfly_stage()` with logics and masks to specify the
     connection patterns in different stages. The loop `Butterfly_Loop`
     goes over the $\frac{M}{2}$ basic butterfly elements in each
     stage. In order to achieve an II=1 for the `Butterfly_Loop` for
     each stage, we need to use the function-instantiate pragma to
-    optimize the RTL synthesized to implement the each stage instance
-    of `butterfly_stage()`. Since the structures of the stages are
+    optimize the RTL implementation of the stage instance of
+    `butterfly_stage()`. Since the structures of the stages are
     different, $\nu$ different instances of the function will be
-    synthesized. 
+    synthesized.
   - All the stages in the butterfly SFG are instantiated in the loop
     `Stage_Loop` of the function `fft()`. The loop is fully unrolled,
     and $\nu$ different instances of `butterfly_stage()` will be
@@ -231,7 +231,7 @@
       performance gain.
 
 * Since access to the input and output arrays of
-  'butterfly_stage_uniform()' is not sequential, we still can not
+  `butterfly_stage_uniform()` is not sequential, we still can not
   apply task-level pipelining to the stage instances (if $\nu$
   instances are synthesized) of the function. However, a more careful
   inspection of the modified butterfly SFG in
@@ -342,7 +342,7 @@
   #include <hls_stream.h>
 
   #define nu 10            // FFT size M = 2^nu (nu>=2)
-  #define eta 1            // Chunk szie C = 2^eta (eta>=1)
+  #define eta 1            // Chunk size C = 2^eta (eta>=1)
   #define COSIM_NUMBLKS 16 // Number of blocks in COSIM
   #define MAX_NUMBLKS 1000 // Max number of blocks for loop tripcount
 
@@ -524,7 +524,7 @@
     bit-reversal stage and the butterfly stage task functions
     `pipeline_bit_reversal_stage()` and `pipeline_butterfly_stage()`
     using ping-pong buffers.
-  - Latency of `pipeline_butterfly_stage()` mat be further reduced by
+  - Latency of `pipeline_butterfly_stage()` may be further reduced by
     outputting the first half of the coefficients in the butterfly
     stage during the current block as done in
     `butterfly_stage_pipelined()` (see code in {numref}`sec:1fft`).

@@ -564,14 +564,14 @@ implemented as ROM, and will not synthesize the initialization
 functions <code class="docutils literal notranslate"><span class="pre">init_twiddle_table()</span></code> and <code class="docutils literal notranslate"><span class="pre">init_bit_reversal_table()</span></code>
 but only use them to calculate the ROM values.</p></li>
 <li><p>The butterfly stages with different structures as shown in
-<a class="reference internal" href="butterfly.html#butterfly8-mod"><span class="std std-numref">Fig. 8.4</span></a> are genrally implemented in the function
+<a class="reference internal" href="butterfly.html#butterfly8-mod"><span class="std std-numref">Fig. 8.4</span></a> are generally implemented in the function
 <code class="docutils literal notranslate"><span class="pre">butterfly_stage()</span></code> with logics and masks to specify the
 connection patterns in different stages. The loop <code class="docutils literal notranslate"><span class="pre">Butterfly_Loop</span></code>
 goes over the <span class="math notranslate nohighlight">\(\frac{M}{2}\)</span> basic butterfly elements in each
 stage. In order to achieve an II=1 for the <code class="docutils literal notranslate"><span class="pre">Butterfly_Loop</span></code> for
 each stage, we need to use the function-instantiate pragma to
-optimize the RTL synthesized to implement the each stage instance
-of <code class="docutils literal notranslate"><span class="pre">butterfly_stage()</span></code>. Since the structures of the stages are
+optimize the RTL implementation of the stage instance of
+<code class="docutils literal notranslate"><span class="pre">butterfly_stage()</span></code>. Since the structures of the stages are
 different, <span class="math notranslate nohighlight">\(\nu\)</span> different instances of the function will be
 synthesized.</p></li>
 <li><p>All the stages in the butterfly SFG are instantiated in the loop
@@ -657,7 +657,7 @@ performance gain.</p></li>
 </ul>
 </li>
 <li><p>Since access to the input and output arrays of
-‘butterfly_stage_uniform()’ is not sequential, we still can not
+<code class="docutils literal notranslate"><span class="pre">butterfly_stage_uniform()</span></code> is not sequential, we still can not
 apply task-level pipelining to the stage instances (if <span class="math notranslate nohighlight">\(\nu\)</span>
 instances are synthesized) of the function. However, a more careful
 inspection of the modified butterfly SFG in
@@ -773,7 +773,7 @@ modified butterfly SFG with uniform stages discussed in
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;hls_stream.h&gt;</span>
 
 <span class="cp">#define nu 10            </span><span class="c1">// FFT size M = 2^nu (nu&gt;=2)</span>
-<span class="cp">#define eta 1            </span><span class="c1">// Chunk szie C = 2^eta (eta&gt;=1)</span>
+<span class="cp">#define eta 1            </span><span class="c1">// Chunk size C = 2^eta (eta&gt;=1)</span>
 <span class="cp">#define COSIM_NUMBLKS 16 </span><span class="c1">// Number of blocks in COSIM</span>
 <span class="cp">#define MAX_NUMBLKS 1000 </span><span class="c1">// Max number of blocks for loop tripcount</span>
 
@@ -956,7 +956,7 @@ between tasks (stages) for parallelization.</p></li>
 bit-reversal stage and the butterfly stage task functions
 <code class="docutils literal notranslate"><span class="pre">pipeline_bit_reversal_stage()</span></code> and <code class="docutils literal notranslate"><span class="pre">pipeline_butterfly_stage()</span></code>
 using ping-pong buffers.</p></li>
-<li><p>Latency of <code class="docutils literal notranslate"><span class="pre">pipeline_butterfly_stage()</span></code> mat be further reduced by
+<li><p>Latency of <code class="docutils literal notranslate"><span class="pre">pipeline_butterfly_stage()</span></code> may be further reduced by
 outputting the first half of the coefficients in the butterfly
 stage during the current block as done in
 <code class="docutils literal notranslate"><span class="pre">butterfly_stage_pipelined()</span></code> (see code in <a class="reference internal" href="#sec-1fft"><span class="std std-numref">Section 8.3.1</span></a>).</p></li>
