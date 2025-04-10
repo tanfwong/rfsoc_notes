@@ -69,7 +69,7 @@
 * In the frequency domain, the ideal reconstruction process is simply:
   1. Cut out the period of the folded spectrum $X(e^{j\hat\omega})$
      over $[-\pi, \pi)$ and scale it by $\frac{1}{f_s}$.
-  2. Substitute $\hat\omega = \frac{\omega}{f_s}$ in the cut-outi and
+  2. Substitute $\hat\omega = \frac{\omega}{f_s}$ in the cut-out and
      scaled period of  $X(e^{j\hat\omega})$ to convert it to the FT
      $\tilde{X}(\omega)$ of the reconstructed continuous-time signal
      $\tilde{x}(t)$, i.e.,
@@ -92,7 +92,7 @@
       $\tilde{X}(\omega) = X(\omega)$, which of course implies
       $\tilde{x}(t) = x(t)$ in the time domain.
 
-* Reconsiderng the ideal reconstruction steps above from a
+* Reconsidering the ideal reconstruction steps above from a
   time-domain perspective, we get
   ```{math}
   :label: e:interpolation
@@ -218,7 +218,7 @@
   components of $x(t)$ lie within the frequency range $(\frac{f_s}{2},
   f_s)$ Hz, which is often referred to as the *second Nyquist zone*. This
   is in reference to that the frequency range $[0, \frac{f_s}{2})$ Hz
-  is called the *first Nyquist zone*. A pictorial illustration of a (real-valued)  
+  is called the *first Nyquist zone*. A pictorial illustration of a (real-valued) 
   bandpass $x(t)$ with its whole $X(\omega)$ lying in the second
   Nyquist zone is as shown below:
   ```{image} ../figs/nyqzone2.jpg

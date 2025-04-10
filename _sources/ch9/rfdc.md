@@ -43,17 +43,17 @@
 
 * The configuration of the DSP functions can be set when building the
   Vitis extensible platform using the RFDC IP block {cite}`pg269`. In
-  `rfsoc_adc_vitis_platform`, the configuration is chosen to implement 
+  `eee4511c_vitis_platform`, the configuration is chosen to implement 
   Nyquist sampling of a real-valued baseband signal.
   
 * The sampling rate of the ADCs is set based on the frequency of the
   stable reference clock input provided on the RFSoC 4x2 board. In
-  `rfsoc_adc_vitis_platform`, it is set to $4.9152$ Gsps. The DDC in
+  `eee4511c_vitis_platform`, it is set to $4.9152$ Gsps. The DDC in
   the data converter block allows us to decimate the ADC output in
   order to equivalently lower the sampling rate (see [my DSP
   notes](https://tanfwong.github.io/dsp_notes/ch7/down.html) for a
   more detailed discussion). In
-  `rfsoc_adc_vitis_platform`, the decimation factor is set to 16,
+  `eee4511c_vitis_platform`, the decimation factor is set to 16,
   resulting in the sampling rate of $307.2$ Msps reported in
   {numref}`sec:class_platform`. 
 
@@ -64,9 +64,9 @@
   access the stream of samples. Up to 12 samples (see the 192-bit wide
   data path in {numref}`rfadc`) can be packed together as the basic
   unit of the `axis` stream to reduce the clock rate required to
-  support the `axis` interface. In `rfsoc_adc_vitis_platform`, eight
+  support the `axis` interface. In `eee4511c_vitis_platform`, eight
   samples are packed into a chunk for `axis` streaming, requiring a
-  minimum clock rate of $38.4$ MHz for the `axis` interface. The data
+  clock rate of $38.4$ MHz for the `axis` interface. The data
   converter block can be configured to provide a reference clock at
   that frequency to drive the `axis` interface as shown in
   {numref}`hardware`.
