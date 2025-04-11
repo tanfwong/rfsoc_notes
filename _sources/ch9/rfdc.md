@@ -210,7 +210,7 @@
   align: center 
   --- 
   Block diagram showing connection between the HLS kernel and the
-  data converter's `axis` interface in `rfsoc_adc_vitis_platform`.
+  data converter's `axis` interfaces in `eee4511c_vitis_platform`.
   ```
 
 * The same chucking approach can also be applied to any DSP kernel
