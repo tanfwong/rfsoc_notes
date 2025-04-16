@@ -30,7 +30,7 @@
   - a Digital Down Converter (DDC) that consists of
     - coarse frequency mixers and a numerically controlled oscillator
       (NCO), and 
-    - signal decimators with aliasing filters.
+    - signal decimators with anti-aliasing filters.
 
 * All these DSP function components can be configured to implements
   standard Nyquist sampling (in the first Nyquist zone) of a
