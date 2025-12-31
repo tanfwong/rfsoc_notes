@@ -47,7 +47,7 @@ RFSoC device in the configuration below:
        results from the DSP kernels.
 
 * The AMD-Xilinx tools that support the embedded system
-  development workflow is [Vitis](https://www.xilinx.com/products/design-tools/vitis.html), [Vivado](https://www.xilinx.com/products/design-tools/vivado.html), and [Vitis HLS](https://www.xilinx.com/products/design-tools/vitis/vitis-hls.html):
+  development workflow are [Vitis](https://www.xilinx.com/products/design-tools/vitis.html), [Vivado](https://www.xilinx.com/products/design-tools/vivado.html), and [Vitis HLS](https://www.xilinx.com/products/design-tools/vitis/vitis-hls.html):
   ```{glossary}
   Vivado
     - Supports RTL design of DSP kernels, hardware blocks, and
