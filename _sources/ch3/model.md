@@ -86,8 +86,8 @@
 * When two DSP tasks are *fully independent*, i.e., their operations
   do not depend on one another, they do not communicate, and they do
   not access any shared memory or computational resource, they can be
-  executed in parallel; thus reducing the II and increasing the
-  throughput of the DSP kernel.
+  executed in parallel; thus reducing the iteration lattency and II as
+  well as increasing the throughput of the DSP kernel.
 
 * A piece of C/C++ code written in the producer-consumer model helps
   the HLS tool to identify opportunities for task-level
