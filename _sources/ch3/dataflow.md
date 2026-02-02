@@ -174,7 +174,7 @@ which are also often referred to as ***channels***.
   {cite}`ug1399` for more predictable inferencing by Vitis HLS.
 
 * A dataflow region is in the canonical form if:
-  - The task functions are not be inlined. 
+  - The task functions are not inlined. 
   - Each task function's return type is `void`.
   - Each task function uses only local and non-static variables. 
   - The sequence of task functions pass data forward such that
