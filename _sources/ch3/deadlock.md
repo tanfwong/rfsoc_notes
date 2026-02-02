@@ -7,7 +7,7 @@
   tasks can access any data and continue their operations
   indefinitely.
 
-* Let reconsider the diamond-shaped data flow graph in
+* Let's reconsider the diamond-shaped data flow graph in
   {eq}`diamond` to see how the use of FIFOs of insufficient depth
   can cause a deadlock:
   ```{math}
