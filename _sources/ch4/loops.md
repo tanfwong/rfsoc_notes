@@ -214,7 +214,7 @@ task-level pipelining and parallelization discussed in
   - Because the inner loop is unrolled, pipelining the nested loops
     this way may significantly increase the amount of PL resources
     needed to implement the nested loops.
-  - Since Vitis HLS automatically pipeline loops, we will obtain the
+  - Since Vitis HLS automatically pipelines loops, we will obtain the
     same synthesized RTL design even if the pipeline pragma in the
     code above is absent.
 
@@ -345,7 +345,7 @@ task-level pipelining and parallelization discussed in
       increasing PL resource utilization. 
     
 ## Loop Tripcount
-* For a loop with variable bound, Vitis HLS is not able to report the
+* For a loop with a variable bound, Vitis HLS is not able to report the
   *tripcount*, i.e., the number of iterations and the latency of the
   loop in the synthesis step because the tripcount is unknown during
   synthesis.

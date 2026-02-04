@@ -648,7 +648,7 @@ resources required to unroll <code class="docutils literal notranslate"><span cl
 <li><p>Because the inner loop is unrolled, pipelining the nested loops
 this way may significantly increase the amount of PL resources
 needed to implement the nested loops.</p></li>
-<li><p>Since Vitis HLS automatically pipeline loops, we will obtain the
+<li><p>Since Vitis HLS automatically pipelines loops, we will obtain the
 same synthesized RTL design even if the pipeline pragma in the
 code above is absent.</p></li>
 </ul>
@@ -794,7 +794,7 @@ increasing PL resource utilization.</p>
 <section id="loop-tripcount">
 <h2><span class="section-number">4.2.5. </span>Loop Tripcount<a class="headerlink" href="#loop-tripcount" title="Permalink to this headline">#</a></h2>
 <ul>
-<li><p>For a loop with variable bound, Vitis HLS is not able to report the
+<li><p>For a loop with a variable bound, Vitis HLS is not able to report the
 <em>tripcount</em>, i.e., the number of iterations and the latency of the
 loop in the synthesis step because the tripcount is unknown during
 synthesis.</p></li>
