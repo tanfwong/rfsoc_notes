@@ -521,7 +521,7 @@ different clock cycles each iteration. As a matter of fact, Vitis
 HLS is smart enough to perform the re-factoring for <code class="docutils literal notranslate"><span class="pre">iir1</span></code>
 automatically during synthesis.</p>
 </li>
-<li><p>We may explicitly turn off loop pipelining by putting <code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">pipiline</span> <span class="pre">off</span></code> in the loop body.</p></li>
+<li><p>We may explicitly turn off loop pipelining by putting <code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">pipeline</span> <span class="pre">off</span></code> in the loop body.</p></li>
 <li><p>We may <em>rewind</em> a pipelined loop to effect continuous execution of
 successive calls to the loop by using the option <code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">pipeline</span> <span class="pre">rewind</span></code>.  Rewinding can only apply to the outermost loop
 inside the top-level function and the code segment before the loop

@@ -92,7 +92,7 @@ task-level pipelining and parallelization discussed in
   automatically during synthesis.
 
 * We may explicitly turn off loop pipelining by putting `#pragma HLS
-  pipiline off` in the loop body.
+  pipeline off` in the loop body.
 
 * We may *rewind* a pipelined loop to effect continuous execution of
   successive calls to the loop by using the option `#pragma HLS

@@ -149,4 +149,4 @@ below).
     differently optimized versions of `foo()` because Vitis HLS
         recognizes that the function call `foo(inval1,0)` does not
         require any arithmetic operation, and thus inlines 
-        the function call into the top-level function.
+        the function call into the top-level function. 
