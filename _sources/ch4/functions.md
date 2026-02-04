@@ -106,9 +106,10 @@ below).
   - By default, inlining a function applies only to the level of the
     function body; hence inlining of `sub()` does not recursively
     apply to the call to `foo()` inside `sub()`. In this example,
-    inlining of `foo()` is explicitly turned off. We may instruct
-    Vitis HLS to inline `foo()` by issuing `#pragma HLS inline` in
-    `foo()`.
+    inlining of `foo()` is explicitly turned off. Removing the line
+    `#pragma HLS inline off` from `foo()` (and also the allocation
+    pragma line below) will cause Vitis HLS to
+    automatically inline `foo()` due to its simplicity.
   - The pragma [`#pragma HLS
     allocation`](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-allocation)
     in `top()` limits that only a single instance of `foo()` will be
