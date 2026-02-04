@@ -533,9 +533,9 @@ body of <code class="docutils literal notranslate"><span class="pre">sub()</span
 <li><p>By default, inlining a function applies only to the level of the
 function body; hence inlining of <code class="docutils literal notranslate"><span class="pre">sub()</span></code> does not recursively
 apply to the call to <code class="docutils literal notranslate"><span class="pre">foo()</span></code> inside <code class="docutils literal notranslate"><span class="pre">sub()</span></code>. In this example,
-inlining of <code class="docutils literal notranslate"><span class="pre">foo()</span></code> is explicitly turned off. Removing the line
-<code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">inline</span> <span class="pre">off</span></code> from <code class="docutils literal notranslate"><span class="pre">foo()</span></code> will cause Vitis HLS to
-automatically inline <code class="docutils literal notranslate"><span class="pre">foo()</span></code> due to its simplicity.</p></li>
+inlining of <code class="docutils literal notranslate"><span class="pre">foo()</span></code> is explicitly turned off. We may instruct
+Vitis HLS to inline <code class="docutils literal notranslate"><span class="pre">foo()</span></code> by issuing <code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">inline</span></code> in
+<code class="docutils literal notranslate"><span class="pre">foo()</span></code>.</p></li>
 <li><p>The pragma <a class="reference external" href="https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-allocation"><code class="docutils literal notranslate"><span class="pre">#pragma</span> <span class="pre">HLS</span> <span class="pre">allocation</span></code></a>
 in <code class="docutils literal notranslate"><span class="pre">top()</span></code> limits that only a single instance of <code class="docutils literal notranslate"><span class="pre">foo()</span></code> will be
 synthesized. Without it, two instances of <code class="docutils literal notranslate"><span class="pre">foo()</span></code> will be
