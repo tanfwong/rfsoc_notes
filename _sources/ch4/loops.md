@@ -189,7 +189,7 @@ task-level pipelining and parallelization discussed in
   - If the loop bounds are constants, the maximum is used as the bound of the merged loop.
   - Loops with both variable bounds and constant bounds cannot be merged.
   - The code between loops to be merged can not have side effects,
-    i.e., multiple execution of this code should generate the same results.
+    i.e., multiple executions of this code should generate the same results.
   - Loops cannot be merged when they contain FIFO reads because
     merging may change the order of the reads.
 

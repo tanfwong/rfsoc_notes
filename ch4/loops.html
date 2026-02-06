@@ -618,7 +618,7 @@ i.e., the number of iterations of the loops must be the same.</p></li>
 <li><p>If the loop bounds are constants, the maximum is used as the bound of the merged loop.</p></li>
 <li><p>Loops with both variable bounds and constant bounds cannot be merged.</p></li>
 <li><p>The code between loops to be merged can not have side effects,
-i.e., multiple execution of this code should generate the same results.</p></li>
+i.e., multiple executions of this code should generate the same results.</p></li>
 <li><p>Loops cannot be merged when they contain FIFO reads because
 merging may change the order of the reads.</p></li>
 </ul>
