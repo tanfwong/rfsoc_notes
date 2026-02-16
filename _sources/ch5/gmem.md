@@ -234,7 +234,7 @@
     manual burst access.
   - Two interface pragmas are used to set the arguments `in` and `out`
     to use channels `0` and `1` of the default `m_axi_gmem` adapter,
-    respectively. This is a requirement by VItis HLS that different
+    respectively. This is a requirement by Vitis HLS that different
     `hls::burst_maxi<int>`-type arguments must be on different `m_axi`
     adapters or different channels if they are bundled to the same
     `m_axi` adapter. The `depth=MAX_N` options in the pragmas tell
@@ -268,7 +268,7 @@
   top(x, y, 1000);
   ```
 
-* A ***sequential burst*** is one in which a smaller number of pieces of
+* In a ***sequential burst*** , a smaller number of pieces of
   data are accessed with each single read request (pair of write request
   and write response). The sequence of read requests and reads (write
   requests, writes, and write responses) are typically all placed with
@@ -315,7 +315,7 @@
   ```
   - With sequential bursting, there may be gaps in accessing the
     global memory via the AXI interconnect, and thus may not be as
-    efficient as pipeline bursting. 
+    efficient as pipeline bursting.
   - Pipelining the loop helps to reduce these memory access
     gaps. However, pipeling the loop may push a stream of read (write)
     requests in a row to the `m_axi` adapter. Therefore, we may need

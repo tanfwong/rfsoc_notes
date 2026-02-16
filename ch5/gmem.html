@@ -667,7 +667,7 @@ array arguments to let Vitis HLS know that we intend to implement
 manual burst access.</p></li>
 <li><p>Two interface pragmas are used to set the arguments <code class="docutils literal notranslate"><span class="pre">in</span></code> and <code class="docutils literal notranslate"><span class="pre">out</span></code>
 to use channels <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">1</span></code> of the default <code class="docutils literal notranslate"><span class="pre">m_axi_gmem</span></code> adapter,
-respectively. This is a requirement by VItis HLS that different
+respectively. This is a requirement by Vitis HLS that different
 <code class="docutils literal notranslate"><span class="pre">hls::burst_maxi&lt;int&gt;</span></code>-type arguments must be on different <code class="docutils literal notranslate"><span class="pre">m_axi</span></code>
 adapters or different channels if they are bundled to the same
 <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> adapter. The <code class="docutils literal notranslate"><span class="pre">depth=MAX_N</span></code> options in the pragmas tell
@@ -701,7 +701,7 @@ function, for example as shown in the C++ code snippet below:</p>
 </pre></div>
 </div>
 </li>
-<li><p>A <em><strong>sequential burst</strong></em> is one in which a smaller number of pieces of
+<li><p>In a <em><strong>sequential burst</strong></em> , a smaller number of pieces of
 data are accessed with each single read request (pair of write request
 and write response). The sequence of read requests and reads (write
 requests, writes, and write responses) are typically all placed with
