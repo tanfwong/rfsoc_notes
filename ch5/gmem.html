@@ -622,7 +622,7 @@ burst access to the global memory by manually controlling the burst
 access behavior of the kernel. There are two types of burst access,
 namely <em>pipeline bursting</em> and <em>sequential bursting</em>, that we may
 use the <code class="docutils literal notranslate"><span class="pre">hls::burst_maxi</span></code> class object to implement.</p></li>
-<li><p>A <em><strong>pipeline burst</strong></em> is one that the maximum number of pieces of
+<li><p>A <em><strong>pipeline burst</strong></em> supports the maximum number of pieces of
 data are accessed with a single read request (pair of write request
 and write response). The “maximum number” here often refers to the
 tripcount of a loop. The best way to explain pipeline bursting is to
