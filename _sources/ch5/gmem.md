@@ -191,7 +191,7 @@
   use the `hls::burst_maxi` class object to implement.
 
 * A ***pipeline burst*** supports the maximum number of pieces of
-  data are accessed with a single read request (pair of write request
+  data to be  accessed with a single read request (pair of write request
   and write response). The "maximum number" here often refers to the
   tripcount of a loop. The best way to explain pipeline bursting is to
   consider the following example kernel code:
