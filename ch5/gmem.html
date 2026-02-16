@@ -476,8 +476,9 @@ we may then try caching.</p>
 <section id="port-widening">
 <span id="sec-port-widen"></span><h2><span class="section-number">5.1.1. </span>Port Widening<a class="headerlink" href="#port-widening" title="Permalink to this headline">#</a></h2>
 <ul>
-<li><p>The maximum bit-width of an AXI4 port is 512. Thus, setting the
-<code class="docutils literal notranslate"><span class="pre">m_axi</span></code> interface of the kernel to 512 allows us to read/write 64
+<li><p>The maximum bit-width of an AXI4 port is 1024. Vitis HLS allows the
+<code class="docutils literal notranslate"><span class="pre">m_axi</span></code> interface of a kernel to have a bit-width up to 512. This
+maximum setting allows us to read/write 64
 bytes per access to the global memory. For example, consider the
 following simple top-level function:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define N 8000</span>

@@ -46,8 +46,9 @@
 
 (sec:port_widen)=
 ## Port Widening
-* The maximum bit-width of an AXI4 port is 512. Thus, setting the
-  `m_axi` interface of the kernel to 512 allows us to read/write 64
+* The maximum bit-width of an AXI4 port is 1024. Vitis HLS allows the
+  `m_axi` interface of a kernel to have a bit-width up to 512. This
+  maximum setting allows us to read/write 64
   bytes per access to the global memory. For example, consider the
   following simple top-level function:
   ```c++
