@@ -148,8 +148,8 @@
     the `m_axi` interface, allowing Vitis HLS to initiate a read
     (write) request `value` clock cycles before the read (write) is
     expected.  The default setting is `value=64`. If the expected
-    latency is set too low, the read (write) will be ready too soon
-    and might stall waiting for the global memory. If this figure is
+    latency is set too low, the read (write) will be scheduled too soon
+    and thus the kernel might stall waiting for the global memory. If this figure is
     set too high, memory access might be idle waiting on the kernel to
     start the read (write).
   - `max_read_burst_length=<value>` specifies the maximum number of

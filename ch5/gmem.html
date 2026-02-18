@@ -578,8 +578,8 @@ adapter to obtain a higher global memory access throughput:</p>
 the <code class="docutils literal notranslate"><span class="pre">m_axi</span></code> interface, allowing Vitis HLS to initiate a read
 (write) request <code class="docutils literal notranslate"><span class="pre">value</span></code> clock cycles before the read (write) is
 expected.  The default setting is <code class="docutils literal notranslate"><span class="pre">value=64</span></code>. If the expected
-latency is set too low, the read (write) will be ready too soon
-and might stall waiting for the global memory. If this figure is
+latency is set too low, the read (write) will be scheduled too soon
+and thus the kernel might stall waiting for the global memory. If this figure is
 set too high, memory access might be idle waiting on the kernel to
 start the read (write).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">max_read_burst_length=&lt;value&gt;</span></code> specifies the maximum number of
