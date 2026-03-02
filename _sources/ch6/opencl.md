@@ -138,7 +138,7 @@ TPUs
   - **In-order execution**: The commands are executed in the order
     that they are placed into the command queue. A command must complete
     before the next one begins.
-  - **Out-of-order execution**: Commands are launched in the order,
+  - **Out-of-order execution**: Commands are launched in order,
     but a command can execute without waiting for completion of prior
     commands. Specific ordering constraints on the execution of
     commands can be enforced by explicitly issuing synchronization
