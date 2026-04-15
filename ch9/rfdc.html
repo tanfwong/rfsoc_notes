@@ -466,7 +466,7 @@ stable reference clock input provided on the RFSoC 4x2 board. In
 <code class="docutils literal notranslate"><span class="pre">eee4511c_vitis_platform</span></code>, it is set to <span class="math notranslate nohighlight">\(4.9152\)</span> Gsps. The I-Q mixer
 in the data converter block performs frequency shifting. In
 <code class="docutils literal notranslate"><span class="pre">eee4511c_vitis_platform</span></code>, the I-Q mixer is configured to perform a
-frequency shift of -98 MHz, brining the real-valued bandpass
+frequency shift of -98 MHz, bringing the real-valued bandpass
 (centered at 98 MHz) signal sampled by the ADC to a complex-valued
 baseband signal.  The DDC in the data converter block allows us to
 decimate the ADC output in order to equivalently lower the sampling
@@ -497,7 +497,7 @@ converter block and then stores them in the global memory:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;ap_fixed.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;hls_stream.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;complex.h&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;tuple&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;array&gt;</span>
 
 <span class="cp">#define MAX_N 8192   </span><span class="c1">// Number of samples</span>
 <span class="cp">#define C 8  </span><span class="c1">// Number of samples per chunk</span>

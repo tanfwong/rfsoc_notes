@@ -55,7 +55,7 @@
   `eee4511c_vitis_platform`, it is set to $4.9152$ Gsps. The I-Q mixer
   in the data converter block performs frequency shifting. In
   `eee4511c_vitis_platform`, the I-Q mixer is configured to perform a
-  frequency shift of -98 MHz, brining the real-valued bandpass
+  frequency shift of -98 MHz, bringing the real-valued bandpass
   (centered at 98 MHz) signal sampled by the ADC to a complex-valued
   baseband signal.  The DDC in the data converter block allows us to
   decimate the ADC output in order to equivalently lower the sampling
@@ -90,7 +90,7 @@
   #include <ap_fixed.h>
   #include <hls_stream.h>
   #include <complex.h>
-  #include <tuple>
+  #include <array>
 
   #define MAX_N 8192   // Number of samples
   #define C 8  // Number of samples per chunk
